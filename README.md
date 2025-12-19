@@ -4,7 +4,7 @@
 
 > **"De redding voor de 'huisjesmelker' die alles nog in Excel doet."**
 
-## 📖 Het Project
+## 📖 Het Project: KotCompass
 Veel verhuurders van studentenkamers (kotbazen) werken nog met rommelige Excel-lijsten en WhatsApp. Contracten raken kwijt en eindafrekeningen zijn een rekenkundige nachtmerrie.
 
 > **Scrummaster**: Wout Vanlommel
