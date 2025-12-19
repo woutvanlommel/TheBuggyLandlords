@@ -1,4 +1,7 @@
+![logo-theBuggyLandlords](./frontend/assets/img/theBuggyLandlords.png)
+
 # Groupname:
+The Buggy Landlords
 
 # Grouprules:
 
