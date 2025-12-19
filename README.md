@@ -7,6 +7,8 @@
 ## 📖 Het Project
 Veel verhuurders van studentenkamers (kotbazen) werken nog met rommelige Excel-lijsten en WhatsApp. Contracten raken kwijt en eindafrekeningen zijn een rekenkundige nachtmerrie.
 
+> **Scrummaster**: Wout Vanlommel
+
 **De Oplossing:**
 Een centraal portaal voor verhuurder én student.
 * **Student:** Ziet huurstatus, meldt problemen (bv. lekkage) met foto's.
