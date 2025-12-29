@@ -65,7 +65,6 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
 ## Kot zoek platform
 **Must Haves**
-
 * **Filter functies**
     - Locatie/regio
     - Prijs (inclusief verbruik/verzekering, ...)
@@ -114,7 +113,6 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
 
 **Should Haves**
-
 * **Dichtsbijzijnde locaties**
     * Scholen
     * Winkels
@@ -127,7 +125,6 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
 
 **Could Haves**
-
 * **Kotmatcher**
     - Op basis van wat voor huis genoot je zoekt
     - Interesses
@@ -135,18 +132,16 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
     - ...
 * **Kotswiper** (tinder voor koten)
 * Soort van **reactiepunten** systeem om niet serieuze huurders 'af te schrikken'
-* Nieuwsbrief naar alle gebruikers die op zoek zijn naar een kot in een bepaalde regio (Spotlight koten?)
+* **Nieuwsbrief** naar alle gebruikers die op zoek zijn naar een kot in een bepaalde regio (Spotlight koten?)
 
 
 **Wont Haves**
-
 * **Eigen betaalintegratie** (Niet verzeild geraken in juridische betaaloorlogen)
 
 
 
 ## Kot management dashboard
 ### Algemeen
-
 **Must Haves Algemeen:**
 * **Staat van het kot**
     * Discussies vermijden als er schade toegericht wordt
@@ -175,31 +170,37 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
 
 ### Verhuurders
-
 **Must Haves Verhuurders**
-* Overzicht van de gebouwen in bezit met als verdere onderverdeling de koten die in dat gebouw aanwezig zijn
-* Studenten die goedkeuring hebben gekregen van de kotverhuurder, kunnen toewijzen aan het juiste kot
-* Algemene boodschappen kunnen mededelen met de huurders
-* Overzicht van de koten
-    * Financieel overzicht
-    * Status van de koten (verhuuurd vs onverhuurd)
-    * Wie zijn contract loopt wanneer af?
-    * ...
-* Kot toevoegen (Met de nodige informatie) -> Openzetten voor bezichtigingen, updaten, verwijderen, ...
+* **Portfolio Overzicht:**
+    * Dashboard met: Aantal panden, bezettingsgraad (%), openstaande tickets.
+    * Gebouwbeheer: Hierarchie `Gebouw -> Verdieping -> Kamer/Unit`.
+* **Huurdersbeheer:**
+    * Koppelen van geregistreerde studenten aan een specifieke unit.
+    * Overzicht looptijd contracten (Melding "Contract loopt af binnen 3 maanden").
+* **Kot toevoegen** (Met de nodige informatie) -> Openzetten voor bezichtigingen, updaten, verwijderen, ...
+
+**Should Haves Verhuurders:**
+* **Sleutelbeheer:** Register van wie welke sleutel heeft (inclusief reservesleutels).
 
 **Could Haves Verhuurders**
-* Kalender integratie
+* **Kalender integratie**
     * Bezoek van potentiële huurders
     * Feestjes van huurders
+
 
 **Wont Haves Verhuurders**
 
 ### Huurders
-
 **Must Haves Huurders**
-* Betalingsdeadlines
-* Betalingsherinneringen
-* 
+* **Betalingsdeadlines**
+* **Betalingsherinneringen**
+* **Mijn Kot:** Overzicht van hun contract, maandelijkse kosten en betaalstatus.
+* **Plaatsbeschrijving (Intrede):**
+    * Digitale flow bij intrede: Verhuurder uploadt foto's -> Huurder moet in app "Akkoord" klikken of opmerking toevoegen binnen 14 dage
+
+**Should Haves Huurders**
+* **Onderverhuur (Erasmus) Flow:** Aanvraagformulier om kot tijdelijk door te geven, met goedkeuringsknop voor eigenaar.
+* **Schoonmaakrooster:** Simpele tool om taken te verdelen onder huisgenoten.
 
 **Could Haves Huurders**
 * Review section -> Gelinkt aan de verhuurpagina
