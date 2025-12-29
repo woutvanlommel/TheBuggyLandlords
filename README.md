@@ -142,32 +142,50 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 ## Kot management dashboard
 ### Algemeen
 
-
-
-**Must Haves Algemeen:***
-* Staat van het kot
+**Must Haves Algemeen:**
+* **Staat van het kot**
     * Discussies vermijden als er schade toegericht wordt
     * Schade opmeten voor dat er iemand een kot betreedt (samen met de huurder) -> Denk aan autoverhuur op vakantie
     * Foto de afbeeldingen in de app laten maken zodat er een timestamp aan vastgekoppeld wordt
-* Communicatietool (Whatsapp binnen de kotapplicatie zelf)
+* **Communicatietool** (Whatsapp binnen de kotapplicatie zelf)
+* **Mededelingen bord** voor iedereen van het kot (Enkel verhuurder kan hierin posten)
+* **Contracten opstellen**
+    - Onderling tussen huurder en verhuurder (plaatsbeschrijving)
+    - Voorwaarden
+    - Duurcontracten
+    - Pdf generatie -> Doorsturen naar huurder en verhuurder (of in het dashboard zetten van de betrokkenen)
+* **Ticket Systeem (Onderhoud & Schade):**
+    * Huurder maakt ticket aan: Categorie (Lekkage, Internet, Elektriciteit) + Foto upload.
+    * Status flow: *Open -> In behandeling -> Opgelost*.
+    * Timestamp logging bij elke statuswijziging.
+
+**Should Haves Algemeen**
+
 
 **Could Haves Algemeen**
+* **Documentenkluis (The Vault):** Centrale opslagplek per gebouw voor EPC-attesten, handleiding CV-ketel, brandveiligheidsattesten.
+
+**Wont Haves Algemeen**
+* Plattegrond van de koten
+
 
 ### Verhuurders
 
 **Must Haves Verhuurders**
-* Contracten opstellen (voorwaarden, duurcontracten, onderling tussen huurder en verhuurder voor de staat van het kot, ...)
 * Overzicht van de gebouwen in bezit met als verdere onderverdeling de koten die in dat gebouw aanwezig zijn
 * Studenten die goedkeuring hebben gekregen van de kotverhuurder, kunnen toewijzen aan het juiste kot
-* Betalingen innen
 * Algemene boodschappen kunnen mededelen met de huurders
 * Overzicht van de koten
     * Financieel overzicht
     * Status van de koten (verhuuurd vs onverhuurd)
     * Wie zijn contract loopt wanneer af?
     * ...
+* Kot toevoegen (Met de nodige informatie) -> Openzetten voor bezichtigingen, updaten, verwijderen, ...
 
 **Could Haves Verhuurders**
+* Kalender integratie
+    * Bezoek van potentiële huurders
+    * Feestjes van huurders
 
 **Wont Haves Verhuurders**
 
