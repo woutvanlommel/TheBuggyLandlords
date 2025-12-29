@@ -64,6 +64,61 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 * Daarnaast is onze grootste USP dat we er een **managementtool** aan vastkoppelen. 
 
 ## Kot zoek platform
+**Must Haves**
+* Filter functies
+    - Locatie/regio
+    - Prijs (inclusief verbruik/verzekering, ...)
+    - Start huurperiode
+    - Contractduur
+    - Buitenzone (Tuin, balkon, parking, fietsenstalling, ...)
+    - Voorzieningen
+    - Soort woningen
+* Contact maken met de verhuurder/firma
+* Grote zoekbalk/functie bovenaan
+* Responsiveness
+* Login/Registratie
+    - Beveiliging
+    - GDPR
+* Persoonlijk profiel (Van huurder, zichtbaar voor verhuurder)
+    - Naam + Achternaam
+    - Studiebewijs opladen (Verplicht vanaf de start van het academie jaar)
+    - Contactgevens (telefoon, mailadres, van de ouders?, ...)
+    - Bankgegevens (Voor overschrijvingen)
+    - Geboortedatum
+* Persoonlijk profiel (Van verhuurder)
+    - Naam + Achternaam
+    - Betaalgegevens van de verhuurder -> Automatisch linken in de 'facturen'
+    - Contactgegevens
+    - (Should have: Andere koten van deze verhuurder)
+* Overzichtpagina van de koten, op basis van de locatie
+* Favorieten zetten
+
+
+**Should Haves**
+* Dichtsbijzijnde locaties
+    * Scholen
+    * Winkels
+    * Station (vervoer)
+* Verspreiding op andere zoekplatformen (indirect naar ons platform leiden, door onder andere op IMMO sites)
+* Betaling -> Bevestiging betaling, soort van facturen via ons, betaalherinneringen, ..........
+* Spotlight voor verhuurders -> Boosten van hun kot voor x aantal tijd
+* Aanmelden op e-mail melding lijst. Bv: hou me op de hoogte voor dit kot (Als het vrijkomt)
+
+**Could Haves**
+* Kotmatcher
+    - Op basis van wat voor huis genoot je zoekt
+    - Interesses
+    - Public profile
+    - ...
+* Kotswiper (tinder voor koten)
+* Soort van reactiepunten systeem om niet serieuze huurders 'af te schrikken'
+* Nieuwsbrief naar alle gebruikers die op zoek zijn naar een kot in een bepaalde regio (Spotlight koten?)
+
+
+**Wont Haves**
+* Eigen betaalintegratie (Niet verzeild geraken in juridische betaaloorlogen)
+
+
 
 ## Kot management dashboard
 ### Algemeen
@@ -99,11 +154,11 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 ### Huurders
 
 **Must Haves Huurders**
-* Ratings pagina
 * Betalingsdeadlines
 * Betalingsherinneringen
 * 
 
 **Could Haves Huurders**
+* Review section -> Gelinkt aan de verhuurpagina
 
 **Wont Haves Huurders**
