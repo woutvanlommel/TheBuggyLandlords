@@ -92,6 +92,24 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
     - (Should have: Andere koten van deze verhuurder)
 * Overzichtpagina van de koten, op basis van de locatie
 * Favorieten zetten
+* Pagina met info links over de wetgeving in verband met verhuren
+    - Verwerken in een algemene info sectie
+    - FAQ hieronder (Voor huurder/verhuurder)
+* Nodige info per kot
+    - Duidelijke foto's
+    - Adres
+    - Voorzieningen
+        - Douche, toilet, badkamer
+        - Bemeubeld vs niet bemeubeld
+        - ...
+    - Eigenschappen
+        - Aantal slaapkamers
+        - Oppervlakte
+        - Prijs van het kot
+        - Wat is inbegrepen in de prijs zoals (internet, extra kosten)
+    - Beschrijving van het kot zelf
+    - Plaatsing van het zoekertje
+    - Beschikbaar vanaf
 
 
 **Should Haves**
@@ -103,6 +121,7 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 * Betaling -> Bevestiging betaling, soort van facturen via ons, betaalherinneringen, ..........
 * Spotlight voor verhuurders -> Boosten van hun kot voor x aantal tijd
 * Aanmelden op e-mail melding lijst. Bv: hou me op de hoogte voor dit kot (Als het vrijkomt)
+* ItsMe verificatie
 
 **Could Haves**
 * Kotmatcher
@@ -129,6 +148,7 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 * Staat van het kot
     * Discussies vermijden als er schade toegericht wordt
     * Schade opmeten voor dat er iemand een kot betreedt (samen met de huurder) -> Denk aan autoverhuur op vakantie
+    * Foto de afbeeldingen in de app laten maken zodat er een timestamp aan vastgekoppeld wordt
 * Communicatietool (Whatsapp binnen de kotapplicatie zelf)
 
 **Could Haves Algemeen**
@@ -136,7 +156,7 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 ### Verhuurders
 
 **Must Haves Verhuurders**
-* Contracten opstellen (voorwaarden, duurcontracten, ...)
+* Contracten opstellen (voorwaarden, duurcontracten, onderling tussen huurder en verhuurder voor de staat van het kot, ...)
 * Overzicht van de gebouwen in bezit met als verdere onderverdeling de koten die in dat gebouw aanwezig zijn
 * Studenten die goedkeuring hebben gekregen van de kotverhuurder, kunnen toewijzen aan het juiste kot
 * Betalingen innen
