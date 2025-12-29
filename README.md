@@ -59,24 +59,28 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 ---
 
 # MoScoW
-
-## Algemeen
-
 * Grootste doel is het realiseren van de **"Autoscout"** variant maar dan voor studentenkoten. 
     -> Voorbeelden: iKot, Rentola, Kotzoeker, ...
 * Daarnaast is onze grootste USP dat we er een **managementtool** aan vastkoppelen. 
 
-### Must Haves Algemeen:
+## Kot zoek platform
+
+## Kot management dashboard
+### Algemeen
+
+
+
+**Must Haves Algemeen:***
 * Staat van het kot
     * Discussies vermijden als er schade toegericht wordt
     * Schade opmeten voor dat er iemand een kot betreedt (samen met de huurder) -> Denk aan autoverhuur op vakantie
 * Communicatietool (Whatsapp binnen de kotapplicatie zelf)
 
-### Could Haves Algemeen
+**Could Haves Algemeen**
 
-## Verhuurders
+### Verhuurders
 
-### Must Haves Verhuurders
+**Must Haves Verhuurders**
 * Contracten opstellen (voorwaarden, duurcontracten, ...)
 * Overzicht van de gebouwen in bezit met als verdere onderverdeling de koten die in dat gebouw aanwezig zijn
 * Studenten die goedkeuring hebben gekregen van de kotverhuurder, kunnen toewijzen aan het juiste kot
@@ -88,15 +92,18 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
     * Wie zijn contract loopt wanneer af?
     * ...
 
-### Could Haves Verhuurders
+**Could Haves Verhuurders**
 
-### Wont Haves Verhuurders
+**Wont Haves Verhuurders**
 
-## Huurders
+### Huurders
 
-### Must Haves Huurders
+**Must Haves Huurders**
+* Ratings pagina
+* Betalingsdeadlines
+* Betalingsherinneringen
 * 
 
-### Could Haves Huurders
+**Could Haves Huurders**
 
-### Wont Haves Huurders
+**Wont Haves Huurders**
