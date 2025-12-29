@@ -201,6 +201,7 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 **Should Haves Huurders**
 * **Onderverhuur (Erasmus) Flow:** Aanvraagformulier om kot tijdelijk door te geven, met goedkeuringsknop voor eigenaar.
 * **Schoonmaakrooster:** Simpele tool om taken te verdelen onder huisgenoten.
+* **Exit lijst:** Wat moet er allemaal inorde zijn vooraleer ik uit mijn kot ga?
 
 **Could Haves Huurders**
 * Review section -> Gelinkt aan de verhuurpagina
