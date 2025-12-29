@@ -65,7 +65,8 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
 ## Kot zoek platform
 **Must Haves**
-* Filter functies
+
+* **Filter functies**
     - Locatie/regio
     - Prijs (inclusief verbruik/verzekering, ...)
     - Start huurperiode
@@ -73,29 +74,29 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
     - Buitenzone (Tuin, balkon, parking, fietsenstalling, ...)
     - Voorzieningen
     - Soort woningen
-* Contact maken met de verhuurder/firma
-* Grote zoekbalk/functie bovenaan
-* Responsiveness
-* Login/Registratie
+* **Contact maken met de verhuurder/firma**
+* **Grote zoekbalk/functie bovenaan**
+* **Responsiveness**
+* **Login/Registratie**
     - Beveiliging
     - GDPR
-* Persoonlijk profiel (Van huurder, zichtbaar voor verhuurder)
+* **Persoonlijk profiel (Van huurder, zichtbaar voor verhuurder)**
     - Naam + Achternaam
     - Studiebewijs opladen (Verplicht vanaf de start van het academie jaar)
     - Contactgevens (telefoon, mailadres, van de ouders?, ...)
     - Bankgegevens (Voor overschrijvingen)
     - Geboortedatum
-* Persoonlijk profiel (Van verhuurder)
+* **Persoonlijk profiel (Van verhuurder)**
     - Naam + Achternaam
     - Betaalgegevens van de verhuurder -> Automatisch linken in de 'facturen'
     - Contactgegevens
     - (Should have: Andere koten van deze verhuurder)
-* Overzichtpagina van de koten, op basis van de locatie
-* Favorieten zetten
-* Pagina met info links over de wetgeving in verband met verhuren
+* **Overzichtpagina** van de koten, op basis van de locatie
+* **Favorieten** zetten
+* Pagina met info links over de **wetgeving in verband met verhuren**
     - Verwerken in een algemene info sectie
     - FAQ hieronder (Voor huurder/verhuurder)
-* Nodige info per kot
+* **Nodige info per kot**
     - Duidelijke foto's
     - Adres
     - Voorzieningen
@@ -113,7 +114,8 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 
 
 **Should Haves**
-* Dichtsbijzijnde locaties
+
+* **Dichtsbijzijnde locaties**
     * Scholen
     * Winkels
     * Station (vervoer)
@@ -123,19 +125,22 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 * Aanmelden op e-mail melding lijst. Bv: hou me op de hoogte voor dit kot (Als het vrijkomt)
 * ItsMe verificatie
 
+
 **Could Haves**
-* Kotmatcher
+
+* **Kotmatcher**
     - Op basis van wat voor huis genoot je zoekt
     - Interesses
     - Public profile
     - ...
-* Kotswiper (tinder voor koten)
-* Soort van reactiepunten systeem om niet serieuze huurders 'af te schrikken'
+* **Kotswiper** (tinder voor koten)
+* Soort van **reactiepunten** systeem om niet serieuze huurders 'af te schrikken'
 * Nieuwsbrief naar alle gebruikers die op zoek zijn naar een kot in een bepaalde regio (Spotlight koten?)
 
 
 **Wont Haves**
-* Eigen betaalintegratie (Niet verzeild geraken in juridische betaaloorlogen)
+
+* **Eigen betaalintegratie** (Niet verzeild geraken in juridische betaaloorlogen)
 
 
 
