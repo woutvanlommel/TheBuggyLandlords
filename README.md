@@ -57,3 +57,46 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
 `feat-micro-excercise-readme`
 
 ---
+
+# MoScoW
+
+## Algemeen
+
+* Grootste doel is het realiseren van de **"Autoscout"** variant maar dan voor studentenkoten. 
+    -> Voorbeelden: iKot, Rentola, Kotzoeker, ...
+* Daarnaast is onze grootste USP dat we er een **managementtool** aan vastkoppelen. 
+
+### Must Haves Algemeen:
+* Staat van het kot
+    * Discussies vermijden als er schade toegericht wordt
+    * Schade opmeten voor dat er iemand een kot betreedt (samen met de huurder) -> Denk aan autoverhuur op vakantie
+* Communicatietool (Whatsapp binnen de kotapplicatie zelf)
+
+### Could Haves Algemeen
+
+## Verhuurders
+
+### Must Haves Verhuurders
+* Contracten opstellen (voorwaarden, duurcontracten, ...)
+* Overzicht van de gebouwen in bezit met als verdere onderverdeling de koten die in dat gebouw aanwezig zijn
+* Studenten die goedkeuring hebben gekregen van de kotverhuurder, kunnen toewijzen aan het juiste kot
+* Betalingen innen
+* Algemene boodschappen kunnen mededelen met de huurders
+* Overzicht van de koten
+    * Financieel overzicht
+    * Status van de koten (verhuuurd vs onverhuurd)
+    * Wie zijn contract loopt wanneer af?
+    * ...
+
+### Could Haves Verhuurders
+
+### Wont Haves Verhuurders
+
+## Huurders
+
+### Must Haves Huurders
+* 
+
+### Could Haves Huurders
+
+### Wont Haves Huurders
