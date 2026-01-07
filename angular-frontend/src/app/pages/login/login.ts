@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../../shared/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -23,8 +23,13 @@ import { Router, RouterModule } from '@angular/router';
         </div>
 
         @if (errorMessage) {
-
-        <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+        <div class="rounded-md bg-red-50 p-4 border border-red-200 mb-4">
+          <div class="flex">
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+            </div>
+          </div>
+        </div>
         }
 
         <form class="mt-8 space-y-6" (ngSubmit)="login()">
@@ -84,7 +89,12 @@ import { Router, RouterModule } from '@angular/router';
   `,
 })
 export class Login {
-  constructor(private authService: AuthService, private router: Router, private ngZone: NgZone) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   email: string = '';
   password: string = '';
@@ -134,7 +144,8 @@ export class Login {
     } catch (error: any) {
       // Forceer update binnen Angular zone
       this.ngZone.run(() => {
-        this.errorMessage = error.message || 'Inloggen mislukt. Controleer uw inloggegevens.';
+        this.errorMessage = 'E-mailadres of wachtwoord is onjuist.';
+        this.cdr.detectChanges();
       });
       console.error(error);
     }
