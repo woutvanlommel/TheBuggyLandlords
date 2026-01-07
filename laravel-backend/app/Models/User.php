@@ -50,4 +50,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relatie: Een User (Huurder) heeft meerdere contracten (historiek).
+     */
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
+
+    /**
+     * Relatie: Een User (Verhuurder) bezit meerdere gebouwen.
+     */
+    public function buildings()
+    {
+        return $this->hasMany(Building::class);
+    }
 }

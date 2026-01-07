@@ -8,6 +8,7 @@ class Building extends Model
 {
     protected $table = 'building';
     public $timestamps = false;
+    protected $fillable = ['street_id', 'housenumber', 'place_id', 'user_id'];
 
     public function street()
     {
@@ -17,5 +18,10 @@ class Building extends Model
     public function place()
     {
         return $this->belongsTo(Place::class);
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

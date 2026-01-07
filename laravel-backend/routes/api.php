@@ -199,4 +199,24 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($room);
     });
 
+    // --- SPECIFIEK VOOR VERHUURDERS ---
+
+    /**
+     * MIJN GEBOUWEN
+     * Haal de gebouwen op die eigendom zijn van de ingelogde user
+     */
+    Route::get('/my-buildings', function (Request $request) {
+        $user = $request->user();
+
+        // Check of het wel een verhuurder is (rol 2)
+        if ($user->role_id !== 2) {
+            return response()->json(['message' => 'Alleen voor verhuurders'], 403);
+        }
+
+        // Haal gebouwen op met kamers
+        $buildings = $user->buildings()->with(['rooms', 'street', 'place'])->get();
+        
+        return response()->json($buildings);
+    });
+
 });
