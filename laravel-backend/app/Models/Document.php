@@ -17,6 +17,7 @@ class Document extends Model
         'document_type_id',
         'user_id',
         'contract_id',
+        'room_id', // Nieuw
     ];
 
     // Relaties
@@ -28,6 +29,11 @@ class Document extends Model
     public function contract()
     {
         return $this->belongsTo(Contract::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
     }
 
     public function complaints()

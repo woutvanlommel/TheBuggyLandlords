@@ -35,7 +35,7 @@ class ImportDataSeeder extends Seeder
 
             -- 3. Types en Faciliteiten
             INSERT INTO `complainttype` (`id`, `type`) VALUES (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
-            INSERT INTO `documenttype` (`id`, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht');
+            INSERT INTO `documenttype` (`id`, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding');
             INSERT INTO `facility` (`id`, `facility`) VALUES (1, 'Snel Internet'), (2, 'Eigen badkamer'), (3, 'Gemeenschappelijke keuken'), (4, 'Eigen keuken'), (5, 'Fietsenstalling'), (6, 'Bemeubeld'), (7, 'Tuin/Koer'), (8, 'Wasmachine aanwezig'), (9, 'Dichtbij station'), (10, 'Huisdieren toegelaten');
             INSERT INTO `condition` (`id`, `name`, `description`) VALUES (1, 'Kamer Yentl', 'Alles is inorde.'), (2, 'Kamer Alessio', 'Wc bril hangt scheef.'), (3, 'Kamer Wout', 'Isolatie raamwanden ontbreekt.');
 
@@ -93,13 +93,13 @@ class ImportDataSeeder extends Seeder
             (26, 24, '12', 17, 32), (27, 25, '77', 22, 33), (28, 26, '3', 24, 34), (29, 27, '5B', 25, 35), (30, 28, '8', 26, 36);
 
             -- 6. Kamers (Gebruik nu user_id ipv account_id)
-            INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`) VALUES
-            (1, '0.01', 450, 1), (2, '1.01', 480, 1), (3, '1.02', 460, 1), (4, '2.01', 500, 1), (5, 'A', 600, 2),
-            (6, 'B', 550, 2), (7, '10', 400, 3), (8, '11', 410, 3), (9, '12', 390, 3), (10, 'Glv', 520, 4),
-            (11, '1L', 480, 4), (12, '1R', 480, 4), (13, 'Studio 1', 650, 5), (14, 'Studio 2', 670, 5), (15, 'K1', 350, 6),
-            (16, 'K2', 360, 6), (17, 'K3', 350, 6), (18, 'K4', 370, 6), (19, '3.01', 510, 7), (20, '3.02', 510, 7),
-            (21, '01', 440, 8), (22, '02', 440, 8), (23, 'Penthouse', 800, 9), (24, 'A1', 490, 10), (25, 'A2', 495, 10),
-            (26, 'B1', 505, 10), (27, '1.1', 425, 11), (28, '1.2', 425, 11), (29, 'Gelijkvloers', 580, 12), (30, 'Dakapp', 700, 13);
+            INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`, `is_highlighted`) VALUES
+            (1, '0.01', 450, 1, 1), (2, '1.01', 480, 1, 0), (3, '1.02', 460, 1, 0), (4, '2.01', 500, 1, 0), (5, 'A', 600, 2, 1),
+            (6, 'B', 550, 2, 0), (7, '10', 400, 3, 0), (8, '11', 410, 3, 0), (9, '12', 390, 3, 0), (10, 'Glv', 520, 4, 1),
+            (11, '1L', 480, 4, 0), (12, '1R', 480, 4, 0), (13, 'Studio 1', 650, 5, 1), (14, 'Studio 2', 670, 5, 0), (15, 'K1', 350, 6, 0),
+            (16, 'K2', 360, 6, 0), (17, 'K3', 350, 6, 0), (18, 'K4', 370, 6, 0), (19, '3.01', 510, 7, 0), (20, '3.02', 510, 7, 0),
+            (21, '01', 440, 8, 0), (22, '02', 440, 8, 0), (23, 'Penthouse', 800, 9, 1), (24, 'A1', 490, 10, 0), (25, 'A2', 495, 10, 0),
+            (26, 'B1', 505, 10, 0), (27, '1.1', 425, 11, 0), (28, '1.2', 425, 11, 0), (29, 'Gelijkvloers', 580, 12, 0), (30, 'Dakapp', 700, 13, 1);
 
             INSERT INTO `contract` (`id`, `user_id`, `room_id`, `start_date`, `end_date`, `is_active`, `created_at`, `updated_at`) VALUES
             (1, 1, 1, '2025-09-01', NULL, 1, NOW(), NOW()), (2, 2, 2, '2025-09-01', NULL, 1, NOW(), NOW()), (3, 3, 3, '2025-09-01', NULL, 1, NOW(), NOW()), 
@@ -147,18 +147,45 @@ class ImportDataSeeder extends Seeder
             (29, 'Vaatwasser stuk', 'Pomp werkt niet.', 1, 29), 
             (30, 'Afvoer verstopt', 'Douche loopt niet weg.', 1, 30);
 
-            -- 8. Documenten (Met file_path en contract_id)
-            INSERT INTO `document` (`id`, `name`, `file_path`, `document_type_id`, `user_id`, `contract_id`, `created_at`, `updated_at`) VALUES
-            (1, 'Contract_Lotte.pdf', 'protected/contracts/1/Contract_Lotte.pdf', 1, 1, 1, NOW(), NOW()), (2, 'PB_Lotte.pdf', 'protected/contracts/1/PB_Lotte.pdf', 2, 1, 1, NOW(), NOW()), (3, 'Contract_Robbe.pdf', 'protected/contracts/2/Contract_Robbe.pdf', 1, 2, 2, NOW(), NOW()),
-            (4, 'Contract_Noah.pdf', 'protected/contracts/3/Contract_Noah.pdf', 1, 3, 3, NOW(), NOW()), (5, 'Reglement_Gebouw1.pdf', 'protected/general/Reglement_Gebouw1.pdf', 3, 31, NULL, NOW(), NOW()), (6, 'Verzekering_Gebouw1.pdf', 'protected/general/Verzekering_Gebouw1.pdf', 4, 31, NULL, NOW(), NOW()),
-            (7, 'Contract_Emma.pdf', 'protected/contracts/4/Contract_Emma.pdf', 1, 4, 4, NOW(), NOW()), (8, 'Contract_Arthur.pdf', 'protected/contracts/5/Contract_Arthur.pdf', 1, 5, 5, NOW(), NOW()), (9, 'PB_Arthur.pdf', 'protected/contracts/5/PB_Arthur.pdf', 2, 5, 5, NOW(), NOW()),
-            (10, 'Contract_Mila.pdf', 'protected/contracts/6/Contract_Mila.pdf', 1, 6, 6, NOW(), NOW()), (11, 'EPC_Gebouw2.pdf', 'protected/general/EPC_Gebouw2.pdf', 5, 31, NULL, NOW(), NOW()), (12, 'Contract_Liam.pdf', 'protected/contracts/7/Contract_Liam.pdf', 1, 7, 7, NOW(), NOW()),
-            (13, 'Contract_Olivia.pdf', 'protected/contracts/8/Contract_Olivia.pdf', 1, 8, 8, NOW(), NOW()), (14, 'Contract_Louis.pdf', 'protected/contracts/9/Contract_Louis.pdf', 1, 9, 9, NOW(), NOW()), (15, 'Contract_Louise.pdf', 'protected/contracts/10/Contract_Louise.pdf', 1, 10, 10, NOW(), NOW()),
-            (16, 'PB_Louise.pdf', 'protected/contracts/10/PB_Louise.pdf', 2, 10, 10, NOW(), NOW()), (17, 'Contract_Lucas.pdf', 'protected/contracts/11/Contract_Lucas.pdf', 1, 11, 11, NOW(), NOW()), (18, 'Contract_Elise.pdf', 'protected/contracts/12/Contract_Elise.pdf', 1, 12, 12, NOW(), NOW()),
-            (19, 'Contract_Adam.pdf', 'protected/contracts/13/Contract_Adam.pdf', 1, 13, 13, NOW(), NOW()), (20, 'Contract_Marie.pdf', 'protected/contracts/14/Contract_Marie.pdf', 1, 14, 14, NOW(), NOW()), (21, 'Contract_Jules.pdf', 'protected/contracts/15/Contract_Jules.pdf', 1, 15, 15, NOW(), NOW()),
-            (22, 'Contract_Ella.pdf', 'protected/contracts/16/Contract_Ella.pdf', 1, 16, 16, NOW(), NOW()), (23, 'Contract_Victor.pdf', 'protected/contracts/17/Contract_Victor.pdf', 1, 17, 17, NOW(), NOW()), (24, 'Contract_Julie.pdf', 'protected/contracts/18/Contract_Julie.pdf', 1, 18, 18, NOW(), NOW()),
-            (25, 'Contract_Gabriel.pdf', 'protected/contracts/19/Contract_Gabriel.pdf', 1, 19, 19, NOW(), NOW()), (26, 'Contract_Sarah.pdf', 'protected/contracts/20/Contract_Sarah.pdf', 1, 20, 20, NOW(), NOW()), (27, 'Contract_Mohamed.pdf', 'protected/contracts/21/Contract_Mohamed.pdf', 1, 21, 21, NOW(), NOW()),
-            (28, 'Contract_Yasmine.pdf', 'protected/contracts/22/Contract_Yasmine.pdf', 1, 22, 22, NOW(), NOW()), (29, 'Contract_Thomas.pdf', 'protected/contracts/23/Contract_Thomas.pdf', 1, 23, 23, NOW(), NOW()), (30, 'Contract_Amber.pdf', 'protected/contracts/24/Contract_Amber.pdf', 1, 24, 24, NOW(), NOW());
+            -- 8. Documenten (Met file_path, contract_id en nu ook room_id)
+            -- Voor bestaande contract-documenten is room_id NULL.
+            -- Ik voeg per kamer 1 afbeelding toe.
+            INSERT INTO `document` (`id`, `name`, `file_path`, `document_type_id`, `user_id`, `contract_id`, `room_id`, `created_at`, `updated_at`) VALUES
+            (1, 'Contract_Lotte.pdf', 'protected/contracts/1/Contract_Lotte.pdf', 1, 1, 1, NULL, NOW(), NOW()), 
+            (2, 'PB_Lotte.pdf', 'protected/contracts/1/PB_Lotte.pdf', 2, 1, 1, NULL, NOW(), NOW()), 
+            (3, 'Contract_Robbe.pdf', 'protected/contracts/2/Contract_Robbe.pdf', 1, 2, 2, NULL, NOW(), NOW()),
+            (4, 'Contract_Noah.pdf', 'protected/contracts/3/Contract_Noah.pdf', 1, 3, 3, NULL, NOW(), NOW()), 
+            (5, 'Reglement_Gebouw1.pdf', 'protected/general/Reglement_Gebouw1.pdf', 3, 31, NULL, NULL, NOW(), NOW()), 
+            (6, 'Verzekering_Gebouw1.pdf', 'protected/general/Verzekering_Gebouw1.pdf', 4, 31, NULL, NULL, NOW(), NOW()),
+            (7, 'Contract_Emma.pdf', 'protected/contracts/4/Contract_Emma.pdf', 1, 4, 4, NULL, NOW(), NOW()), 
+            (8, 'Contract_Arthur.pdf', 'protected/contracts/5/Contract_Arthur.pdf', 1, 5, 5, NULL, NOW(), NOW()), 
+            (9, 'PB_Arthur.pdf', 'protected/contracts/5/PB_Arthur.pdf', 2, 5, 5, NULL, NOW(), NOW()),
+            (10, 'Contract_Mila.pdf', 'protected/contracts/6/Contract_Mila.pdf', 1, 6, 6, NULL, NOW(), NOW()), 
+            (11, 'EPC_Gebouw2.pdf', 'protected/general/EPC_Gebouw2.pdf', 5, 31, NULL, NULL, NOW(), NOW()), 
+            (12, 'Contract_Liam.pdf', 'protected/contracts/7/Contract_Liam.pdf', 1, 7, 7, NULL, NOW(), NOW()),
+            (13, 'Contract_Olivia.pdf', 'protected/contracts/8/Contract_Olivia.pdf', 1, 8, 8, NULL, NOW(), NOW()), 
+            (14, 'Contract_Louis.pdf', 'protected/contracts/9/Contract_Louis.pdf', 1, 9, 9, NULL, NOW(), NOW()), 
+            (15, 'Contract_Louise.pdf', 'protected/contracts/10/Contract_Louise.pdf', 1, 10, 10, NULL, NOW(), NOW()),
+            (16, 'PB_Louise.pdf', 'protected/contracts/10/PB_Louise.pdf', 2, 10, 10, NULL, NOW(), NOW()), 
+            (17, 'Contract_Lucas.pdf', 'protected/contracts/11/Contract_Lucas.pdf', 1, 11, 11, NULL, NOW(), NOW()), 
+            (18, 'Contract_Elise.pdf', 'protected/contracts/12/Contract_Elise.pdf', 1, 12, 12, NULL, NOW(), NOW()),
+            (19, 'Contract_Adam.pdf', 'protected/contracts/13/Contract_Adam.pdf', 1, 13, 13, NULL, NOW(), NOW()), 
+            (20, 'Contract_Marie.pdf', 'protected/contracts/14/Contract_Marie.pdf', 1, 14, 14, NULL, NOW(), NOW()), 
+            (21, 'Contract_Jules.pdf', 'protected/contracts/15/Contract_Jules.pdf', 1, 15, 15, NULL, NOW(), NOW()),
+            (22, 'Contract_Ella.pdf', 'protected/contracts/16/Contract_Ella.pdf', 1, 16, 16, NULL, NOW(), NOW()), 
+            (23, 'Contract_Victor.pdf', 'protected/contracts/17/Contract_Victor.pdf', 1, 17, 17, NULL, NOW(), NOW()), 
+            (24, 'Contract_Julie.pdf', 'protected/contracts/18/Contract_Julie.pdf', 1, 18, 18, NULL, NOW(), NOW()),
+            (25, 'Contract_Gabriel.pdf', 'protected/contracts/19/Contract_Gabriel.pdf', 1, 19, 19, NULL, NOW(), NOW()), 
+            (26, 'Contract_Sarah.pdf', 'protected/contracts/20/Contract_Sarah.pdf', 1, 20, 20, NULL, NOW(), NOW()), 
+            (27, 'Contract_Mohamed.pdf', 'protected/contracts/21/Contract_Mohamed.pdf', 1, 21, 21, NULL, NOW(), NOW()),
+            (28, 'Contract_Yasmine.pdf', 'protected/contracts/22/Contract_Yasmine.pdf', 1, 22, 22, NULL, NOW(), NOW()), 
+            (29, 'Contract_Thomas.pdf', 'protected/contracts/23/Contract_Thomas.pdf', 1, 23, 23, NULL, NOW(), NOW()), 
+            (30, 'Contract_Amber.pdf', 'protected/contracts/24/Contract_Amber.pdf', 1, 24, 24, NULL, NOW(), NOW()),
+            -- Afbeeldingen (Type 7)
+            (31, 'Kamer1.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 1, NOW(), NOW()),
+            (32, 'Kamer2.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 2, NOW(), NOW()),
+            (33, 'Kamer5.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 5, NOW(), NOW()),
+            (34, 'Kamer13.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 13, NOW(), NOW());
 
             -- 9. Koppelingen
             INSERT INTO `facility_room` (`id`, `facility_id`, `room_id`) VALUES

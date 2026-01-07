@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('roomnumber');
             $table->bigInteger('price');
             $table->foreignId('building_id')->constrained('building');
+            $table->boolean('is_highlighted')->default(false); // Highlighted kamer
         });
 
         // 2. Contract (Koppelt User en Room)
@@ -30,7 +31,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 3. Document (Verwijst naar DocumentType, User en optioneel Contract)
+        // 3. Document (Verwijst naar DocumentType, User, Room en optioneel Contract)
         Schema::create('document', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Weergavenaam
@@ -38,6 +39,7 @@ return new class extends Migration
             $table->foreignId('document_type_id')->constrained('documenttype');
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('contract_id')->nullable()->constrained('contract'); // Link naar huurcontract
+            $table->foreignId('room_id')->nullable()->constrained('room'); // Link naar kamer (voor afbeeldingen)
             $table->timestamps();
         });
 

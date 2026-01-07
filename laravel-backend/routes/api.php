@@ -76,9 +76,13 @@ Route::post('/login', function (Request $request) {
  * Iedereen mag zien welke kamers er zijn, maar geen contracten zien.
  */
 Route::get('/public/rooms', function () {
-    // Haal kamers op, inclusief straat en gebouw info (via relaties)
-    // Let op: Je moet wel relaties definiëren in je Room model!
-    $rooms = Room::with('building.street')->take(20)->get(); 
+    // Haal kamers op, inclusief straat, plaats en afbeeldingen
+    $rooms = Room::with([
+        'building.street', 
+        'building.place', 
+        'images'
+    ])->take(20)->get(); 
+    
     return response()->json($rooms);
 });
 
