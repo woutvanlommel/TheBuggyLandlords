@@ -1,3 +1,49 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './shared/auth.guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  // PUBLIEKE ROUTES (Iedereen mag dit zien)
+  {
+    path: '',
+    redirectTo: 'kotcompass',
+    pathMatch: 'full',
+  },
+  {
+    path: 'kotcompass',
+    loadComponent: () => import('./pages/kotcompass/kotcompass').then((m) => m.Kotcompass),
+    title: 'KotCompass - Zoek je kot',
+    children: [
+      /*{
+            path: 'leuven',
+            loadComponent: () => import('./pages/kotcompass/cities/leuven/leuven').then((m) => m.Leuven),
+            title: 'KotCompass - Leuven',
+        },*/
+    ],
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then((m) => m.Login),
+    title: 'Inloggen',
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/register/register').then((m) => m.Register),
+    title: 'Registreren',
+  },
+
+  // PRIVATE ROUTES (Alleen ingelogde gebruikers en alleen EIGEN data)
+  {
+    path: 'dashboard',
+    canActivate: [authGuard], // Beveiliging: stuurt je terug naar login als je geen token hebt
+    loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
+    title: 'Mijn Dashboard',
+    // 2. Kinderen (Sub-routes): Erven automatisch de beveiliging van de ouder (dashboard)
+    children: [
+      // Voorbeeld: /dashboard/rooms
+      // { path: 'rooms', loadComponent: ... }
+    ],
+  },
+
+  // FALLBACK (Onbekende URL -> terug naar start)
+  { path: '**', redirectTo: 'kotcompass' },
+];
