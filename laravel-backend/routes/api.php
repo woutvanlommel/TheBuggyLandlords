@@ -41,6 +41,8 @@ Route::post('/register', function (Request $request) {
         'credits'  => 0, // Standaard startkrediet
         'role_id'  => 1,   // Standaard rol (1 = Huurder)
     ]);
+    
+    $user->load('role');
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -56,7 +58,7 @@ Route::post('/login', function (Request $request) {
         'password' => 'required',
     ]);
 
-    $user = User::where('email', $validated['email'])->first();
+    $user = User::where('email', $validated['email'])->with('role')->first();
 
     if (!$user || !Hash::check($validated['password'], $user->password)) {
         return response()->json(['message' => 'Foute inloggegevens'], 401);
