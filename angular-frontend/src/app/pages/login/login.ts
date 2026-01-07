@@ -23,13 +23,8 @@ import { Router, RouterModule } from '@angular/router';
         </div>
 
         @if (errorMessage) {
-        <div class="rounded-md bg-red-50 p-4 border border-red-200">
-          <div class="flex">
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
-            </div>
-          </div>
-        </div>
+
+        <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
         }
 
         <form class="mt-8 space-y-6" (ngSubmit)="login()">
