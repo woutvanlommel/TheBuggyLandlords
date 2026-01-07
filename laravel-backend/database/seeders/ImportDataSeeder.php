@@ -93,13 +93,25 @@ class ImportDataSeeder extends Seeder
             (26, 24, '12', 17), (27, 25, '77', 22), (28, 26, '3', 24), (29, 27, '5B', 25), (30, 28, '8', 26);
 
             -- 6. Kamers (Gebruik nu user_id ipv account_id)
-            INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`, `user_id`) VALUES
-            (1, '0.01', 450, 1, 1), (2, '1.01', 480, 1, 2), (3, '1.02', 460, 1, 3), (4, '2.01', 500, 1, 4), (5, 'A', 600, 2, 5),
-            (6, 'B', 550, 2, 6), (7, '10', 400, 3, 7), (8, '11', 410, 3, 8), (9, '12', 390, 3, 9), (10, 'Glv', 520, 4, 10),
-            (11, '1L', 480, 4, 11), (12, '1R', 480, 4, 12), (13, 'Studio 1', 650, 5, 13), (14, 'Studio 2', 670, 5, 14), (15, 'K1', 350, 6, 15),
-            (16, 'K2', 360, 6, 16), (17, 'K3', 350, 6, 17), (18, 'K4', 370, 6, 18), (19, '3.01', 510, 7, 19), (20, '3.02', 510, 7, 20),
-            (21, '01', 440, 8, 21), (22, '02', 440, 8, 22), (23, 'Penthouse', 800, 9, 23), (24, 'A1', 490, 10, 24), (25, 'A2', 495, 10, 25),
-            (26, 'B1', 505, 10, 26), (27, '1.1', 425, 11, 27), (28, '1.2', 425, 11, 28), (29, 'Gelijkvloers', 580, 12, 29), (30, 'Dakapp', 700, 13, 30);
+            INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`) VALUES
+            (1, '0.01', 450, 1), (2, '1.01', 480, 1), (3, '1.02', 460, 1), (4, '2.01', 500, 1), (5, 'A', 600, 2),
+            (6, 'B', 550, 2), (7, '10', 400, 3), (8, '11', 410, 3), (9, '12', 390, 3), (10, 'Glv', 520, 4),
+            (11, '1L', 480, 4), (12, '1R', 480, 4), (13, 'Studio 1', 650, 5), (14, 'Studio 2', 670, 5), (15, 'K1', 350, 6),
+            (16, 'K2', 360, 6), (17, 'K3', 350, 6), (18, 'K4', 370, 6), (19, '3.01', 510, 7), (20, '3.02', 510, 7),
+            (21, '01', 440, 8), (22, '02', 440, 8), (23, 'Penthouse', 800, 9), (24, 'A1', 490, 10), (25, 'A2', 495, 10),
+            (26, 'B1', 505, 10), (27, '1.1', 425, 11), (28, '1.2', 425, 11), (29, 'Gelijkvloers', 580, 12), (30, 'Dakapp', 700, 13);
+
+            INSERT INTO `contract` (`id`, `user_id`, `room_id`, `start_date`, `end_date`, `is_active`, `created_at`, `updated_at`) VALUES
+            (1, 1, 1, '2025-09-01', NULL, 1, NOW(), NOW()), (2, 2, 2, '2025-09-01', NULL, 1, NOW(), NOW()), (3, 3, 3, '2025-09-01', NULL, 1, NOW(), NOW()), 
+            (4, 4, 4, '2025-09-01', NULL, 1, NOW(), NOW()), (5, 5, 5, '2025-09-01', NULL, 1, NOW(), NOW()), (6, 6, 6, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (7, 7, 7, '2025-09-01', NULL, 1, NOW(), NOW()), (8, 8, 8, '2025-09-01', NULL, 1, NOW(), NOW()), (9, 9, 9, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (10, 10, 10, '2025-09-01', NULL, 1, NOW(), NOW()), (11, 11, 11, '2025-09-01', NULL, 1, NOW(), NOW()), (12, 12, 12, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (13, 13, 13, '2025-09-01', NULL, 1, NOW(), NOW()), (14, 14, 14, '2025-09-01', NULL, 1, NOW(), NOW()), (15, 15, 15, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (16, 16, 16, '2025-09-01', NULL, 1, NOW(), NOW()), (17, 17, 17, '2025-09-01', NULL, 1, NOW(), NOW()), (18, 18, 18, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (19, 19, 19, '2025-09-01', NULL, 1, NOW(), NOW()), (20, 20, 20, '2025-09-01', NULL, 1, NOW(), NOW()), (21, 21, 21, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (22, 22, 22, '2025-09-01', NULL, 1, NOW(), NOW()), (23, 23, 23, '2025-09-01', NULL, 1, NOW(), NOW()), (24, 24, 24, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (25, 25, 25, '2025-09-01', NULL, 1, NOW(), NOW()), (26, 26, 26, '2025-09-01', NULL, 1, NOW(), NOW()), (27, 27, 27, '2025-09-01', NULL, 1, NOW(), NOW()),
+            (28, 28, 28, '2025-09-01', NULL, 1, NOW(), NOW()), (29, 29, 29, '2025-09-01', NULL, 1, NOW(), NOW()), (30, 30, 30, '2025-09-01', NULL, 1, NOW(), NOW());
 
             -- 7. Complaints (TOEGEVOEGD: user_id)
             -- Ik heb hier willekeurige bestaande user ID's ingevuld (1, 2, 3, etc.) zodat de database klopt
@@ -135,18 +147,18 @@ class ImportDataSeeder extends Seeder
             (29, 'Vaatwasser stuk', 'Pomp werkt niet.', 1, 29), 
             (30, 'Afvoer verstopt', 'Douche loopt niet weg.', 1, 30);
 
-            -- 8. Documenten (Gebruik nu user_id ipv account_id)
-            INSERT INTO `document` (`id`, `name`, `document_type_id`, `user_id`, `timestamp`) VALUES
-            (1, 'Contract_Lotte.pdf', 1, 1, '2026-01-06 14:02:44'), (2, 'PB_Lotte.pdf', 2, 1, '2026-01-06 14:02:44'), (3, 'Contract_Robbe.pdf', 1, 2, '2026-01-06 14:02:44'),
-            (4, 'Contract_Noah.pdf', 1, 3, '2026-01-06 14:02:44'), (5, 'Reglement_Gebouw1.pdf', 3, 31, '2026-01-06 14:02:44'), (6, 'Verzekering_Gebouw1.pdf', 4, 31, '2026-01-06 14:02:44'),
-            (7, 'Contract_Emma.pdf', 1, 4, '2026-01-06 14:02:44'), (8, 'Contract_Arthur.pdf', 1, 5, '2026-01-06 14:02:44'), (9, 'PB_Arthur.pdf', 2, 5, '2026-01-06 14:02:44'),
-            (10, 'Contract_Mila.pdf', 1, 6, '2026-01-06 14:02:44'), (11, 'EPC_Gebouw2.pdf', 5, 31, '2026-01-06 14:02:44'), (12, 'Contract_Liam.pdf', 1, 7, '2026-01-06 14:02:44'),
-            (13, 'Contract_Olivia.pdf', 1, 8, '2026-01-06 14:02:44'), (14, 'Contract_Louis.pdf', 1, 9, '2026-01-06 14:02:44'), (15, 'Contract_Louise.pdf', 1, 10, '2026-01-06 14:02:44'),
-            (16, 'PB_Louise.pdf', 2, 10, '2026-01-06 14:02:44'), (17, 'Contract_Lucas.pdf', 1, 11, '2026-01-06 14:02:44'), (18, 'Contract_Elise.pdf', 1, 12, '2026-01-06 14:02:44'),
-            (19, 'Contract_Adam.pdf', 1, 13, '2026-01-06 14:02:44'), (20, 'Contract_Marie.pdf', 1, 14, '2026-01-06 14:02:44'), (21, 'Contract_Jules.pdf', 1, 15, '2026-01-06 14:02:44'),
-            (22, 'Contract_Ella.pdf', 1, 16, '2026-01-06 14:02:44'), (23, 'Contract_Victor.pdf', 1, 17, '2026-01-06 14:02:44'), (24, 'Contract_Julie.pdf', 1, 18, '2026-01-06 14:02:44'),
-            (25, 'Contract_Gabriel.pdf', 1, 19, '2026-01-06 14:02:44'), (26, 'Contract_Sarah.pdf', 1, 20, '2026-01-06 14:02:44'), (27, 'Contract_Mohamed.pdf', 1, 21, '2026-01-06 14:02:44'),
-            (28, 'Contract_Yasmine.pdf', 1, 22, '2026-01-06 14:02:44'), (29, 'Contract_Thomas.pdf', 1, 23, '2026-01-06 14:02:44'), (30, 'Contract_Amber.pdf', 1, 24, '2026-01-06 14:02:44');
+            -- 8. Documenten (Met file_path en contract_id)
+            INSERT INTO `document` (`id`, `name`, `file_path`, `document_type_id`, `user_id`, `contract_id`, `created_at`, `updated_at`) VALUES
+            (1, 'Contract_Lotte.pdf', 'protected/contracts/1/Contract_Lotte.pdf', 1, 1, 1, NOW(), NOW()), (2, 'PB_Lotte.pdf', 'protected/contracts/1/PB_Lotte.pdf', 2, 1, 1, NOW(), NOW()), (3, 'Contract_Robbe.pdf', 'protected/contracts/2/Contract_Robbe.pdf', 1, 2, 2, NOW(), NOW()),
+            (4, 'Contract_Noah.pdf', 'protected/contracts/3/Contract_Noah.pdf', 1, 3, 3, NOW(), NOW()), (5, 'Reglement_Gebouw1.pdf', 'protected/general/Reglement_Gebouw1.pdf', 3, 31, NULL, NOW(), NOW()), (6, 'Verzekering_Gebouw1.pdf', 'protected/general/Verzekering_Gebouw1.pdf', 4, 31, NULL, NOW(), NOW()),
+            (7, 'Contract_Emma.pdf', 'protected/contracts/4/Contract_Emma.pdf', 1, 4, 4, NOW(), NOW()), (8, 'Contract_Arthur.pdf', 'protected/contracts/5/Contract_Arthur.pdf', 1, 5, 5, NOW(), NOW()), (9, 'PB_Arthur.pdf', 'protected/contracts/5/PB_Arthur.pdf', 2, 5, 5, NOW(), NOW()),
+            (10, 'Contract_Mila.pdf', 'protected/contracts/6/Contract_Mila.pdf', 1, 6, 6, NOW(), NOW()), (11, 'EPC_Gebouw2.pdf', 'protected/general/EPC_Gebouw2.pdf', 5, 31, NULL, NOW(), NOW()), (12, 'Contract_Liam.pdf', 'protected/contracts/7/Contract_Liam.pdf', 1, 7, 7, NOW(), NOW()),
+            (13, 'Contract_Olivia.pdf', 'protected/contracts/8/Contract_Olivia.pdf', 1, 8, 8, NOW(), NOW()), (14, 'Contract_Louis.pdf', 'protected/contracts/9/Contract_Louis.pdf', 1, 9, 9, NOW(), NOW()), (15, 'Contract_Louise.pdf', 'protected/contracts/10/Contract_Louise.pdf', 1, 10, 10, NOW(), NOW()),
+            (16, 'PB_Louise.pdf', 'protected/contracts/10/PB_Louise.pdf', 2, 10, 10, NOW(), NOW()), (17, 'Contract_Lucas.pdf', 'protected/contracts/11/Contract_Lucas.pdf', 1, 11, 11, NOW(), NOW()), (18, 'Contract_Elise.pdf', 'protected/contracts/12/Contract_Elise.pdf', 1, 12, 12, NOW(), NOW()),
+            (19, 'Contract_Adam.pdf', 'protected/contracts/13/Contract_Adam.pdf', 1, 13, 13, NOW(), NOW()), (20, 'Contract_Marie.pdf', 'protected/contracts/14/Contract_Marie.pdf', 1, 14, 14, NOW(), NOW()), (21, 'Contract_Jules.pdf', 'protected/contracts/15/Contract_Jules.pdf', 1, 15, 15, NOW(), NOW()),
+            (22, 'Contract_Ella.pdf', 'protected/contracts/16/Contract_Ella.pdf', 1, 16, 16, NOW(), NOW()), (23, 'Contract_Victor.pdf', 'protected/contracts/17/Contract_Victor.pdf', 1, 17, 17, NOW(), NOW()), (24, 'Contract_Julie.pdf', 'protected/contracts/18/Contract_Julie.pdf', 1, 18, 18, NOW(), NOW()),
+            (25, 'Contract_Gabriel.pdf', 'protected/contracts/19/Contract_Gabriel.pdf', 1, 19, 19, NOW(), NOW()), (26, 'Contract_Sarah.pdf', 'protected/contracts/20/Contract_Sarah.pdf', 1, 20, 20, NOW(), NOW()), (27, 'Contract_Mohamed.pdf', 'protected/contracts/21/Contract_Mohamed.pdf', 1, 21, 21, NOW(), NOW()),
+            (28, 'Contract_Yasmine.pdf', 'protected/contracts/22/Contract_Yasmine.pdf', 1, 22, 22, NOW(), NOW()), (29, 'Contract_Thomas.pdf', 'protected/contracts/23/Contract_Thomas.pdf', 1, 23, 23, NOW(), NOW()), (30, 'Contract_Amber.pdf', 'protected/contracts/24/Contract_Amber.pdf', 1, 24, 24, NOW(), NOW());
 
             -- 9. Koppelingen
             INSERT INTO `facility_room` (`id`, `facility_id`, `room_id`) VALUES

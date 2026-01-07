@@ -10,25 +10,38 @@ return new class extends Migration
 {
     public function up()
     {
-        // 1. Room (Verwijst naar Building en Account)
+        // 1. Room (Verwijst naar Building)
+        // user_id is verwijderd, relatie loopt nu via contract
         Schema::create('room', function (Blueprint $table) {
             $table->id();
             $table->string('roomnumber');
             $table->bigInteger('price');
             $table->foreignId('building_id')->constrained('building');
-            $table->foreignId('user_id')->constrained('users');
         });
 
-        // 2. Document (Verwijst naar DocumentType en Account)
+        // 2. Contract (Koppelt User en Room)
+        Schema::create('contract', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('room_id')->constrained('room');
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        // 3. Document (Verwijst naar DocumentType, User en optioneel Contract)
         Schema::create('document', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name'); // Weergavenaam
+            $table->string('file_path'); // Opslaglocatie
             $table->foreignId('document_type_id')->constrained('documenttype');
             $table->foreignId('user_id')->constrained('users');
-            $table->timestamp('timestamp'); // Specifiek veld uit jouw SQL
+            $table->foreignId('contract_id')->nullable()->constrained('contract'); // Link naar huurcontract
+            $table->timestamps();
         });
 
-        // 3. Complaint (Verwijst naar ComplaintType)
+        // 4. Complaint (Verwijst naar ComplaintType)
         Schema::create('complaint', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -42,6 +55,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('complaint');
         Schema::dropIfExists('document');
+        Schema::dropIfExists('contract');
         Schema::dropIfExists('room');
     }
 };

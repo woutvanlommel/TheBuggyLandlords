@@ -10,19 +10,24 @@ class Document extends Model
     use HasFactory;
 
     protected $table = 'document';
-    public $timestamps = false;
-
+    
     protected $fillable = [
         'name',
+        'file_path',
         'document_type_id',
         'user_id',
-        'timestamp',
+        'contract_id',
     ];
 
     // Relaties
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function contract()
+    {
+        return $this->belongsTo(Contract::class);
     }
 
     public function complaints()

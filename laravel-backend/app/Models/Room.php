@@ -16,13 +16,12 @@ class Room extends Model
         'roomnumber',
         'price',
         'building_id',
-        'user_id',
     ];
 
     // Relaties
-    public function user()
+    public function contracts()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Contract::class);
     }
 
     public function building()

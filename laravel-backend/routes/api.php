@@ -3,10 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Document;
 use App\Models\Complaint;
 use App\Models\Room;
+use App\Models\Contract;
 
 /*
 |--------------------------------------------------------------------------
@@ -136,6 +138,25 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     /**
+     * DOCUMENT DOWNLOADEN (Veilig)
+     */
+    Route::get('/documents/{id}/download', function (Request $request, $id) {
+        $document = Document::findOrFail($id);
+        
+        // Security check: mag deze user dit zien?
+        if ($document->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Geen toegang'], 403);
+        }
+
+        // Check of bestand bestaat (optioneel, anders gooit download error)
+        // if (!Storage::exists($document->file_path)) {
+        //    return response()->json(['message' => 'Bestand niet gevonden'], 404);
+        // }
+
+        return Storage::download($document->file_path, $document->name);
+    });
+
+    /**
      * NIEUWE KLACHT INDIENEN
      */
     Route::post('/complaints', function (Request $request) {
@@ -157,18 +178,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     /**
      * MIJN GEHUURDE KAMER
-     * Haal de kamer op die gelinkt is aan deze user
+     * Haal de kamer op die gelinkt is aan deze user via een actief contract
      */
     Route::get('/my-room', function (Request $request) {
         $userId = $request->user()->id;
         
-        $room = Room::where('user_id', $userId)
-                    ->with(['building', 'building.street', 'building.place']) // Haal adresdata erbij
-                    ->first();
+        // Zoek een ACTIEF contract voor deze user
+        $contract = Contract::where('user_id', $userId)
+                            ->where('is_active', true)
+                            ->first();
 
-        if (!$room) {
-            return response()->json(['message' => 'Geen kamer gevonden voor deze gebruiker'], 404);
+        if (!$contract) {
+            return response()->json(['message' => 'Geen actieve huur gevonden'], 404);
         }
+
+        // Haal de room op via het contract
+        $room = Room::with(['building', 'building.street', 'building.place'])
+                    ->find($contract->room_id);
 
         return response()->json($room);
     });
