@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('name'); // Weergavenaam
             $table->string('file_path'); // Opslaglocatie
             $table->foreignId('document_type_id')->constrained('documenttype');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('contract_id')->nullable()->constrained('contract'); // Link naar huurcontract
             $table->foreignId('room_id')->nullable()->constrained('room'); // Link naar kamer (voor afbeeldingen)
             $table->timestamps();
