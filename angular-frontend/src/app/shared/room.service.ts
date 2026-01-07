@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoomService {
-  private baseApi = 'http://127.0.0.1:8000/api/';
+  private baseApi = environment.apiUrl;
 
   // Haal alle publieke kamers op (voor de map/lijst)
   async getPublicRooms(): Promise<any[]> {
@@ -12,8 +13,8 @@ export class RoomService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+        Accept: 'application/json',
+      },
     });
 
     if (!response.ok) {
