@@ -10,12 +10,13 @@ return new class extends Migration
 {
     public function up()
     {
-        // 2. Building (Verwijst naar Street en Place)
+        // 2. Building (Verwijst naar Street, Place en User (Eigenaar))
         Schema::create('building', function (Blueprint $table) {
             $table->id();
             $table->foreignId('street_id')->constrained('street');
             $table->string('housenumber');
             $table->foreignId('place_id')->constrained('place');
+            $table->foreignId('user_id')->constrained('users'); // De eigenaar/verhuurder
         });
     }
 
