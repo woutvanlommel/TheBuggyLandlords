@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->foreignId('complaint_type_id')->constrained('complainttype');
+            $table->foreignId('user_id')->constrained('users');
         });
     }
 

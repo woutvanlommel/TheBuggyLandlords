@@ -20,8 +20,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->bigInteger('credits');
-            $table->foreignId('role_id');
+            $table->bigInteger('credits')->default(0);
+            $table->foreignId('role_id')->default(1);
             $table->timestamps();
         });
 

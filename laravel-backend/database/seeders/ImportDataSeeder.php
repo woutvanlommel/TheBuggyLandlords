@@ -8,19 +8,15 @@ use Illuminate\Support\Facades\Schema;
 
 class ImportDataSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // 1. Zet foreign key checks uit
         Schema::disableForeignKeyConstraints();
 
-        // 2. Gebruik NOWDOC syntax (<<<'SQL') om dollartekens ($) als tekst te lezen
         $sql = <<<'SQL'
-            INSERT INTO `role` (`id`, `role`) VALUES
-            (1, 'Huurder'), (2, 'Verhuurder'), (3, 'Admin');
+            -- 1. Eerst de rollen
+            INSERT INTO `role` (`id`, `role`) VALUES (1, 'Huurder'), (2, 'Verhuurder'), (3, 'Admin');
 
+            -- 2. Straten en Plaatsen
             INSERT INTO `street` (`id`, `street`) VALUES
             (1, 'Naamsestraat'), (2, 'Oude Markt'), (3, 'Bondgenotenlaan'), (4, 'Tiensestraat'), (5, 'Andreas Vesaliusstraat'),
             (6, 'Overpoortstraat'), (7, 'Sint-Pietersnieuwstraat'), (8, 'Korianderstraat'), (9, 'Bagattenstraat'), (10, 'Rozier'),
@@ -37,21 +33,14 @@ class ImportDataSeeder extends Seeder
             (21, 'Oostende', 8400), (22, 'Genk', 3600), (23, 'Roeselare', 8800), (24, 'Aalst', 9300), (25, 'Sint-Niklaas', 9100),
             (26, 'Turnhout', 2300), (27, 'Luik', 4000), (28, 'Namen', 5000), (29, 'Bergen', 7000), (30, 'Charleroi', 6000);
 
-            INSERT INTO `complainttype` (`id`, `type`) VALUES
-            (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
+            -- 3. Types en Faciliteiten
+            INSERT INTO `complainttype` (`id`, `type`) VALUES (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
+            INSERT INTO `documenttype` (`id`, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht');
+            INSERT INTO `facility` (`id`, `facility`) VALUES (1, 'Snel Internet'), (2, 'Eigen badkamer'), (3, 'Gemeenschappelijke keuken'), (4, 'Eigen keuken'), (5, 'Fietsenstalling'), (6, 'Bemeubeld'), (7, 'Tuin/Koer'), (8, 'Wasmachine aanwezig'), (9, 'Dichtbij station'), (10, 'Huisdieren toegelaten');
+            INSERT INTO `condition` (`id`, `name`, `description`) VALUES (1, 'Kamer Yentl', 'Alles is inorde.'), (2, 'Kamer Alessio', 'Wc bril hangt scheef.'), (3, 'Kamer Wout', 'Isolatie raamwanden ontbreekt.');
 
-            INSERT INTO `documenttype` (`id`, `type`) VALUES
-            (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht');
-
-            INSERT INTO `facility` (`id`, `facility`) VALUES
-            (1, 'Snel Internet'), (2, 'Eigen badkamer'), (3, 'Gemeenschappelijke keuken'), (4, 'Eigen keuken'), (5, 'Fietsenstalling'),
-            (6, 'Bemeubeld'), (7, 'Tuin/Koer'), (8, 'Wasmachine aanwezig'), (9, 'Dichtbij station'), (10, 'Huisdieren toegelaten');
-
-            INSERT INTO `condition` (`id`, `name`, `description`) VALUES
-            (1, 'Kamer Yentl', 'Alles is inorde, geen enkele vorm van schade.'),
-            (2, 'Kamer Alessio', 'Wc bril hangt scheef, moet gefikst worden voor dat Alessio eruit gaat.'),
-            (3, 'Kamer Wout', 'Isolatie van de raamwanden is eruit.');
-
+            -- 4. USERS (Voorheen Account)
+            -- Let op: tabelnaam 'users', kolom 'email' ipv 'mail', en 'role_id' wordt behouden
             INSERT INTO `users` (`id`, `name`, `fname`, `password`, `phone`, `email`, `credits`, `role_id`) VALUES
             (1, 'Peeters', 'Lotte', '$2y$10$dummyhash', '0470123456', 'lotte.peeters@student.be', 100, 1),
             (2, 'Janssens', 'Robbe', '$2y$10$dummyhash', '0470123457', 'robbe.janssens@student.be', 200, 1),
@@ -94,6 +83,7 @@ class ImportDataSeeder extends Seeder
             (39, 'Wouters', 'Arne', '$2y$10$dummyhash', '0490998877', 'admin.arne@app.be', 335, 3),
             (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3);
 
+            -- 5. Gebouwen
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`) VALUES
             (1, 1, '12', 1), (2, 2, '5A', 1), (3, 6, '110', 4), (4, 7, '23', 4), (5, 11, '4B', 7),
             (6, 16, '88', 10), (7, 1, '14bis', 1), (8, 6, '9', 4), (9, 3, '45', 1), (10, 4, '101', 1),
@@ -102,6 +92,7 @@ class ImportDataSeeder extends Seeder
             (21, 19, '1', 10), (22, 20, '100', 12), (23, 21, '32', 15), (24, 22, '14', 5), (25, 23, '99', 16),
             (26, 24, '12', 17), (27, 25, '77', 22), (28, 26, '3', 24), (29, 27, '5B', 25), (30, 28, '8', 26);
 
+            -- 6. Kamers (Gebruik nu user_id ipv account_id)
             INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`, `user_id`) VALUES
             (1, '0.01', 450, 1, 1), (2, '1.01', 480, 1, 2), (3, '1.02', 460, 1, 3), (4, '2.01', 500, 1, 4), (5, 'A', 600, 2, 5),
             (6, 'B', 550, 2, 6), (7, '10', 400, 3, 7), (8, '11', 410, 3, 8), (9, '12', 390, 3, 9), (10, 'Glv', 520, 4, 10),
@@ -110,18 +101,41 @@ class ImportDataSeeder extends Seeder
             (21, '01', 440, 8, 21), (22, '02', 440, 8, 22), (23, 'Penthouse', 800, 9, 23), (24, 'A1', 490, 10, 24), (25, 'A2', 495, 10, 25),
             (26, 'B1', 505, 10, 26), (27, '1.1', 425, 11, 27), (28, '1.2', 425, 11, 28), (29, 'Gelijkvloers', 580, 12, 29), (30, 'Dakapp', 700, 13, 30);
 
-            INSERT INTO `complaint` (`id`, `name`, `description`, `complaint_type_id`) VALUES
-            (1, 'Lekkende kraan', 'Keukenkraan lekt constant.', 1), (2, 'Geen warm water', 'Boiler geeft storing.', 1), (3, 'Luidruchtige buren', 'Muziek na 22u.', 2),
-            (4, 'Wifi traag', 'Kan niet streamen op 2e verdiep.', 3), (5, 'Vuilzakken gang', 'Buren laten vuilzakken staan.', 5), (6, 'Deurbel stuk', 'Ik hoor niet als er iemand belt.', 1),
-            (7, 'Raam sluit niet', 'Raam straatkant klemt.', 1), (8, 'Schimmel badkamer', 'Zwarte plekken op plafond.', 5), (9, 'Internet valt uit', 'Modem herstart spontaan.', 3),
-            (10, 'Verwarming', 'Radiator lekt water.', 1), (11, 'Muis gezien', 'In de keuken.', 5), (12, 'Sleutel kwijt', 'Kan ik een reserve krijgen?', 4),
-            (13, 'Huurcontract vraag', 'Wanneer loopt het af?', 4), (14, 'Lamp gang stuk', 'Het is donker op de trap.', 1), (15, 'Lift defect', 'Staat vast op 2e.', 1),
-            (16, 'Geluid straat', 'Slecht geïsoleerd raam.', 2), (17, 'Geurhinder', 'Rioolgeur in badkamer.', 5), (18, 'Kookplaat barst', 'Barst in keramische plaat.', 1),
-            (19, 'Douchekop stuk', 'Water spuit alle kanten op.', 1), (20, 'Toilet loopt door', 'Water blijft lopen.', 1), (21, 'Rookmelder piept', 'Batterij leeg?', 1),
-            (22, 'Vochtplek muur', 'Naast het raam.', 1), (23, 'Geen internet', 'Al 2 uur offline.', 3), (24, 'Feestje buren', 'Te luid.', 2),
-            (25, 'Postbus kapot', 'Slotje werkt niet.', 1), (26, 'Tegel los', 'Vloertegel badkamer.', 1), (27, 'Stopcontact los', 'Gevaarlijk.', 1),
-            (28, 'Gordijnrail los', 'Naar beneden gekomen.', 1), (29, 'Vaatwasser stuk', 'Pomp werkt niet.', 1), (30, 'Afvoer verstopt', 'Douche loopt niet weg.', 1);
+            -- 7. Complaints (TOEGEVOEGD: user_id)
+            -- Ik heb hier willekeurige bestaande user ID's ingevuld (1, 2, 3, etc.) zodat de database klopt
+            INSERT INTO `complaint` (`id`, `name`, `description`, `complaint_type_id`, `user_id`) VALUES
+            (1, 'Lekkende kraan', 'Keukenkraan lekt constant.', 1, 1), 
+            (2, 'Geen warm water', 'Boiler geeft storing.', 1, 2), 
+            (3, 'Luidruchtige buren', 'Muziek na 22u.', 2, 3),
+            (4, 'Wifi traag', 'Kan niet streamen.', 3, 4), 
+            (5, 'Vuilzakken gang', 'Buren laten vuilzakken staan.', 5, 5), 
+            (6, 'Deurbel stuk', 'Ik hoor niet als er iemand belt.', 1, 6),
+            (7, 'Raam sluit niet', 'Raam straatkant klemt.', 1, 7), 
+            (8, 'Schimmel badkamer', 'Zwarte plekken op plafond.', 5, 8), 
+            (9, 'Internet valt uit', 'Modem herstart spontaan.', 3, 9),
+            (10, 'Verwarming', 'Radiator lekt water.', 1, 10), 
+            (11, 'Muis gezien', 'In de keuken.', 5, 11), 
+            (12, 'Sleutel kwijt', 'Kan ik een reserve krijgen?', 4, 12),
+            (13, 'Huurcontract vraag', 'Wanneer loopt het af?', 4, 13), 
+            (14, 'Lamp gang stuk', 'Het is donker op de trap.', 1, 14), 
+            (15, 'Lift defect', 'Staat vast op 2e.', 1, 15),
+            (16, 'Geluid straat', 'Slecht geïsoleerd raam.', 2, 16), 
+            (17, 'Geurhinder', 'Rioolgeur in badkamer.', 5, 17), 
+            (18, 'Kookplaat barst', 'Barst in keramische plaat.', 1, 18),
+            (19, 'Douchekop stuk', 'Water spuit alle kanten op.', 1, 19), 
+            (20, 'Toilet loopt door', 'Water blijft lopen.', 1, 20), 
+            (21, 'Rookmelder piept', 'Batterij leeg?', 1, 21),
+            (22, 'Vochtplek muur', 'Naast het raam.', 1, 22), 
+            (23, 'Geen internet', 'Al 2 uur offline.', 3, 23), 
+            (24, 'Feestje buren', 'Te luid.', 2, 24),
+            (25, 'Postbus kapot', 'Slotje werkt niet.', 1, 25), 
+            (26, 'Tegel los', 'Vloertegel badkamer.', 1, 26), 
+            (27, 'Stopcontact los', 'Gevaarlijk.', 1, 27),
+            (28, 'Gordijnrail los', 'Naar beneden gekomen.', 1, 28), 
+            (29, 'Vaatwasser stuk', 'Pomp werkt niet.', 1, 29), 
+            (30, 'Afvoer verstopt', 'Douche loopt niet weg.', 1, 30);
 
+            -- 8. Documenten (Gebruik nu user_id ipv account_id)
             INSERT INTO `document` (`id`, `name`, `document_type_id`, `user_id`, `timestamp`) VALUES
             (1, 'Contract_Lotte.pdf', 1, 1, '2026-01-06 14:02:44'), (2, 'PB_Lotte.pdf', 2, 1, '2026-01-06 14:02:44'), (3, 'Contract_Robbe.pdf', 1, 2, '2026-01-06 14:02:44'),
             (4, 'Contract_Noah.pdf', 1, 3, '2026-01-06 14:02:44'), (5, 'Reglement_Gebouw1.pdf', 3, 31, '2026-01-06 14:02:44'), (6, 'Verzekering_Gebouw1.pdf', 4, 31, '2026-01-06 14:02:44'),
@@ -134,6 +148,7 @@ class ImportDataSeeder extends Seeder
             (25, 'Contract_Gabriel.pdf', 1, 19, '2026-01-06 14:02:44'), (26, 'Contract_Sarah.pdf', 1, 20, '2026-01-06 14:02:44'), (27, 'Contract_Mohamed.pdf', 1, 21, '2026-01-06 14:02:44'),
             (28, 'Contract_Yasmine.pdf', 1, 22, '2026-01-06 14:02:44'), (29, 'Contract_Thomas.pdf', 1, 23, '2026-01-06 14:02:44'), (30, 'Contract_Amber.pdf', 1, 24, '2026-01-06 14:02:44');
 
+            -- 9. Koppelingen
             INSERT INTO `facility_room` (`id`, `facility_id`, `room_id`) VALUES
             (1, 1, 1), (2, 6, 1), (3, 3, 1), (4, 1, 2), (5, 6, 2), (6, 3, 2), (7, 1, 3), (8, 6, 3), (9, 3, 3), (10, 1, 5),
             (11, 2, 5), (12, 4, 5), (13, 1, 13), (14, 2, 13), (15, 4, 13), (16, 5, 13), (17, 1, 15), (18, 3, 15), (19, 5, 15),
@@ -143,10 +158,7 @@ class ImportDataSeeder extends Seeder
             (1, 1, 1), (2, 5, 2), (3, 8, 5);
         SQL;
 
-        // 3. Voer de SQL uit
         DB::unprepared($sql);
-
-        // 4. Zet foreign keys weer aan
         Schema::enableForeignKeyConstraints();
     }
 }
