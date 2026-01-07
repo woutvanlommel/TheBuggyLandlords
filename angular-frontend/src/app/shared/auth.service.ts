@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private baseApi = 'http://127.0.0.1:8000/api/'; // Let op: Laravel draait vaak op poort 8000
+  private baseApi = environment.apiUrl;
   private tokenKey = 'auth_token';
 
   // Helper om de token op te halen
