@@ -36,7 +36,7 @@ Route::post('/register', function (Request $request) {
         'email'    => $validated['email'],
         'phone'    => $validated['phone'],
         'password' => Hash::make($validated['password']),
-        'credits'  => 100, // Standaard startkrediet
+        'credits'  => 0, // Standaard startkrediet
         'role_id'  => 1,   // Standaard rol (1 = Huurder)
     ]);
 
