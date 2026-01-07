@@ -1,11 +1,189 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
+import { AuthService } from '../../shared/auth.service';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [],
-  templateUrl: './register.html',
-  styleUrl: './register.css',
+  standalone: true,
+  imports: [FormsModule, RouterModule],
+  template: `
+    <div
+      class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+    >
+      <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+        <div>
+          <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Account aanmaken</h2>
+          <p class="mt-2 text-center text-sm text-gray-600">
+            Of
+            <a routerLink="/login" class="font-medium text-accent hover:text-accent-600">
+              log in als je al een account hebt
+            </a>
+          </p>
+        </div>
+
+        <form class="mt-8 space-y-6" (ngSubmit)="register()">
+          <!-- Naam Sectie -->
+          <div class="flex gap-4">
+            <div class="w-1/2">
+              <label for="fname" class="block text-sm font-medium text-gray-700">Voornaam</label>
+              <input
+                type="text"
+                id="fname"
+                name="fname"
+                [(ngModel)]="fname"
+                required
+                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
+              />
+            </div>
+            <div class="w-1/2">
+              <label for="name" class="block text-sm font-medium text-gray-700">Achternaam</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                [(ngModel)]="name"
+                required
+                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <!-- Contact Sectie -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Emailadres</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="email"
+              required
+              class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
+            />
+          </div>
+
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700"
+              >Telefoonnummer</label
+            >
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              [(ngModel)]="phone"
+              required
+              class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
+            />
+          </div>
+
+          <!-- Wachtwoord Sectie -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Wachtwoord</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              [(ngModel)]="password"
+              required
+              minlength="8"
+              class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
+            />
+          </div>
+
+          <div>
+            <label for="password_confirmation" class="block text-sm font-medium text-gray-700"
+              >Bevestig Wachtwoord</label
+            >
+            <input
+              type="password"
+              id="password_confirmation"
+              name="password_confirmation"
+              [(ngModel)]="password_confirmation"
+              required
+              class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
+            />
+            @if (password !== password_confirmation && password_confirmation) {
+            <p class="text-red-500 text-xs mt-1">Wachtwoorden komen niet overeen.</p>
+            }
+          </div>
+
+          <!-- Error Message -->
+          @if (errorMessage) {
+          <div class="rounded-md bg-red-50 p-4 border border-red-200">
+            <div class="flex">
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+              </div>
+            </div>
+          </div>
+          }
+
+          <!-- Submit Button -->
+          <div>
+            <button
+              type="submit"
+              [disabled]="!isValid()"
+              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition duration-150 ease-in-out"
+            >
+              Registreren
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `,
 })
 export class Register {
+  constructor(private authService: AuthService, private router: Router, private ngZone: NgZone) {}
 
+  fname: string = '';
+  name: string = '';
+  email: string = '';
+  phone: string = '';
+  password: string = '';
+  password_confirmation: string = '';
+
+  errorMessage: string = '';
+
+  isValid(): boolean {
+    return (
+      this.fname !== '' &&
+      this.name !== '' &&
+      this.email !== '' &&
+      this.phone !== '' &&
+      this.password.length >= 8 &&
+      this.password === this.password_confirmation
+    );
+  }
+
+  async register() {
+    this.errorMessage = '';
+
+    if (!this.isValid()) {
+      this.errorMessage = 'Controleer alle velden.';
+      return;
+    }
+
+    const payload = {
+      fname: this.fname,
+      name: this.name,
+      email: this.email,
+      phone: this.phone,
+      password: this.password,
+      password_confirmation: this.password_confirmation,
+    };
+
+    try {
+      await this.authService.register(payload);
+      // Redirect to dashboard on success (auto-login happens in service if token returned)
+      this.ngZone.run(() => {
+        this.router.navigate(['/dashboard']);
+      });
+    } catch (error: any) {
+      this.ngZone.run(() => {
+        this.errorMessage = error.message || 'Registratie mislukt. Probeer het later opnieuw.';
+      });
+      console.error(error);
+    }
+  }
 }

@@ -9,7 +9,7 @@ export class AuthService {
 
   // Helper om de token op te halen
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    return sessionStorage.getItem(this.tokenKey);
   }
 
   // Helper om headers te maken MET token
@@ -36,15 +36,22 @@ export class AuthService {
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      throw new Error('Login failed');
-    }
-
     const data = await response.json();
 
-    // SLA DE TOKEN OP!
+    if (!response.ok) {
+      throw new Error(data.message || 'Login failed');
+    }
+
+    // SLA DE TOKEN EN USER INFO OP IN SESSION STORAGE
     if (data.token) {
-      localStorage.setItem(this.tokenKey, data.token);
+      sessionStorage.setItem(this.tokenKey, data.token);
+    }
+    if (data.user) {
+      sessionStorage.setItem('user_fname', data.user.fname);
+      sessionStorage.setItem('user_name', data.user.name);
+      if (data.user.role) {
+        sessionStorage.setItem('user_role', data.user.role.role);
+      }
     }
 
     return data;
@@ -60,13 +67,23 @@ export class AuthService {
       body: JSON.stringify(userData),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Registration failed');
+      // Laravel validation errors often come in an 'errors' object or a 'message'
+      const errorMsg = data.message || 'Registration failed';
+      throw new Error(errorMsg);
     }
 
-    const data = await response.json();
     if (data.token) {
-      localStorage.setItem(this.tokenKey, data.token);
+      sessionStorage.setItem(this.tokenKey, data.token);
+    }
+    if (data.user) {
+      sessionStorage.setItem('user_fname', data.user.fname);
+      sessionStorage.setItem('user_name', data.user.name);
+      if (data.user.role) {
+        sessionStorage.setItem('user_role', data.user.role.role);
+      }
     }
     return data;
   }
@@ -81,7 +98,7 @@ export class AuthService {
     } catch (e) {
       console.error('Logout API call failed', e);
     } finally {
-      localStorage.removeItem(this.tokenKey);
+      sessionStorage.clear();
     }
   }
 
