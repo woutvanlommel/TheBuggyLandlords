@@ -13,7 +13,7 @@ import { Router, RouterModule } from '@angular/router';
     >
       <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
         <div>
-          <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Inloggen</h2>
+          <h2 class="mt-6 text-center text-3xl font-extrabold text-primary">Inloggen</h2>
           <p class="mt-2 text-center text-sm text-gray-600">
             Of
             <a routerLink="/register" class="font-medium text-orange-500 hover:text-accent-600">
