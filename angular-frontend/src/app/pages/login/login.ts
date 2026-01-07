@@ -9,14 +9,14 @@ import { Router, RouterModule } from '@angular/router';
   imports: [FormsModule, RouterModule],
   template: `
     <div
-      class="min-h-screen flex items-center justify-center bg-blue-700 py-12 px-4 sm:px-6 lg:px-8"
+      class="min-h-screen flex items-center justify-center bg-primary-500 py-12 px-4 sm:px-6 lg:px-8"
     >
       <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
         <div>
           <h2 class="mt-6 text-center text-3xl font-extrabold text-primary">Inloggen</h2>
-          <p class="mt-2 text-center text-sm text-gray-600">
+          <p class="mt-2 text-center text-sm text-base-twee-600">
             Of
-            <a routerLink="/register" class="font-medium text-orange-500 hover:text-accent-600">
+            <a routerLink="/register" class="font-medium text-accent-500 hover:text-accent-600">
               maak een nieuw account aan
             </a>
           </p>
@@ -30,7 +30,9 @@ import { Router, RouterModule } from '@angular/router';
         <form class="mt-8 space-y-6" (ngSubmit)="login()">
           <div class="rounded-md space-y-4">
             <div>
-              <label for="email" class="block text-sm font-medium text-gray-700">Emailadres</label>
+              <label for="email" class="block text-sm font-medium text-base-een-800"
+                >Emailadres</label
+              >
               <input
                 type="email"
                 id="email"
@@ -39,7 +41,7 @@ import { Router, RouterModule } from '@angular/router';
                 (blur)="checkEmail()"
                 (input)="emailCheck = ''"
                 required
-                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-base-een-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
                 placeholder="test@test.com"
               />
               @if (emailCheck) {
@@ -47,7 +49,7 @@ import { Router, RouterModule } from '@angular/router';
               }
             </div>
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700"
+              <label for="password" class="block text-sm font-medium text-base-een-900"
                 >Wachtwoord</label
               >
               <input
@@ -58,7 +60,7 @@ import { Router, RouterModule } from '@angular/router';
                 (blur)="checkPassword()"
                 (input)="passwordCheck = ''"
                 required
-                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-base-een-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
                 placeholder="password"
               />
               @if (passwordCheck) {
@@ -71,7 +73,7 @@ import { Router, RouterModule } from '@angular/router';
             <button
               type="submit"
               [disabled]="!isValid()"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out cursor-pointer"
+              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-500 hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out cursor-pointer"
             >
               Inloggen
             </button>
