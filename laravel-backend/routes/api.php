@@ -84,8 +84,21 @@ Route::get('/public/rooms', function () {
         'building.place', 
         'building.owner',
         'images'
-    ])->take(20)->get(); 
-    
+    ])->take(20)->get();
+
+    // Voeg url-attribuut toe aan elk document in images
+    $rooms = $rooms->map(function ($room) {
+        $roomArray = $room->toArray();
+        if (isset($room->images)) {
+            $roomArray['images'] = collect($room->images)->map(function ($doc) {
+                $arr = $doc->toArray();
+                $arr['url'] = $doc->url;
+                return $arr;
+            })->all();
+        }
+        return $roomArray;
+    });
+
     return response()->json($rooms);
 });
 
@@ -134,15 +147,19 @@ Route::middleware('auth:sanctum')->group(function () {
      * MIJN DOCUMENTEN
      * Haal alleen contracten op die gelinkt zijn aan de ingelogde user.
      */
-    Route::get('/my-documents', function (Request $request) {
-        $userId = $request->user()->id;
-        
-        // Zorg dat je een Document model hebt aangemaakt!
-        // We zoeken op 'user_id' omdat je database die naam gebruikt.
-        $documents = Document::where('user_id', $userId)->get();
-        
-        return response()->json($documents);
+   Route::get('/my-documents', function (Request $request) {
+    $userId = $request->user()->id;
+    $documents = \App\Models\Document::where('user_id', $userId)->get();
+
+    // Voeg het url-attribuut toe aan elk document
+    $documents = $documents->map(function ($doc) {
+        $array = $doc->toArray();
+        $array['url'] = $doc->url;
+        return $array;
     });
+
+    return response()->json($documents);
+});
 
     /**
      * DOCUMENT DOWNLOADEN (Veilig)

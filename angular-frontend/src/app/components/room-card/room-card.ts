@@ -13,9 +13,9 @@ import { RoomService } from '../../shared/room.service';
       <div class="flex flex-col gap-4 items-start">
         @if (imageDocs.length) {
         <img
-          [src]="imageDocs[0].file_path"
+          [src]="imageDocs[0].url"
           alt="Kamer afbeelding"
-          class="w-full object-cover rounded-lg border border-gray-200"
+          class="w-full aspect-2/1 object-cover rounded-lg border border-gray-200"
         />
         } @else {
         <div
@@ -45,7 +45,7 @@ export class RoomCard {
   private roomService = inject(RoomService);
 
   get imageDocs(): Document[] {
-    return this.room?.images?.filter((doc: Document) => doc.document_type?.id === 7) ?? [];
+    return this.room?.images?.filter((doc: Document) => doc.document_type_id === 7) ?? [];
   }
 
   ngOnInit() {

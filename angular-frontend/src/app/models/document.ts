@@ -7,6 +7,8 @@ export interface Document {
   id: number;
   name: string;
   file_path: string;
+  url?: string;
+  document_type_id?: number;
   document_type?: DocumentType;
   user?: User;
   contract?: Contract;
