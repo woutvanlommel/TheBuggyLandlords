@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { RoomList } from '../../components/room-list/room-list';
+import { Navigation } from '../../components/navigation/navigation';
 import { Footer } from '../../components/footer/footer';
 
 @Component({
