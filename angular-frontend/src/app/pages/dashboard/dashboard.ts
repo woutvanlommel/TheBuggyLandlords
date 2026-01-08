@@ -1,17 +1,30 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../shared/auth.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div id="mainDashboardId" class="bg-primary min-h-screen w-full pb-10">
       <div class="w-full px-6 pt-6">
-        <div>
-          <!-- eventuele knoppen die hier nog moeten komen later op terug komen-->
-        </div>
-        <div>
-          <h1 class="text-base-twee text-4xl mb-6">Dashboard</h1>
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <h1 class="text-base-twee text-4xl">Dashboard</h1>
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              routerLink="/kotcompass/zoekplatform"
+              class="px-4 py-2 rounded-full bg-secondary text-base-een-100 font-semibold shadow hover:bg-secondary-600 transition-colors">
+              KotCompass
+            </button>
+            <button
+              type="button"
+              (click)="onLogout()"
+              class="px-4 py-2 rounded-full bg-base-een-100/70 border border-base-twee-200 text-base-twee-900 font-semibold shadow hover:bg-base-een-200 transition-colors">
+              Log off
+            </button>
+          </div>
         </div>
       </div>
       <main class="relative z-20 w-full">
@@ -195,7 +208,13 @@ import { CommonModule } from '@angular/common';
 export class Dashboard {
   activeTab: string = 'dashboard';
 
+  constructor(private router: Router, private authService: AuthService) {}
+
   setActiveTab(tab: string) {
     this.activeTab = tab;
+  }
+
+  onLogout() {
+    this.authService.logout().finally(() => this.router.navigate(['/login']));
   }
 }
