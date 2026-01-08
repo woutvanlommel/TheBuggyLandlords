@@ -81,7 +81,8 @@ class ImportDataSeeder extends Seeder
             (37, 'Claes', 'Elias', '$2y$10$dummyhash', '0480112239', 'elias.claes@koten.be', 315, 2),
             (38, 'Goossens', 'Oona', '$2y$10$dummyhash', '0480112240', 'oona.goossens@kamers.be', 325, 2),
             (39, 'Wouters', 'Arne', '$2y$10$dummyhash', '0490998877', 'admin.arne@app.be', 335, 3),
-            (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3);
+            (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3),
+            (41, 'test', 'tester', '$2y$12$Bvai5AbRmpewVj6qwCy4g.GnzS7Fbu./6IxBkQBAvyOuc0Lw2FpXO', '0412345678', 'test@test.com', 5, 3);
 
             -- 5. Gebouwen (Met user_id/eigenaar)
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`, `user_id`) VALUES
