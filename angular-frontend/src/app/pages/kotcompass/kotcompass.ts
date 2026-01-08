@@ -9,12 +9,8 @@ import { Footer } from '../../components/footer/footer';
   styleUrl: './kotcompass.css',
   template: `
     <app-navigation></app-navigation>
-    <div class="min-h-screen flex flex-col">
-      <div class="grow">
-        <router-outlet></router-outlet>
-      </div>
-      <app-footer></app-footer>
-    </div>
+    <router-outlet></router-outlet>
+    <app-footer></app-footer>
   `,
 })
 export class Kotcompass {}
