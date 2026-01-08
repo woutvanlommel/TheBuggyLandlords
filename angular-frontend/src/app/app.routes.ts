@@ -14,6 +14,11 @@ export const routes: Routes = [
     title: 'KotCompass - Zoek je kot',
     children: [
       {
+        path: '',
+        redirectTo: 'zoekplatform',
+        pathMatch: 'full',
+      },
+      {
         path: 'faq',
         loadComponent: () => import('./pages/faq/faq').then((m) => m.Faq),
         title: 'Veelgestelde vragen',
