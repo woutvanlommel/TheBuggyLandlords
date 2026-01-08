@@ -2,18 +2,20 @@ import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../../shared/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { Footer } from '../../components/footer/footer';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, Footer],
   template: `
     <div
-      class="min-h-screen flex items-center justify-center bg-primary-500 py-12 px-4 sm:px-6 lg:px-8"
+      class="min-h-screen flex flex-col justify-between bg-primary-500"
     >
-      <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
-        <div>
-          <h2 class="mt-6 text-center text-3xl font-extrabold text-primary">Inloggen</h2>
+      <div class="grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+          <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-primary">Inloggen</h2>
           <p class="mt-2 text-center text-sm text-base-twee-600">
             Of
             <a routerLink="/register" class="font-medium text-accent-500 hover:text-accent-600">
@@ -85,6 +87,8 @@ import { Router, RouterModule } from '@angular/router';
           </div>
         </form>
       </div>
+      </div>
+      <app-footer></app-footer>
     </div>
   `,
 })

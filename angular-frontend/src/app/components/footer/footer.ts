@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
+  standalone: true,
   imports: [RouterLink],
   template: `
   <footer class="bg-base-twee">
@@ -61,7 +62,12 @@ import { RouterLink } from '@angular/router';
     </div>  
   </footer>
   `,
-  styles: `` ,
+  styles: `
+    :host {
+      display: block;
+      width: 100%;
+    }
+  ` ,
 })
 export class Footer {
 
