@@ -14,9 +14,9 @@ export const routes: Routes = [
     title: 'KotCompass - Zoek je kot',
     children: [
       /*{
-            path: 'leuven',
-            loadComponent: () => import('./pages/kotcompass/cities/leuven/leuven').then((m) => m.Leuven),
-            title: 'KotCompass - Leuven',
+            path: 'faq',
+            loadComponent: () => import('./pages/faq/faq').then((m) => m.Faq),
+            title: 'Veelgestelde vragen',
         },*/
     ],
   },
@@ -40,7 +40,10 @@ export const routes: Routes = [
     // 2. Kinderen (Sub-routes): Erven automatisch de beveiliging van de ouder (dashboard)
     children: [
       // Voorbeeld: /dashboard/rooms
-      // { path: 'rooms', loadComponent: ... }
+      // { path: 'faq',
+      //   loadComponent: () => import('./pages/faq/faq').then(m => m.Faq),
+      //   title: 'Veelgestelde vragen',
+      // },
     ],
   },
 
