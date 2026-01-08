@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div id="mainDashboardId" class="bg-primary min-h-screen w-full pb-10">
-      <div class="max-w-7xl mx-auto px-6 pt-6">
+      <div class="w-full px-6 pt-6">
         <div>
           <!-- eventuele knoppen die hier nog moeten komen later op terug komen-->
         </div>
@@ -14,31 +14,31 @@ import { CommonModule } from '@angular/common';
           <h1 class="text-base-twee text-4xl mb-6">Dashboard</h1>
         </div>
       </div>
-      <main class="relative z-20 w-full max-w-7xl mx-auto px-6">
+      <main class="relative z-20 w-full">
         <!-- Tabs on top -->
-        <div class="grid grid-cols-3 gap-2  relative z-30">
+        <div class="grid grid-cols-3 gap-2 relative z-30 -mb-px">
             <button 
               (click)="setActiveTab('dashboard')"
-              [ngClass]="activeTab === 'dashboard' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-xl transition-all'"
+              [ngClass]="activeTab === 'dashboard' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all'"
               class="px-6 py-2.5 font-semibold text-sm w-full">
               Dashboard
             </button>
             <button 
               (click)="setActiveTab('profiel')"
-              [ngClass]="activeTab === 'profiel' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-xl transition-all'"
+              [ngClass]="activeTab === 'profiel' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all'"
               class="px-6 py-2.5 font-semibold text-sm w-full">
               Profiel
             </button>
             <button 
               (click)="setActiveTab('instellingen')"
-              [ngClass]="activeTab === 'instellingen' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-xl transition-all'"
+              [ngClass]="activeTab === 'instellingen' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all'"
               class="px-6 py-2.5 font-semibold text-sm w-full">
               Instellingen
             </button>
         </div>
 
         <!-- Main Content Card -->
-        <section class="bg-base-een-100/60 backdrop-blur-md border border-base-twee-300/50 shadow-2xl rounded-2xl p-6 space-y-6 relative z-20">
+        <section class="bg-base-een-100/60 backdrop-blur-md border border-base-twee-300/50 shadow-2xl rounded-3xl p-6 space-y-6 relative z-20">
 
           <div *ngIf="activeTab === 'dashboard'">
             <!-- Credits + Spotlight Overzicht -->
@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
                   <span class="px-3 py-1 text-xs font-semibold rounded-full bg-secondary-200/50 text-secondary-900">--%</span>
                 </div>
                 <div class="w-full h-2 rounded-full bg-base-een-300 overflow-hidden">
-                  <span class="block h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-600" style="width:60%"></span>
+                  <span class="block h-full rounded-full bg-linear-to-r from-primary-500 to-primary-600" style="width:60%"></span>
                 </div>
               </article>
 
@@ -88,7 +88,7 @@ import { CommonModule } from '@angular/common';
                   <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-200/50 text-accent-900">--%</span>
                 </div>
                  <div class="w-full h-2 rounded-full bg-base-een-300 overflow-hidden">
-                  <span class="block h-full rounded-full bg-gradient-to-r from-accent-400 to-accent-500" style="width:30%"></span>
+                  <span class="block h-full rounded-full bg-linear-to-r from-accent-400 to-accent-500" style="width:30%"></span>
                 </div>
               </article>
             </section>
