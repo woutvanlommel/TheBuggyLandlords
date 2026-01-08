@@ -1,19 +1,17 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { RoomList } from '../../components/room-list/room-list';
 import { Navigation } from '../../components/navigation/navigation';
 import { Footer } from '../../components/footer/footer';
 
 @Component({
   selector: 'app-kotcompass',
-  imports: [RoomList, Footer, Navigation, RouterModule],
+  imports: [Footer, Navigation, RouterModule],
   styleUrl: './kotcompass.css',
   template: `
     <app-navigation></app-navigation>
     <div class="min-h-screen flex flex-col">
       <div class="grow">
-        <h1>Kotcompass Page</h1>
-        <app-room-list></app-room-list>
+        <router-outlet></router-outlet>
       </div>
       <app-footer></app-footer>
     </div>
