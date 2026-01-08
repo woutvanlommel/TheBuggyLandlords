@@ -10,5 +10,6 @@ export interface Room {
   contract_id?: number;
   building?: Building;
   images?: Document[];
+  roomtype?: string; // toegevoegd: type van de kamer (Studio, Kamer, ...)
   // Voeg hier eventueel meer relaties toe
 }
