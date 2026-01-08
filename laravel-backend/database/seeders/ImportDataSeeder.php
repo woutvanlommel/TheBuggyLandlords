@@ -182,7 +182,7 @@ class ImportDataSeeder extends Seeder
             (29, 'Contract_Thomas.pdf', 'protected/contracts/23/Contract_Thomas.pdf', 1, 23, 23, NULL, NOW(), NOW()), 
             (30, 'Contract_Amber.pdf', 'protected/contracts/24/Contract_Amber.pdf', 1, 24, 24, NULL, NOW(), NOW()),
             -- Afbeeldingen (Type 7)
-            (31, 'Kamer1.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 1, NOW(), NOW()),
+            (31, 'Kamer1.jpg', 'https://www.datocms-assets.com/76079/1744377653-kot-pic-3.png?fit=clip&fm=png&h=1080&w=1920', 7, NULL, NULL, 1, NOW(), NOW()),
             (32, 'Kamer2.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 2, NOW(), NOW()),
             (33, 'Kamer5.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 5, NOW(), NOW()),
             (34, 'Kamer13.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 13, NOW(), NOW());

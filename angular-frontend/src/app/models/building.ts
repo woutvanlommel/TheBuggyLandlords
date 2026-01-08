@@ -1,7 +1,11 @@
+import { Street } from './street';
+import { Place } from './place';
+import { User } from './user';
+
 export interface Building {
   id: number;
-  street_id?: number;
   housenumber: string;
-  place_id?: number;
-  user_id?: number;
+  street?: Street;
+  place?: Place;
+  owner?: User;
 }

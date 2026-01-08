@@ -1,3 +1,6 @@
+import { Building } from './building';
+import { Document } from './document';
+
 export interface Room {
   id: number;
   roomnumber: string;
@@ -5,5 +8,7 @@ export interface Room {
   building_id: number;
   is_highlighted: boolean;
   contract_id?: number;
-  // Voeg hier eventueel document/afbeelding relatie toe indien nodig
+  building?: Building;
+  images?: Document[];
+  // Voeg hier eventueel meer relaties toe
 }
