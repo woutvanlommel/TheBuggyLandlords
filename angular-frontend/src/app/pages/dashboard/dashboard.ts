@@ -190,7 +190,7 @@ import { CommonModule } from '@angular/common';
     
     
     `,
-  styleUrl: './dashboard.css',
+  styles: [``],
 })
 export class Dashboard {
   activeTab: string = 'dashboard';
