@@ -8,7 +8,6 @@ import { Navigation } from '../../components/navigation/navigation';
   styleUrl: './kotcompass.css',
   template: `
     <app-navigation></app-navigation>
-    <h1>Kotcompass Page</h1>
     <router-outlet></router-outlet>
   `,
 })
