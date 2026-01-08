@@ -6,9 +6,10 @@ import { Footer } from '../../components/footer/footer';
 
 @Component({
   selector: 'app-kotcompass',
-  imports: [RoomList, Footer],
+  imports: [RoomList, Footer, Navigation, RouterModule],
   styleUrl: './kotcompass.css',
   template: `
+    <app-navigation></app-navigation>
     <div class="min-h-screen flex flex-col">
       <div class="grow">
         <h1>Kotcompass Page</h1>
