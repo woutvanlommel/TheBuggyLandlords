@@ -6,14 +6,28 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   template: `
-  <footer class="bg-base-twee">
-    <div class="flex">
-      <div>
-        <!--logo+bijkomende info-->
+  <footer class="bg-base-twee py-2">
+    <div id="footerContainer" class="container mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
+      
+      <!-- Left Section -->
+      <div id="navigationleft" class=" p-10 font-sans w-full min-h-75 flex flex-col justify-center items-center lg:items-start lg:w-1/3">
+        <h1 class="text-5xl font-light text-base-twee-900 tracking-tight mb-4">
+          KOTCOMPASS
+        </h1>
+        <div class="max-w-md">
+          <p class="text-lg text-base-twee-900 leading-relaxed">
+            <span class=" inline-block">
+              Lorem ipsum dolor sit amet,<br>
+              consectetur adipiscing elit, sed do
+            </span>
+          </p>
+        </div>
       </div>
-      <div id="navigationMidden" class="flex flex-col gap-4">
+
+      <!-- Middle Section -->
+      <div id="navigationMidden" class="flex flex-col gap-4 w-full lg:w-1/3 items-center justify-center">
         <!-- Dashboard -->
-        <a routerLink="/dashboard" class="cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg font-semibold text-gray-800 transition-all duration-300 group hover:-translate-y-1">
+        <a routerLink="/dashboard" class="focus:outline-none cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1">
           <span class="relative">
             Dashboard
             <span class="absolute bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
@@ -24,7 +38,7 @@ import { RouterLink } from '@angular/router';
         </a>
 
         <!-- Profile -->
-        <a routerLink="/profile" class="cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg font-semibold text-gray-800 transition-all duration-300 group hover:-translate-y-1">
+        <a routerLink="/profile" class="focus:outline-none cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1">
           <span class="relative">
             Profile
             <span class="absolute bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
@@ -35,7 +49,7 @@ import { RouterLink } from '@angular/router';
         </a>
 
         <!-- Credits -->
-        <a routerLink="/credits" class="cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg font-semibold text-gray-800 transition-all duration-300 group hover:-translate-y-1">
+        <a routerLink="/credits" class="focus:outline-none cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1">
           <span class="relative">
             Credits
             <span class="absolute bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
@@ -46,7 +60,7 @@ import { RouterLink } from '@angular/router';
         </a>
 
         <!-- FAQ -->
-        <a routerLink="/faq" class="cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg font-semibold text-gray-800 transition-all duration-300 group hover:-translate-y-1">
+        <a routerLink="/faq" class="focus:outline-none cursor-pointer relative flex items-center justify-center gap-2 mx-auto text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1">
           <span class="relative">
             FAQ
             <span class="absolute bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
@@ -56,15 +70,18 @@ import { RouterLink } from '@angular/router';
           </svg>
         </a>
       </div>
-      <div id="navigationRight" class="p-6 rounded-2xl w-full max-w-sm">
-        <h3 class="text-xl font-bold font-sans text-base-twee-900 mb-2">Newsletter</h3>
+
+      <!-- Right Section -->
+      <div id="navigationRight" class="p-6 rounded-2xl w-full lg:w-1/3 max-w-sm flex flex-col items-center lg:items-end">
+        <div class="w-full">
+          <h3 class="text-xl font-bold font-sans text-base-twee-900 mb-2">Newsletter</h3>
         <p class="text-base-twee-700 text-sm mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         
         <div class="relative w-full">
           <input 
             type="email" 
             placeholder="@ enter your email.." 
-            class="w-full pl-4 pr-14 py-3 bg-base-een-100 rounded-full text-base-twee-900 placeholder-base-twee-400 focus:outline-none focus:ring-2 focus:ring-accent-500 shadow-sm transition-all"
+            class="w-full pl-4 pr-14 py-3 bg-base-een-100 rounded-full text-base-twee-900 placeholder-base-twee-400 shadow-sm focus:outline-none"
           />
           <button class="absolute right-1.5 top-1.5 h-9 w-9 bg-accent-500 rounded-full flex items-center justify-center hover:bg-accent-600 transition-colors shadow-md cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -72,6 +89,7 @@ import { RouterLink } from '@angular/router';
             </svg>
           </button>
         </div>
+      </div>
       </div>
     </div>  
   </footer>
