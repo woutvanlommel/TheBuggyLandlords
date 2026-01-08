@@ -56,8 +56,22 @@ import { RouterLink } from '@angular/router';
           </svg>
         </a>
       </div>
-      <div>
-        <button></button>
+      <div id="navigationRight" class="p-6 rounded-2xl w-full max-w-sm">
+        <h3 class="text-xl font-bold font-sans text-base-twee-900 mb-2">Newsletter</h3>
+        <p class="text-base-twee-700 text-sm mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        
+        <div class="relative w-full">
+          <input 
+            type="email" 
+            placeholder="@ enter your email.." 
+            class="w-full pl-4 pr-14 py-3 bg-base-een-100 rounded-full text-base-twee-900 placeholder-base-twee-400 focus:outline-none focus:ring-2 focus:ring-accent-500 shadow-sm transition-all"
+          />
+          <button class="absolute right-1.5 top-1.5 h-9 w-9 bg-accent-500 rounded-full flex items-center justify-center hover:bg-accent-600 transition-colors shadow-md cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>  
   </footer>
