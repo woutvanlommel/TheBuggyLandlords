@@ -1,4 +1,5 @@
 export interface Place {
   id: number;
-  name?: string;
+  place?: string;
+  zipcode?: string;
 }

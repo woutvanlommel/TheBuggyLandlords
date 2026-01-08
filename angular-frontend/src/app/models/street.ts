@@ -1,4 +1,4 @@
 export interface Street {
   id: number;
-  name?: string;
+  street?: string;
 }

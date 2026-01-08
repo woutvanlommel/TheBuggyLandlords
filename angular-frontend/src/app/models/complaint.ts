@@ -1,7 +1,9 @@
+import { ComplaintType } from './complaint-type';
+import { User } from './user';
 export interface Complaint {
   id: number;
   name: string;
   description: string;
-  complaint_type_id?: number;
-  user_id?: number;
+  user?: User;
+  complaint_type?: ComplaintType;
 }

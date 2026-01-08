@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Document extends Model
 {
@@ -19,6 +20,23 @@ class Document extends Model
         'contract_id',
         'room_id', // Nieuw
     ];
+
+    protected function url(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                $path = $attributes['file_path'];
+                
+                // Als het al een URL is, geef direct terug
+                if (str_starts_with($path, 'https')) {
+                    return $path;
+                }
+
+                // Anders, maak er een volledige URL van naar jouw storage
+                return asset('storage/' . $path);
+            }
+        );
+    }
 
     // Relaties
     public function user()
