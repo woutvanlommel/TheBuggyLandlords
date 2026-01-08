@@ -29,7 +29,8 @@ import { AuthService } from '../../shared/auth.service';
       </div>
       <main class="relative z-20 w-full">
         <!-- Tabs on top -->
-        <div class="grid grid-cols-3 gap-2 relative z-30 -mb-px">
+        <div class="relative z-30 -mb-px px-5">
+          <div class="grid grid-cols-3 gap-2 w-full">
             <button 
               (click)="setActiveTab('dashboard')"
               [ngClass]="activeTab === 'dashboard' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all'"
@@ -48,6 +49,7 @@ import { AuthService } from '../../shared/auth.service';
               class="px-6 py-2.5 font-semibold text-sm w-full">
               Instellingen
             </button>
+          </div>
         </div>
 
         <!-- Main Content Card -->
