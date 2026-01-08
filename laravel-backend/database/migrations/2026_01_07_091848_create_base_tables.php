@@ -42,6 +42,11 @@ return new class extends Migration
             $table->string('type');
         });
 
+        Schema::create('roomtype', function (Blueprint $table){
+            $table->id();
+            $table->string('type');
+        });
+
         // 6. Facilities
         Schema::create('facility', function (Blueprint $table) {
             $table->id();

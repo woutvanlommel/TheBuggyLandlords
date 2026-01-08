@@ -83,7 +83,8 @@ Route::get('/public/rooms', function () {
         'building.street', 
         'building.place', 
         'building.owner',
-        'images'
+        'images',
+        'roomtype'
     ])->take(20)->get();
 
     // Voeg url-attribuut toe aan elk document in images
@@ -96,6 +97,8 @@ Route::get('/public/rooms', function () {
                 return $arr;
             })->all();
         }
+        // Voeg roomtype toe
+        $roomArray['roomtype'] = $room->roomtype ? $room->roomtype->type : null;
         return $roomArray;
     });
 

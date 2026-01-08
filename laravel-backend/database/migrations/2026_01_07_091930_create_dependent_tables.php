@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('price');
             $table->foreignId('building_id')->constrained('building');
             $table->boolean('is_highlighted')->default(false); // Highlighted kamer
+            $table->foreignId('roomtype_id')->constrained('roomtype');
         });
 
         // 2. Contract (Koppelt User en Room)
