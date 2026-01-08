@@ -13,11 +13,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/kotcompass/kotcompass').then((m) => m.Kotcompass),
     title: 'KotCompass - Zoek je kot',
     children: [
-      /*{
+      {
             path: 'faq',
             loadComponent: () => import('./pages/faq/faq').then((m) => m.Faq),
             title: 'Veelgestelde vragen',
-        },*/
+        },
+      {
+        path: 'zoekplatform',
+        loadComponent: () => import('./pages/zoekplatform/zoekplatform').then((m) => m.Zoekplatform),
+        title: 'Zoekplatform',
+      },
     ],
   },
   {
