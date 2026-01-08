@@ -5,7 +5,7 @@ export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
   {
     path: '',
-    redirectTo: 'kotcompass',
+    redirectTo: 'kotcompass/zoekplatform',
     pathMatch: 'full',
   },
   {
@@ -14,13 +14,14 @@ export const routes: Routes = [
     title: 'KotCompass - Zoek je kot',
     children: [
       {
-            path: 'faq',
-            loadComponent: () => import('./pages/faq/faq').then((m) => m.Faq),
-            title: 'Veelgestelde vragen',
-        },
+        path: 'faq',
+        loadComponent: () => import('./pages/faq/faq').then((m) => m.Faq),
+        title: 'Veelgestelde vragen',
+      },
       {
         path: 'zoekplatform',
-        loadComponent: () => import('./pages/zoekplatform/zoekplatform').then((m) => m.Zoekplatform),
+        loadComponent: () =>
+          import('./pages/zoekplatform/zoekplatform').then((m) => m.Zoekplatform),
         title: 'Zoekplatform',
       },
     ],
@@ -53,5 +54,5 @@ export const routes: Routes = [
   },
 
   // FALLBACK (Onbekende URL -> terug naar start)
-  { path: '**', redirectTo: 'kotcompass' },
+  { path: '**', redirectTo: 'kotcompass/zoektplatform' },
 ];
