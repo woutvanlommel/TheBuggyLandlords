@@ -22,12 +22,6 @@ cd laravel-backend
 # Installeer PHP dependencies indien nodig
 composer install
 
-# Kopieer .env (pas enkel lokale waarden aan zoals DB credentials indien je een lokale DB gebruikt)
-cp .env.example .env
-
-# (Optioneel) Importeer sample DB als je toestemming hebt:
-# mysql -u root -p < database/TheBuggyLandLords.sql
-
 # Maak de storage symlink zodat afbeeldingen uit storage/public bereikbaar zijn
 php artisan storage:link
 
@@ -58,7 +52,7 @@ export const environment = {
 };
 ```
 
-Start de frontend dev-server:
+Start de frontend dev-server (werk in de `angular-frontend/` map):
 
 ```bash
 ng serve
