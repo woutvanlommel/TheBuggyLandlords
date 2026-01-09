@@ -21,5 +21,16 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoomSeeder::class,
         ]);
+
+
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
+        $room = \App\Models\Room::first();
+
+        if ($user && $room) {
+            \App\Models\Favorite::create([
+                'user_id' => $user->id,
+                'room_id' => $room->id,
+            ]);
+        }
     }
 }
