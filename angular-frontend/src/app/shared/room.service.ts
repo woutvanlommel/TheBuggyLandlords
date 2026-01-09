@@ -20,8 +20,9 @@ export class RoomService {
 
   toggleFavorite(roomId: number) {
 
-    const token = localStorage.getItem('token') || '';
+    const token = sessionStorage.getItem('token') || '';
 
+    console.log('Attempting to toggle favorite with token:', token);
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
     });
