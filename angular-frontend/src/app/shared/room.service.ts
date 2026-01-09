@@ -18,6 +18,13 @@ export class RoomService {
     return this.http.get<any>(`${this.baseApi}public/rooms/${id}`);
   }
 
+  toggleFavorite(roomId: number) {
+    return this.http.post<{ is_favorited: boolean }>(
+      'http://localhost:8000/api/favorites/toggle',
+      { room_id: roomId }
+    );
+  }
+
   // Haal alle publieke kamers op (voor de map/lijst)
   // async getPublicRooms(): Promise<any[]> {
   //   const response = await fetch(this.baseApi + 'public/rooms', {

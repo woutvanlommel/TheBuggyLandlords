@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { Room } from '../../models/room';
 import { Document } from '../../models/document';
@@ -5,13 +6,26 @@ import { DocumentType } from '../../models/document-type';
 import { RoomService } from '../../shared/room.service';
 import { RouterLink } from '@angular/router';
 
+
 @Component({
   selector: 'app-room-card',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule],
   template: `
     <div class="rounded-xl shadow-md my-4 max-w-md bg-white w-full">
-      <div class="flex flex-col gap-4 items-start">
+      <div class="flex flex-col gap-4 items-start relative">
+
+        <button
+          (click)="toggleFavorite($event)"
+          class="absolute top-3 right-3 z-10 p-2 bg-white/80 hover:bg-white rounded-full shadow-sm transition-transform active:scale-95"
+          [title]="room?.is_favorited ? 'Verwijderen uit favorieten' : 'Toevoegen aan favorieten'"
+        >
+          <span class="text-2xl leading-none"
+                [class.text-red-500]="room?.is_favorited"
+                [class.text-gray-400]="!room?.is_favorited">
+            ❤
+          </span>
+        </button>
         @if (imageDocs.length) {
         <img
           [src]="imageDocs[0].url"
@@ -54,8 +68,8 @@ import { RouterLink } from '@angular/router';
     </div>
   `,
 })
-export class RoomCard {
-  @Input() room?: Room;
+export class RoomCard implements OnInit {
+  @Input() room?: any;
   @Input() roomId?: number;
   private roomService = inject(RoomService);
 
@@ -75,4 +89,18 @@ export class RoomCard {
       });
     }
   }
-}
+  toggleFavorite(event: Event) {
+      event.stopPropagation(); // Prevents clicking the card from triggering other clicks (if any)
+
+      if (!this.room || !this.room.id) return;
+
+      this.roomService.toggleFavorite(this.room.id).subscribe({
+        next: (response: any) => {
+          if (this.room) {
+            this.room.is_favorited = response.is_favorited;
+          }
+        },
+        error: (err: any) => console.error('Error toggling favorite:', err)
+      });
+    }
+  }
