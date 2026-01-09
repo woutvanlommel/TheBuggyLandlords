@@ -23,6 +23,23 @@ import { Router, RouterModule } from '@angular/router';
         </div>
 
         <form class="mt-8 space-y-6" (ngSubmit)="register()">
+          <!-- Student of Verhuurder Keuze -->
+          <div class="w-full">
+            <label for="role" class="block text-sm font-medium text-base-een-700"
+              >Registreren als</label
+            >
+            <select
+              id="role"
+              name="role"
+              [(ngModel)]="role"
+              required
+              class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-base-een-300 bg-accent-100 focus:outline-none focus:ring-accent focus:border-accent sm:text-sm rounded-md cursor-pointer"
+            >
+              <option value="1">Huurder</option>
+              <option value="2">Verhuurder</option>
+            </select>
+          </div>
+
           <!-- Naam Sectie -->
           <div class="flex gap-4">
             <div class="w-1/2">
@@ -144,6 +161,7 @@ import { Router, RouterModule } from '@angular/router';
 export class Register {
   constructor(private authService: AuthService, private router: Router, private ngZone: NgZone) {}
 
+  role: number = 1; // Standaard naar 'Huurder'
   fname: string = '';
   name: string = '';
   email: string = '';
@@ -173,6 +191,7 @@ export class Register {
     }
 
     const payload = {
+      role: this.role,
       fname: this.fname,
       name: this.name,
       email: this.email,
