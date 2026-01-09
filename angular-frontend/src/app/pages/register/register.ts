@@ -2,16 +2,20 @@ import { Component, NgZone } from '@angular/core';
 import { AuthService } from '../../shared/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ButtonHome } from '../../button-home/button-home';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, ButtonHome],
   template: `
     <div
       class="min-h-screen flex items-center justify-center bg-primary-500 py-12 px-4 sm:px-6 lg:px-8"
     >
-      <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+      <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg relative">
+        <div class="absolute top-4 right-4">
+          <app-button-home></app-button-home>
+        </div>
         <div>
           <h2 class="mt-6 text-center text-3xl font-extrabold text-primary">Account aanmaken</h2>
           <p class="mt-2 text-center text-sm text-base-een-800">
