@@ -17,5 +17,9 @@ class DatabaseSeeder extends Seeder
             ImportDataSeeder::class,
         ]);
         // User::factory(10)->create();
+
+        $this->call([
+            RoomSeeder::class,
+        ]);
     }
 }
