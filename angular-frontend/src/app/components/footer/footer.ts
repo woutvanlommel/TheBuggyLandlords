@@ -16,7 +16,14 @@ import { RouterLink } from '@angular/router';
           id="navigationleft"
           class=" p-10 font-sans w-full min-h-75 flex flex-col justify-center items-center lg:items-start lg:w-1/3"
         >
-          <h1 class="text-5xl font-light text-base-twee-900 tracking-tight mb-4">KOTCOMPASS</h1>
+          <h1 class="text-5xl font-light text-base-twee-900 tracking-tight mb-4">
+            <img
+              src="/assets/logo/2.400pxX100pxLogoBovenoranje.png"
+              alt="KotCompass logo"
+              class="h-12 w-auto"
+              loading="lazy"
+            />
+          </h1>
           <div class="max-w-md">
             <p class="text-lg text-base-twee-900 leading-relaxed">
               Find, manage, and optimize your student housing in one platform. KotCompass helps landlords and students match faster.
