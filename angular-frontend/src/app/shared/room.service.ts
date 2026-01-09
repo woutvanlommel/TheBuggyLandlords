@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -19,9 +19,17 @@ export class RoomService {
   }
 
   toggleFavorite(roomId: number) {
+
+    const token = localStorage.getItem('token') || '';
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+
     return this.http.post<{ is_favorited: boolean }>(
       'http://localhost:8000/api/favorites/toggle',
-      { room_id: roomId }
+      { room_id: roomId },
+      {headers: headers}
     );
   }
 
