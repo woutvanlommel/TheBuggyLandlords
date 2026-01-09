@@ -19,20 +19,24 @@ export class RoomService {
   }
 
   toggleFavorite(roomId: number) {
+  // 1. Use sessionStorage (to match the team)
+  // 2. Use the REAL NAME you found in Step 2
+  const token = sessionStorage.getItem('auth_token');
 
-    const token = sessionStorage.getItem('token') || '';
+  console.log('Sending Token:', token); // Debug check
 
-    console.log('Attempting to toggle favorite with token:', token);
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
 
-    return this.http.post<{ is_favorited: boolean }>(
-      'http://localhost:8000/api/favorites/toggle',
-      { room_id: roomId },
-      {headers: headers}
-    );
-  }
+  return this.http.post<{ is_favorited: boolean }>(
+    'http://localhost:8000/api/favorites/toggle',
+    { room_id: roomId },
+    { headers: headers }
+  );
+}
+
+
 
   // Haal alle publieke kamers op (voor de map/lijst)
   // async getPublicRooms(): Promise<any[]> {
