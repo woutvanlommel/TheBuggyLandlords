@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/auth.guard';
+import { RoomDetail } from './pages/room-detail/room-detail';
 
 export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
@@ -36,7 +37,8 @@ export const routes: Routes = [
       },
       {
         path: 'rooms/:id',
-        loadComponent: () => import('./pages/room-detail/room-detail').then((m) => m.RoomDetail),
+        component: RoomDetail,
+        // loadComponent: () => import('./pages/room-detail/room-detail').then((m) => m.RoomDetail),
         title: 'Kot details',
       },
     ],
