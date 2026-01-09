@@ -39,7 +39,7 @@ Route::post('/register', function (Request $request) {
         'phone'    => $validated['phone'],
         'password' => Hash::make($validated['password']),
         'credits'  => 0, // Standaard startkrediet
-        'role_id'  => 1,   // Standaard rol (1 = Huurder)
+        'role_id'  => $request->input('role', 1),   // Standaard rol (1 = Huurder)
     ]);
     
     $user->load('role');
