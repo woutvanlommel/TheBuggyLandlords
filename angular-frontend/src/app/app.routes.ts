@@ -29,6 +29,16 @@ export const routes: Routes = [
           import('./pages/zoekplatform/zoekplatform').then((m) => m.Zoekplatform),
         title: 'Zoekplatform',
       },
+      {
+        path: 'rooms',
+        loadComponent: () => import('./pages/rooms/rooms').then((m) => m.Rooms),
+        title: 'Alle koten',
+      },
+      {
+        path: 'rooms/:id',
+        loadComponent: () => import('./pages/room-detail/room-detail').then((m) => m.RoomDetail),
+        title: 'Kot details',
+      },
     ],
   },
   {
