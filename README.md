@@ -9,7 +9,7 @@ Let op: in onze setup gebruikten we `php artisan storage:link` zodat afbeeldinge
 Stap 1 — Clone de repo
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/woutvanlommel/TheBuggyLandlords.git
 cd TheBuggyLandLords
 ```
 
@@ -33,7 +33,7 @@ php artisan serve
 # Backend bereikbaar op http://127.0.0.1:8000
 ```
 
-Stap 3 — Frontend
+Stap 3 — Frontend (werk in de `angular-frontend/` map)
 
 Open een nieuwe terminal en ga naar de frontend map:
 
@@ -52,7 +52,7 @@ export const environment = {
 };
 ```
 
-Start de frontend dev-server (werk in de `angular-frontend/` map):
+Start de frontend dev-server:
 
 ```bash
 ng serve
