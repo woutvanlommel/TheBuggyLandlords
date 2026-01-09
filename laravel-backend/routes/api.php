@@ -9,6 +9,7 @@ use App\Models\Document;
 use App\Models\Complaint;
 use App\Models\Room;
 use App\Models\Contract;
+use App\Http\Controllers\Api\FavoriteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +42,7 @@ Route::post('/register', function (Request $request) {
         'credits'  => 0, // Standaard startkrediet
         'role_id'  => $request->input('role', 1),   // Standaard rol (1 = Huurder)
     ]);
-    
+
     $user->load('role');
 
     $token = $user->createToken('auth_token')->plainTextToken;
@@ -80,8 +81,8 @@ Route::post('/login', function (Request $request) {
 Route::get('/public/rooms', function () {
     // Haal kamers op, inclusief straat, plaats en afbeeldingen EN de eigenaar (via building)
     $rooms = Room::with([
-        'building.street', 
-        'building.place', 
+        'building.street',
+        'building.place',
         'building.owner',
         'images',
         'roomtype'
@@ -134,7 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::put('/profile', function (Request $request) {
         $user = $request->user();
-        
+
         $validated = $request->validate([
             'phone' => 'sometimes|string|max:20',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
@@ -169,7 +170,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::get('/documents/{id}/download', function (Request $request, $id) {
         $document = Document::findOrFail($id);
-        
+
         // Security check: mag deze user dit zien?
         if ($document->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Geen toegang'], 403);
@@ -209,7 +210,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::get('/my-room', function (Request $request) {
         $userId = $request->user()->id;
-        
+
         // Zoek een ACTIEF contract voor deze user
         $contract = Contract::where('user_id', $userId)
                             ->where('is_active', true)
@@ -242,8 +243,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Haal gebouwen op met kamers
         $buildings = $user->buildings()->with(['rooms', 'street', 'place'])->get();
-        
+
         return response()->json($buildings);
     });
+
+    // --- FAVORIETEN BEHEREN ---
+    Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
 
 });
