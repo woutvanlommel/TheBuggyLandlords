@@ -6,19 +6,25 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   standalone: true,
   template: `
-    <nav class="bg-white w-full shadow-lg py-4 px-4 md:py-8 md:px-0">
+    <nav class="bg-white w-full shadow-lg py-4 px-4">
       <div class="flex flex-row justify-between items-center w-full max-w-300 mx-auto">
         <div>
-          <a
-            routerLink="/kotcompass/zoekplatform"
-            class="text-3xl md:text-5xl text-primary font-bold"
-          >
-            KotCompass
+          <a routerLink="/kotcompass/zoekplatform" class="flex items-center">
+            <img
+              src="/assets/logo/1.400pxX100pxLogoLiggendOranje.png"
+              alt="KotCompass Logo"
+              class="hidden sm:block h-16"
+            />
+            <img
+              src="/assets/logo/256pxFAVICON.png"
+              alt="KotCompass Favicon"
+              class="block sm:hidden h-12"
+            />
           </a>
         </div>
         <!-- Hamburger button for mobile -->
         <button
-          class="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
+          class="md:hidden flex flex-col justify-center items-center w-fit focus:outline-none"
           (click)="menuOpen = !menuOpen"
           aria-label="Toggle navigation menu"
         >
