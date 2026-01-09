@@ -2,3 +2,12 @@
 
 @import 'tailwindcss';
 @config "../tailwind.config.ts";
+
+html, body{
+  scroll-behavior: smooth !important;
+}
+
+.custom-scrollbar{
+  scroll-behavior: smooth !important;
+}
+
