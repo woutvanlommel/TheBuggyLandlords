@@ -74,6 +74,7 @@ Route::post('/login', function (Request $request) {
     ]);
 });
 
+
 /**
  * Publieke lijst van beschikbare kamers (Voorbeeld)
  * Iedereen mag zien welke kamers er zijn, maar geen contracten zien.
@@ -104,6 +105,31 @@ Route::get('/public/rooms', function () {
     });
 
     return response()->json($rooms);
+});
+
+/**
+ * Publieke detailroute voor één kamer
+ */
+Route::get('/public/rooms/{id}', function ($id) {
+    $room = Room::with([
+        'building.street',
+        'building.place',
+        'building.owner',
+        'images',
+        'roomtype'
+    ])->findOrFail($id);
+
+    $roomArray = $room->toArray();
+    if (isset($room->images)) {
+        $roomArray['images'] = collect($room->images)->map(function ($doc) {
+            $arr = $doc->toArray();
+            $arr['url'] = $doc->url;
+            return $arr;
+        })->all();
+    }
+    $roomArray['roomtype'] = $room->roomtype ? $room->roomtype->type : null;
+
+    return response()->json($roomArray);
 });
 
 
