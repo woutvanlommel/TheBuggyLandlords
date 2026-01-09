@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { Room } from '../../models/room';
 import { Document } from '../../models/document';
 import { DocumentType } from '../../models/document-type';
@@ -80,6 +80,7 @@ export class RoomCard implements OnInit {
   @Input() room?: any;
   @Input() roomId?: number;
   private roomService = inject(RoomService);
+  private cdr = inject(ChangeDetectorRef);
 
   get imageDocs(): Document[] {
     return this.room?.images?.filter((doc: Document) => doc.document_type_id === 7) ?? [];
@@ -102,10 +103,13 @@ export class RoomCard implements OnInit {
 
       if (!this.room || !this.room.id) return;
 
+      this.room.is_favorited = !this.room.is_favorited;
+
       this.roomService.toggleFavorite(this.room.id).subscribe({
         next: (response: any) => {
           if (this.room) {
             this.room.is_favorited = response.is_favorited;
+            this.cdr.detectChanges();
           }
         },
         error: (err: any) => console.error('Error toggling favorite:', err)
