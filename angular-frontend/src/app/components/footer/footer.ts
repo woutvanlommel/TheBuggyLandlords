@@ -19,10 +19,7 @@ import { RouterLink } from '@angular/router';
           <h1 class="text-5xl font-light text-base-twee-900 tracking-tight mb-4">KOTCOMPASS</h1>
           <div class="max-w-md">
             <p class="text-lg text-base-twee-900 leading-relaxed">
-              <span class=" inline-block">
-                Lorem ipsum dolor sit amet,<br />
-                consectetur adipiscing elit, sed do
-              </span>
+              Find, manage, and optimize your student housing in one platform. KotCompass helps landlords and students match faster.
             </p>
           </div>
         </div>
@@ -171,7 +168,7 @@ import { RouterLink } from '@angular/router';
           <div class="w-full">
             <h3 class="text-xl font-bold font-sans text-base-twee-900 mb-2">Newsletter</h3>
             <p class="text-base-twee-700 text-sm mb-4">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Stay updated on new listings, platform updates, and tips for landlords.
             </p>
 
             <div class="relative w-full">
