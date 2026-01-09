@@ -42,7 +42,7 @@ import { RouterLink } from '@angular/router';
           </div>
           <div class="flex justify-between items-center w-full">
             <a
-              routerLink="/kotcompass/zoekplatform"
+              [routerLink]="['/kotcompass/rooms', room?.id]"
               class="py-1 px-4 rounded-md bg-accent text-white text-sm w-fit"
               >Bekijk kot</a
             >
