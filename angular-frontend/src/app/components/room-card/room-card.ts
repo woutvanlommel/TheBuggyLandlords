@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <div class="rounded-xl shadow-md my-4 max-w-md bg-white w-full">
+    <div class="rounded-xl shadow-md max-w-md bg-white w-full">
       <div class="flex flex-col gap-4 items-start">
         @if (imageDocs.length) {
         <img
