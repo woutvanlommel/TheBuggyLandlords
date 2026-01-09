@@ -1,82 +1,80 @@
 # The Buggy Landlords 🏠🐛
 
-    ## Viewer (Read-only) — veilig lokaal bekijken na het clonen van de volledige repo
+## Viewer (Read-only) — veilig lokaal bekijken na het clonen van de volledige repo
 
-    Er is geen staging API beschikbaar. Hieronder staan concrete stappen om de volledige repository te clonen en lokaal te bekijken zonder onbedoelde wijzigingen in code, config of database aan te brengen.
+Er is geen staging API beschikbaar. Hieronder staan concrete stappen om de volledige repository te clonen en lokaal te bekijken zonder onbedoelde wijzigingen in code, config of database aan te brengen.
 
-    Let op: in onze setup gebruikten we `php artisan storage:link` zodat afbeeldingen uit `storage` correct geladen worden. Dit is meestal veilig en is opgenomen in de stappen.
+Let op: in onze setup gebruikten we `php artisan storage:link` zodat afbeeldingen uit `storage` correct geladen worden. Dit is meestal veilig en is opgenomen in de stappen.
 
-    Stap 1 — Clone de repo
+Stap 1 — Clone de repo
 
-    ```bash
-    git clone <repo-url>
-    cd TheBuggyLandLords
-    ```
+```bash
+git clone <repo-url>
+cd TheBuggyLandLords
+```
 
-    Stap 2 — Backend (lokale, read-only setup)
+Stap 2 — Backend (lokale, read-only setup)
 
-    Werk in de `laravel-backend/` map. Doe alleen de volgende acties — voer géén migraties of seeders uit tenzij expliciet toegestaan.
+Werk in de `laravel-backend/` map. Doe alleen de volgende acties — voer géén migraties of seeders uit tenzij expliciet toegestaan.
 
-    ```bash
-    cd laravel-backend
-    # Installeer PHP dependencies indien nodig
-    composer install
+```bash
+cd laravel-backend
+# Installeer PHP dependencies indien nodig
+composer install
 
-    # Kopieer .env (pas enkel lokale waarden aan zoals DB credentials indien je een lokale DB gebruikt)
-    cp .env.example .env
+# Kopieer .env (pas enkel lokale waarden aan zoals DB credentials indien je een lokale DB gebruikt)
+cp .env.example .env
 
-    # (Optioneel) Importeer sample DB als je toestemming hebt:
-    # mysql -u root -p < database/TheBuggyLandLords.sql
+# (Optioneel) Importeer sample DB als je toestemming hebt:
+# mysql -u root -p < database/TheBuggyLandLords.sql
 
-    # Maak de storage symlink zodat afbeeldingen uit storage/public bereikbaar zijn
-    php artisan storage:link
+# Maak de storage symlink zodat afbeeldingen uit storage/public bereikbaar zijn
+php artisan storage:link
 
-    # Genereer app key (nodig voor sommige laravel features)
-    php artisan key:generate
+# Genereer app key (nodig voor sommige laravel features)
+php artisan key:generate
 
-    # Start de backend server
-    php artisan serve
-    # Backend bereikbaar op http://127.0.0.1:8000
-    ```
+# Start de backend server
+php artisan serve
+# Backend bereikbaar op http://127.0.0.1:8000
+```
 
-    Stap 3 — Frontend
+Stap 3 — Frontend
 
-    Open een nieuwe terminal en ga naar de frontend map:
+Open een nieuwe terminal en ga naar de frontend map:
 
-    ```bash
-    cd angular-frontend
-    npm install
-    # Pas indien nodig `src/environments/environment.ts` aan zodat `apiUrl` naar je lokale backend wijst:
-    ```
+```bash
+cd angular-frontend
+npm install
+# Pas indien nodig `src/environments/environment.ts` aan zodat `apiUrl` naar je lokale backend wijst:
+```
 
-    In `src/environments/environment.ts`:
+In `src/environments/environment.ts`:
 
-    ```ts
-    export const environment = {
-        production: false,
-        apiUrl: "http://127.0.0.1:8000/api/",
-    };
-    ```
+```ts
+export const environment = {
+    production: false,
+    apiUrl: "http://127.0.0.1:8000/api/",
+};
+```
 
-    Start de frontend dev-server:
+Start de frontend dev-server:
 
-    ```bash
-    ng serve
-    # Open http://localhost:4200
-    ```
+```bash
+ng serve
+# Open http://localhost:4200
+```
 
-    Wat je NIET moet doen (belangrijk voor viewers)
+Wat je NIET moet doen (belangrijk voor viewers)
 
-    -   Voer geen `php artisan migrate` of `php artisan db:seed` uit op gedeelde/staging/production databases.
-    -   Verander geen gedeelde `.env`-bestanden of production instellingen.
-    -   Push of commit geen lokale, tijdelijke wijzigingen terug naar de remote repository.
+-   Voer geen `php artisan migrate` of `php artisan db:seed` uit op gedeelde/staging/production databases.
+-   Verander geen gedeelde `.env`-bestanden of production instellingen.
+-   Push of commit geen lokale, tijdelijke wijzigingen terug naar de remote repository.
 
-    Fallbacks en tips
+Fallbacks en tips
 
-    -   Als je de backend niet lokaal wilt opzetten, kun je de frontend met mock responses draaien of de maintainer vragen om een kleine sample JSON voor endpoints.
-    -   Als afbeeldingen niet zichtbaar zijn: controleer dat `php artisan storage:link` uitgevoerd is en dat `storage/app/public` de benodigde bestanden bevat.
-
-    Als je wil, kan ik nog een korte checklist toevoegen die je rechtstreeks kunt kopiëren en geven aan reviewers.
+-   Als de frontend geen data toont: controleer of de backend server draait en dat `apiUrl` correct is ingesteld.
+-   Als afbeeldingen niet zichtbaar zijn: controleer dat `php artisan storage:link` uitgevoerd is en dat `storage/app/public` de benodigde bestanden bevat.
 
 ![The Buggy Landlords Logo](./angular-frontend/public/assets/img/theBuggyLandlords.png)
 
