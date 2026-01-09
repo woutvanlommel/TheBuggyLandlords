@@ -9,17 +9,17 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     @if (room && room?.id) {
-    <div class="bg-base-een rounded-lg p-4 mx-auto w-fit my-4">
-      <h2>Kot detail</h2>
-      <p>{{ room?.building?.place?.zipcode }} {{ room?.building?.place?.place }}</p>
-      <p>Kot ID: {{ room.id }}</p>
-      <p>Prijs: €{{ room.price }}</p>
-    </div>
-    <!-- Voeg hier meer kamerinfo toe -->
+      <div class="bg-base-een rounded-lg p-4 mx-auto w-fit my-4">
+        <h2>Kot detail</h2>
+        <p>{{ room?.building?.place?.zipcode }} {{ room?.building?.place?.place }}</p>
+        <p>Kot ID: {{ room.id }}</p>
+        <p>Prijs: €{{ room.price }}</p>
+        <!-- Voeg hier meer kamerinfo toe -->
+      </div>
     } @else {
-    <div #loading>
-      <p>Laden...</p>
-    </div>
+      <div>
+        <p>Laden...</p>
+      </div>
     }
   `,
 })
