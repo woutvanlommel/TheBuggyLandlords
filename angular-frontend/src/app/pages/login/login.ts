@@ -2,90 +2,92 @@ import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../../shared/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ButtonHome } from '../../button-home/button-home';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, ButtonHome],
   template: `
-    <div
-      class="min-h-screen flex flex-col justify-between bg-primary-500"
-    >
+    <div class="min-h-screen flex flex-col justify-between bg-primary-500">
       <div class="grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg relative">
+          <div class="absolute top-4 right-4">
+            <app-button-home></app-button-home>
+          </div>
           <div>
             <h2 class="mt-6 text-center text-3xl font-extrabold text-primary">Inloggen</h2>
-          <p class="mt-2 text-center text-sm text-base-twee-600">
-            Of
-            <a routerLink="/register" class="font-medium text-accent-500 hover:text-accent-600">
-              maak een nieuw account aan
-            </a>
-          </p>
-        </div>
+            <p class="mt-2 text-center text-sm text-base-twee-600">
+              Of
+              <a routerLink="/register" class="font-medium text-accent-500 hover:text-accent-600">
+                maak een nieuw account aan
+              </a>
+            </p>
+          </div>
 
-        @if (errorMessage) {
-        <div class="rounded-md bg-red-50 p-4 border border-red-200 mb-4">
-          <div class="flex">
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+          @if (errorMessage) {
+          <div class="rounded-md bg-red-50 p-4 border border-red-200 mb-4">
+            <div class="flex">
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+              </div>
             </div>
           </div>
-        </div>
-        }
+          }
 
-        <form class="mt-8 space-y-6" (ngSubmit)="login()">
-          <div class="rounded-md space-y-4">
+          <form class="mt-8 space-y-6" (ngSubmit)="login()">
+            <div class="rounded-md space-y-4">
+              <div>
+                <label for="email" class="block text-sm font-medium text-base-een-800"
+                  >Emailadres</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  [(ngModel)]="email"
+                  (blur)="checkEmail()"
+                  (input)="emailCheck = ''"
+                  required
+                  class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-base-een-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                  placeholder="test@test.com"
+                />
+                @if (emailCheck) {
+                <p class="text-red-500 text-xs mt-1">{{ emailCheck }}</p>
+                }
+              </div>
+              <div>
+                <label for="password" class="block text-sm font-medium text-base-een-900"
+                  >Wachtwoord</label
+                >
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  [(ngModel)]="password"
+                  (blur)="checkPassword()"
+                  (input)="passwordCheck = ''"
+                  required
+                  class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-base-een-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                  placeholder="password"
+                />
+                @if (passwordCheck) {
+                <p class="text-red-500 text-xs mt-1">{{ passwordCheck }}</p>
+                }
+              </div>
+            </div>
+
             <div>
-              <label for="email" class="block text-sm font-medium text-base-een-800"
-                >Emailadres</label
+              <button
+                type="submit"
+                [disabled]="!isValid()"
+                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-500 hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out cursor-pointer"
               >
-              <input
-                type="email"
-                id="email"
-                name="email"
-                [(ngModel)]="email"
-                (blur)="checkEmail()"
-                (input)="emailCheck = ''"
-                required
-                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-base-een-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
-                placeholder="test@test.com"
-              />
-              @if (emailCheck) {
-              <p class="text-red-500 text-xs mt-1">{{ emailCheck }}</p>
-              }
+                Inloggen
+              </button>
             </div>
-            <div>
-              <label for="password" class="block text-sm font-medium text-base-een-900"
-                >Wachtwoord</label
-              >
-              <input
-                type="password"
-                id="password"
-                name="password"
-                [(ngModel)]="password"
-                (blur)="checkPassword()"
-                (input)="passwordCheck = ''"
-                required
-                class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-base-een-900 focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition duration-150 ease-in-out"
-                placeholder="password"
-              />
-              @if (passwordCheck) {
-              <p class="text-red-500 text-xs mt-1">{{ passwordCheck }}</p>
-              }
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              [disabled]="!isValid()"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-500 hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out cursor-pointer"
-            >
-              Inloggen
-            </button>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
       </div>
     </div>
   `,
