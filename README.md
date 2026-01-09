@@ -1,5 +1,75 @@
 # The Buggy Landlords 🏠🐛
 
+## Viewer (Read-only) — veilig lokaal bekijken na het clonen van de volledige repo
+
+Er is geen staging API beschikbaar. Hieronder staan concrete stappen om de volledige repository te clonen en lokaal te bekijken zonder onbedoelde wijzigingen in code, config of database aan te brengen.
+
+Let op: in onze setup gebruikten we `php artisan storage:link` zodat afbeeldingen uit `storage` correct geladen worden. Dit is meestal veilig en is opgenomen in de stappen.
+
+Stap 1 — Clone de repo
+
+```bash
+git clone https://github.com/woutvanlommel/TheBuggyLandlords.git
+cd TheBuggyLandLords
+```
+
+Stap 2 — Backend (lokale, read-only setup)
+
+Werk in de `laravel-backend/` map. Doe alleen de volgende acties — voer géén migraties of seeders uit tenzij expliciet toegestaan.
+
+```bash
+cd laravel-backend
+# Installeer PHP dependencies indien nodig
+composer install
+
+# Maak de storage symlink zodat afbeeldingen uit storage/public bereikbaar zijn
+php artisan storage:link
+
+# Genereer app key (nodig voor sommige laravel features)
+php artisan key:generate
+
+# Start de backend server
+php artisan serve
+# Backend bereikbaar op http://127.0.0.1:8000
+```
+
+Stap 3 — Frontend (werk in de `angular-frontend/` map)
+
+Open een nieuwe terminal en ga naar de frontend map:
+
+```bash
+cd angular-frontend
+npm install
+# Pas indien nodig `src/environments/environment.ts` aan zodat `apiUrl` naar je lokale backend wijst:
+```
+
+In `src/environments/environment.ts`:
+
+```ts
+export const environment = {
+    production: false,
+    apiUrl: "http://127.0.0.1:8000/api/",
+};
+```
+
+Start de frontend dev-server:
+
+```bash
+ng serve
+# Open http://localhost:4200
+```
+
+Wat je NIET moet doen (belangrijk voor viewers)
+
+-   Voer geen `php artisan migrate` of `php artisan db:seed` uit op gedeelde/staging/production databases.
+-   Verander geen gedeelde `.env`-bestanden of production instellingen.
+-   Push of commit geen lokale, tijdelijke wijzigingen terug naar de remote repository.
+
+Fallbacks en tips
+
+-   Als de frontend geen data toont: controleer of de backend server draait en dat `apiUrl` correct is ingesteld.
+-   Als afbeeldingen niet zichtbaar zijn: controleer dat `php artisan storage:link` uitgevoerd is en dat `storage/app/public` de benodigde bestanden bevat.
+
 ![The Buggy Landlords Logo](./angular-frontend/public/assets/img/theBuggyLandlords.png)
 
 > **"De redding voor de 'huisjesmelker' die alles nog in Excel doet."**
@@ -102,6 +172,7 @@ Werk nooit direct op de main branch. Gebruik de volgende prefixen:
     -   (Should have: Andere koten van deze verhuurder)
 -   **Overzichtpagina** van de koten, op basis van de locatie
 -   **Favorieten** zetten
+
 -   Pagina met info links over de **wetgeving in verband met verhuren**
     -   Verwerken in een algemene info sectie
     -   FAQ hieronder (Voor huurder/verhuurder)
