@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +11,41 @@ export class RoomService {
   constructor(private http: HttpClient) {}
 
   getPublicRooms() {
-    return this.http.get<any[]>(this.baseApi + 'public/rooms');
+
+  const token = sessionStorage.getItem('auth_token');
+
+
+  let headers = new HttpHeaders();
+  if (token) {
+    headers = headers.set('Authorization', `Bearer ${token}`);
   }
+
+
+  return this.http.get<any[]>(this.baseApi + 'public/rooms', { headers: headers });
+}
 
   getRoomById(id: number) {
     return this.http.get<any>(`${this.baseApi}public/rooms/${id}`);
   }
+
+  toggleFavorite(roomId: number) {
+
+  const token = sessionStorage.getItem('auth_token');
+
+  console.log('Sending Token:', token);
+
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+
+  return this.http.post<{ is_favorited: boolean }>(
+    'http://localhost:8000/api/favorites/toggle',
+    { room_id: roomId },
+    { headers: headers }
+  );
+}
+
+
 
   // Haal alle publieke kamers op (voor de map/lijst)
   // async getPublicRooms(): Promise<any[]> {

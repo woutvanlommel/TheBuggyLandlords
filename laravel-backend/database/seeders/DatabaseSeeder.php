@@ -17,5 +17,20 @@ class DatabaseSeeder extends Seeder
             ImportDataSeeder::class,
         ]);
         // User::factory(10)->create();
+
+        $this->call([
+            RoomSeeder::class,
+        ]);
+
+
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
+        $room = \App\Models\Room::first();
+
+        if ($user && $room) {
+            \App\Models\Favorite::create([
+                'user_id' => $user->id,
+                'room_id' => $room->id,
+            ]);
+        }
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Document;
 use App\Models\Complaint;
 use App\Models\Room;
 use App\Models\Contract;
+use App\Http\Controllers\Api\FavoriteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -276,5 +277,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages', [App\Http\Controllers\Api\MessageController::class, 'store']);
     Route::put('/messages/{id}/read', [App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
 
+    // --- FAVORIETEN BEHEREN ---
+    Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
 
 });
