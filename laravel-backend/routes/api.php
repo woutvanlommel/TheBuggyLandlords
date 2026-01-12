@@ -10,6 +10,7 @@ use App\Models\Complaint;
 use App\Models\Room;
 use App\Models\Contract;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\NewsletterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -132,6 +133,7 @@ Route::get('/public/rooms/{id}', function ($id) {
     return response()->json($roomArray);
 });
 
+Route::post('/subscribe', [NewsletterController::class, 'subscribe']);
 
 // ========================================================================
 // 2. PROTECTED ROUTES (Token vereist via Sanctum)
