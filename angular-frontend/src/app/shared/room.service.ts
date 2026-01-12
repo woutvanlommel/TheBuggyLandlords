@@ -11,19 +11,28 @@ export class RoomService {
   constructor(private http: HttpClient) {}
 
   getPublicRooms() {
-    return this.http.get<any[]>(this.baseApi + 'public/rooms');
+
+  const token = sessionStorage.getItem('auth_token');
+
+
+  let headers = new HttpHeaders();
+  if (token) {
+    headers = headers.set('Authorization', `Bearer ${token}`);
   }
+
+
+  return this.http.get<any[]>(this.baseApi + 'public/rooms', { headers: headers });
+}
 
   getRoomById(id: number) {
     return this.http.get<any>(`${this.baseApi}public/rooms/${id}`);
   }
 
   toggleFavorite(roomId: number) {
-  // 1. Use sessionStorage (to match the team)
-  // 2. Use the REAL NAME you found in Step 2
+
   const token = sessionStorage.getItem('auth_token');
 
-  console.log('Sending Token:', token); // Debug check
+  console.log('Sending Token:', token);
 
   const headers = new HttpHeaders({
     'Authorization': `Bearer ${token}`
