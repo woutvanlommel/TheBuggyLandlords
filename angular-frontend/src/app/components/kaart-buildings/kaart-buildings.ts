@@ -26,7 +26,7 @@ import { debounceTime } from 'rxjs/operators';
     <!-- De Reset Knop -->
     <button
       (click)="resetMap()"
-      class="absolute top-4 right-4 z-[1000] bg-white text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg shadow-lg border border-gray-200 font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+      class="absolute top-4 right-4 z-1000 bg-white text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg shadow-lg border border-gray-200 font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
       title="Terug naar Leuven"
     >
       <!-- SVG Icoontje (Refresh/Locatie) -->
@@ -122,7 +122,7 @@ export class KaartBuildings implements OnInit, OnDestroy {
     private router: Router,
     private ngZone: NgZone
   ) {
-    this.mapMove$.pipe(debounceTime(200), takeUntil(this.destroy$)).subscribe(() => {
+    this.mapMove$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
       if (!this.isPopupOpen) {
         this.fetchRooms();
       }
