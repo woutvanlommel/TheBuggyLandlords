@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { RoomListOverview } from '../../components/room-list-overview/room-list-overview';
 
 @Component({
   selector: 'app-rooms',
   standalone: true,
-  template: `<p>rooms works!</p>`
+  imports: [RoomListOverview],
+  template: ` <app-room-list-overview></app-room-list-overview>`,
 })
 export class Rooms {}

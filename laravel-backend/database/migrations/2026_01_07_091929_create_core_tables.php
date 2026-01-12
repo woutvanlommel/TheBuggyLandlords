@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('housenumber');
             $table->foreignId('place_id')->constrained('place');
             $table->foreignId('user_id')->constrained('users'); // De eigenaar/verhuurder
+            // Simple latitude / longitude columns (nullable) to store geolocation without PostGIS
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
         });
     }
 
