@@ -103,13 +103,13 @@ class ImportDataSeeder extends Seeder
             (26, 'B1', 505, 10, 0, 2), (27, '1.1', 425, 11, 0, 2), (28, '1.2', 425, 11, 0, 2), (29, 'Gelijkvloers', 580, 12, 0, 2), (30, 'Dakapp', 700, 13, 1, 4);
 
             INSERT INTO `roomtype` (`id`, `type`) VALUES
-            (1, 'Studio'), 
-            (2, 'Kamer'), 
-            (3, 'Appartement'), 
+            (1, 'Studio'),
+            (2, 'Kamer'),
+            (3, 'Appartement'),
             (4, 'Duplex');
 
             INSERT INTO `contract` (`id`, `user_id`, `room_id`, `start_date`, `end_date`, `is_active`, `created_at`, `updated_at`) VALUES
-            (1, 1, 1, '2025-09-01', NULL, 1, NOW(), NOW()), (2, 2, 2, '2025-09-01', NULL, 1, NOW(), NOW()), (3, 3, 3, '2025-09-01', NULL, 1, NOW(), NOW()), 
+            (1, 1, 1, '2025-09-01', NULL, 1, NOW(), NOW()), (2, 2, 2, '2025-09-01', NULL, 1, NOW(), NOW()), (3, 3, 3, '2025-09-01', NULL, 1, NOW(), NOW()),
             (4, 4, 4, '2025-09-01', NULL, 1, NOW(), NOW()), (5, 5, 5, '2025-09-01', NULL, 1, NOW(), NOW()), (6, 6, 6, '2025-09-01', NULL, 1, NOW(), NOW()),
             (7, 7, 7, '2025-09-01', NULL, 1, NOW(), NOW()), (8, 8, 8, '2025-09-01', NULL, 1, NOW(), NOW()), (9, 9, 9, '2025-09-01', NULL, 1, NOW(), NOW()),
             (10, 10, 10, '2025-09-01', NULL, 1, NOW(), NOW()), (11, 11, 11, '2025-09-01', NULL, 1, NOW(), NOW()), (12, 12, 12, '2025-09-01', NULL, 1, NOW(), NOW()),
@@ -123,70 +123,70 @@ class ImportDataSeeder extends Seeder
             -- 7. Complaints (TOEGEVOEGD: user_id)
             -- Ik heb hier willekeurige bestaande user ID's ingevuld (1, 2, 3, etc.) zodat de database klopt
             INSERT INTO `complaint` (`id`, `name`, `description`, `complaint_type_id`, `user_id`) VALUES
-            (1, 'Lekkende kraan', 'Keukenkraan lekt constant.', 1, 1), 
-            (2, 'Geen warm water', 'Boiler geeft storing.', 1, 2), 
+            (1, 'Lekkende kraan', 'Keukenkraan lekt constant.', 1, 1),
+            (2, 'Geen warm water', 'Boiler geeft storing.', 1, 2),
             (3, 'Luidruchtige buren', 'Muziek na 22u.', 2, 3),
-            (4, 'Wifi traag', 'Kan niet streamen.', 3, 4), 
-            (5, 'Vuilzakken gang', 'Buren laten vuilzakken staan.', 5, 5), 
+            (4, 'Wifi traag', 'Kan niet streamen.', 3, 4),
+            (5, 'Vuilzakken gang', 'Buren laten vuilzakken staan.', 5, 5),
             (6, 'Deurbel stuk', 'Ik hoor niet als er iemand belt.', 1, 6),
-            (7, 'Raam sluit niet', 'Raam straatkant klemt.', 1, 7), 
-            (8, 'Schimmel badkamer', 'Zwarte plekken op plafond.', 5, 8), 
+            (7, 'Raam sluit niet', 'Raam straatkant klemt.', 1, 7),
+            (8, 'Schimmel badkamer', 'Zwarte plekken op plafond.', 5, 8),
             (9, 'Internet valt uit', 'Modem herstart spontaan.', 3, 9),
-            (10, 'Verwarming', 'Radiator lekt water.', 1, 10), 
-            (11, 'Muis gezien', 'In de keuken.', 5, 11), 
+            (10, 'Verwarming', 'Radiator lekt water.', 1, 10),
+            (11, 'Muis gezien', 'In de keuken.', 5, 11),
             (12, 'Sleutel kwijt', 'Kan ik een reserve krijgen?', 4, 12),
-            (13, 'Huurcontract vraag', 'Wanneer loopt het af?', 4, 13), 
-            (14, 'Lamp gang stuk', 'Het is donker op de trap.', 1, 14), 
+            (13, 'Huurcontract vraag', 'Wanneer loopt het af?', 4, 13),
+            (14, 'Lamp gang stuk', 'Het is donker op de trap.', 1, 14),
             (15, 'Lift defect', 'Staat vast op 2e.', 1, 15),
-            (16, 'Geluid straat', 'Slecht geïsoleerd raam.', 2, 16), 
-            (17, 'Geurhinder', 'Rioolgeur in badkamer.', 5, 17), 
+            (16, 'Geluid straat', 'Slecht geïsoleerd raam.', 2, 16),
+            (17, 'Geurhinder', 'Rioolgeur in badkamer.', 5, 17),
             (18, 'Kookplaat barst', 'Barst in keramische plaat.', 1, 18),
-            (19, 'Douchekop stuk', 'Water spuit alle kanten op.', 1, 19), 
-            (20, 'Toilet loopt door', 'Water blijft lopen.', 1, 20), 
+            (19, 'Douchekop stuk', 'Water spuit alle kanten op.', 1, 19),
+            (20, 'Toilet loopt door', 'Water blijft lopen.', 1, 20),
             (21, 'Rookmelder piept', 'Batterij leeg?', 1, 21),
-            (22, 'Vochtplek muur', 'Naast het raam.', 1, 22), 
-            (23, 'Geen internet', 'Al 2 uur offline.', 3, 23), 
+            (22, 'Vochtplek muur', 'Naast het raam.', 1, 22),
+            (23, 'Geen internet', 'Al 2 uur offline.', 3, 23),
             (24, 'Feestje buren', 'Te luid.', 2, 24),
-            (25, 'Postbus kapot', 'Slotje werkt niet.', 1, 25), 
-            (26, 'Tegel los', 'Vloertegel badkamer.', 1, 26), 
+            (25, 'Postbus kapot', 'Slotje werkt niet.', 1, 25),
+            (26, 'Tegel los', 'Vloertegel badkamer.', 1, 26),
             (27, 'Stopcontact los', 'Gevaarlijk.', 1, 27),
-            (28, 'Gordijnrail los', 'Naar beneden gekomen.', 1, 28), 
-            (29, 'Vaatwasser stuk', 'Pomp werkt niet.', 1, 29), 
+            (28, 'Gordijnrail los', 'Naar beneden gekomen.', 1, 28),
+            (29, 'Vaatwasser stuk', 'Pomp werkt niet.', 1, 29),
             (30, 'Afvoer verstopt', 'Douche loopt niet weg.', 1, 30);
 
             -- 8. Documenten (Met file_path, contract_id en nu ook room_id)
             -- Voor bestaande contract-documenten is room_id NULL.
             -- Ik voeg per kamer 1 afbeelding toe.
             INSERT INTO `document` (`id`, `name`, `file_path`, `document_type_id`, `user_id`, `contract_id`, `room_id`, `created_at`, `updated_at`) VALUES
-            (1, 'Contract_Lotte.pdf', 'protected/contracts/1/Contract_Lotte.pdf', 1, 1, 1, NULL, NOW(), NOW()), 
-            (2, 'PB_Lotte.pdf', 'protected/contracts/1/PB_Lotte.pdf', 2, 1, 1, NULL, NOW(), NOW()), 
+            (1, 'Contract_Lotte.pdf', 'protected/contracts/1/Contract_Lotte.pdf', 1, 1, 1, NULL, NOW(), NOW()),
+            (2, 'PB_Lotte.pdf', 'protected/contracts/1/PB_Lotte.pdf', 2, 1, 1, NULL, NOW(), NOW()),
             (3, 'Contract_Robbe.pdf', 'protected/contracts/2/Contract_Robbe.pdf', 1, 2, 2, NULL, NOW(), NOW()),
-            (4, 'Contract_Noah.pdf', 'protected/contracts/3/Contract_Noah.pdf', 1, 3, 3, NULL, NOW(), NOW()), 
-            (5, 'Reglement_Gebouw1.pdf', 'protected/general/Reglement_Gebouw1.pdf', 3, 31, NULL, NULL, NOW(), NOW()), 
+            (4, 'Contract_Noah.pdf', 'protected/contracts/3/Contract_Noah.pdf', 1, 3, 3, NULL, NOW(), NOW()),
+            (5, 'Reglement_Gebouw1.pdf', 'protected/general/Reglement_Gebouw1.pdf', 3, 31, NULL, NULL, NOW(), NOW()),
             (6, 'Verzekering_Gebouw1.pdf', 'protected/general/Verzekering_Gebouw1.pdf', 4, 31, NULL, NULL, NOW(), NOW()),
-            (7, 'Contract_Emma.pdf', 'protected/contracts/4/Contract_Emma.pdf', 1, 4, 4, NULL, NOW(), NOW()), 
-            (8, 'Contract_Arthur.pdf', 'protected/contracts/5/Contract_Arthur.pdf', 1, 5, 5, NULL, NOW(), NOW()), 
+            (7, 'Contract_Emma.pdf', 'protected/contracts/4/Contract_Emma.pdf', 1, 4, 4, NULL, NOW(), NOW()),
+            (8, 'Contract_Arthur.pdf', 'protected/contracts/5/Contract_Arthur.pdf', 1, 5, 5, NULL, NOW(), NOW()),
             (9, 'PB_Arthur.pdf', 'protected/contracts/5/PB_Arthur.pdf', 2, 5, 5, NULL, NOW(), NOW()),
-            (10, 'Contract_Mila.pdf', 'protected/contracts/6/Contract_Mila.pdf', 1, 6, 6, NULL, NOW(), NOW()), 
-            (11, 'EPC_Gebouw2.pdf', 'protected/general/EPC_Gebouw2.pdf', 5, 31, NULL, NULL, NOW(), NOW()), 
+            (10, 'Contract_Mila.pdf', 'protected/contracts/6/Contract_Mila.pdf', 1, 6, 6, NULL, NOW(), NOW()),
+            (11, 'EPC_Gebouw2.pdf', 'protected/general/EPC_Gebouw2.pdf', 5, 31, NULL, NULL, NOW(), NOW()),
             (12, 'Contract_Liam.pdf', 'protected/contracts/7/Contract_Liam.pdf', 1, 7, 7, NULL, NOW(), NOW()),
-            (13, 'Contract_Olivia.pdf', 'protected/contracts/8/Contract_Olivia.pdf', 1, 8, 8, NULL, NOW(), NOW()), 
-            (14, 'Contract_Louis.pdf', 'protected/contracts/9/Contract_Louis.pdf', 1, 9, 9, NULL, NOW(), NOW()), 
+            (13, 'Contract_Olivia.pdf', 'protected/contracts/8/Contract_Olivia.pdf', 1, 8, 8, NULL, NOW(), NOW()),
+            (14, 'Contract_Louis.pdf', 'protected/contracts/9/Contract_Louis.pdf', 1, 9, 9, NULL, NOW(), NOW()),
             (15, 'Contract_Louise.pdf', 'protected/contracts/10/Contract_Louise.pdf', 1, 10, 10, NULL, NOW(), NOW()),
-            (16, 'PB_Louise.pdf', 'protected/contracts/10/PB_Louise.pdf', 2, 10, 10, NULL, NOW(), NOW()), 
-            (17, 'Contract_Lucas.pdf', 'protected/contracts/11/Contract_Lucas.pdf', 1, 11, 11, NULL, NOW(), NOW()), 
+            (16, 'PB_Louise.pdf', 'protected/contracts/10/PB_Louise.pdf', 2, 10, 10, NULL, NOW(), NOW()),
+            (17, 'Contract_Lucas.pdf', 'protected/contracts/11/Contract_Lucas.pdf', 1, 11, 11, NULL, NOW(), NOW()),
             (18, 'Contract_Elise.pdf', 'protected/contracts/12/Contract_Elise.pdf', 1, 12, 12, NULL, NOW(), NOW()),
-            (19, 'Contract_Adam.pdf', 'protected/contracts/13/Contract_Adam.pdf', 1, 13, 13, NULL, NOW(), NOW()), 
-            (20, 'Contract_Marie.pdf', 'protected/contracts/14/Contract_Marie.pdf', 1, 14, 14, NULL, NOW(), NOW()), 
+            (19, 'Contract_Adam.pdf', 'protected/contracts/13/Contract_Adam.pdf', 1, 13, 13, NULL, NOW(), NOW()),
+            (20, 'Contract_Marie.pdf', 'protected/contracts/14/Contract_Marie.pdf', 1, 14, 14, NULL, NOW(), NOW()),
             (21, 'Contract_Jules.pdf', 'protected/contracts/15/Contract_Jules.pdf', 1, 15, 15, NULL, NOW(), NOW()),
-            (22, 'Contract_Ella.pdf', 'protected/contracts/16/Contract_Ella.pdf', 1, 16, 16, NULL, NOW(), NOW()), 
-            (23, 'Contract_Victor.pdf', 'protected/contracts/17/Contract_Victor.pdf', 1, 17, 17, NULL, NOW(), NOW()), 
+            (22, 'Contract_Ella.pdf', 'protected/contracts/16/Contract_Ella.pdf', 1, 16, 16, NULL, NOW(), NOW()),
+            (23, 'Contract_Victor.pdf', 'protected/contracts/17/Contract_Victor.pdf', 1, 17, 17, NULL, NOW(), NOW()),
             (24, 'Contract_Julie.pdf', 'protected/contracts/18/Contract_Julie.pdf', 1, 18, 18, NULL, NOW(), NOW()),
-            (25, 'Contract_Gabriel.pdf', 'protected/contracts/19/Contract_Gabriel.pdf', 1, 19, 19, NULL, NOW(), NOW()), 
-            (26, 'Contract_Sarah.pdf', 'protected/contracts/20/Contract_Sarah.pdf', 1, 20, 20, NULL, NOW(), NOW()), 
+            (25, 'Contract_Gabriel.pdf', 'protected/contracts/19/Contract_Gabriel.pdf', 1, 19, 19, NULL, NOW(), NOW()),
+            (26, 'Contract_Sarah.pdf', 'protected/contracts/20/Contract_Sarah.pdf', 1, 20, 20, NULL, NOW(), NOW()),
             (27, 'Contract_Mohamed.pdf', 'protected/contracts/21/Contract_Mohamed.pdf', 1, 21, 21, NULL, NOW(), NOW()),
-            (28, 'Contract_Yasmine.pdf', 'protected/contracts/22/Contract_Yasmine.pdf', 1, 22, 22, NULL, NOW(), NOW()), 
-            (29, 'Contract_Thomas.pdf', 'protected/contracts/23/Contract_Thomas.pdf', 1, 23, 23, NULL, NOW(), NOW()), 
+            (28, 'Contract_Yasmine.pdf', 'protected/contracts/22/Contract_Yasmine.pdf', 1, 22, 22, NULL, NOW(), NOW()),
+            (29, 'Contract_Thomas.pdf', 'protected/contracts/23/Contract_Thomas.pdf', 1, 23, 23, NULL, NOW(), NOW()),
             (30, 'Contract_Amber.pdf', 'protected/contracts/24/Contract_Amber.pdf', 1, 24, 24, NULL, NOW(), NOW()),
             -- Afbeeldingen (Type 7)
             (31, 'Kamer1.jpg', 'https://www.datocms-assets.com/76079/1744377653-kot-pic-3.png?fit=clip&fm=png&h=1080&w=1920', 7, NULL, NULL, 1, NOW(), NOW()),
@@ -202,6 +202,16 @@ class ImportDataSeeder extends Seeder
 
             INSERT INTO `complaint_document` (`id`, `complaint_id`, `document_id`) VALUES
             (1, 1, 1), (2, 5, 2), (3, 8, 5);
+
+            -- 10. Berichten (Met sender_id en recipient_id)
+            INSERT INTO messages (sender_id, recipient_id, content, is_read, created_at, updated_at) VALUES
+            (1, 2, 'Welcome to the building! Please read the attached rules.', 1, '2023-10-01 09:00:00', '2023-10-01 09:05:00'),
+            (1, 2, 'Just a reminder that rent is due on Friday.', 0, '2023-10-25 10:30:00', '2023-10-25 10:30:00'),
+            (1, 3, 'Maintenance will be checking the fire alarms tomorrow at 2 PM.', 0, '2023-10-26 14:15:00', '2023-10-26 14:15:00'),
+            (2, 1, 'Hi, the radiator in room 4B is making a strange noise.', 1, '2023-10-27 16:45:00', '2023-10-27 17:00:00'),
+            (1, 4, 'Package left at the front desk for you.', 0, '2023-10-28 11:20:00', '2023-10-28 11:20:00'),
+            (3, 1, 'Can I reserve the common room for Saturday night?', 0, '2023-10-29 09:10:00', '2023-10-29 09:10:00'),
+            (1, 2, 'Water will be shut off for repairs on Tuesday from 9-11 AM.', 0, NOW(), NOW());
         SQL;
 
         DB::unprepared($sql);
