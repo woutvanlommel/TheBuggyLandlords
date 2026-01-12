@@ -273,6 +273,10 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($buildings);
     });
 
+    Route::get('/messages', [App\Http\Controllers\Api\MessageController::class, 'index']);
+    Route::post('/messages', [App\Http\Controllers\Api\MessageController::class, 'store']);
+    Route::put('/messages/{id}/read', [App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
+
     // --- FAVORIETEN BEHEREN ---
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
 
