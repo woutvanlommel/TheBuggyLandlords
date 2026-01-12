@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoomService {
   private baseApi = environment.apiUrl;
+
+  // 1. Voor de zoekpagina (Map updates)
+  private mapRoomsSubject = new BehaviorSubject<any[]>([]);
+  public mapRooms$ = this.mapRoomsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -22,7 +26,7 @@ export class RoomService {
     return this.http.get<any[]>(this.baseApi + 'public/rooms', { headers: headers });
   }
 
-  // NIEUW: Haal rooms op binnen een bounding box
+  // Gebruikt door ZOEK pagina (Update de state voor de map)
   getRoomsByBBox(
     minLat: number,
     maxLat: number,
@@ -35,14 +39,14 @@ export class RoomService {
       .set('minLng', minLng.toString())
       .set('maxLng', maxLng.toString());
 
-    // Token mag mee, maar hoeft niet voor publieke route
+    // ... headers logica ...
     const token = sessionStorage.getItem('auth_token');
     let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
+    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<any[]>(this.baseApi + 'public/rooms', { headers, params });
+    return this.http.get<any[]>(this.baseApi + 'public/rooms', { headers, params }).pipe(
+      tap((rooms) => this.mapRoomsSubject.next(rooms)) // <--- Update de 'map' lijst
+    );
   }
 
   getRoomById(id: number) {
