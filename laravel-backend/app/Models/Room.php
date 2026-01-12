@@ -4,14 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Room extends Model
-
 {
     use HasFactory;
 
     protected $table = 'room';
     public $timestamps = false;
+
+
+    protected $appends = ['is_favorited'];
 
     protected $fillable = [
         'roomnumber',
@@ -22,9 +25,24 @@ class Room extends Model
 
     protected $casts = [
         'is_highlighted' => 'boolean',
+
     ];
 
-    // Relaties
+
+    public function getIsFavoritedAttribute()
+    {
+
+        if (Auth::guard('sanctum')->check()) {
+            return $this->favoritedBy()
+                        ->where('user_id', Auth::guard('sanctum')->id())
+                        ->exists();
+        }
+
+        return false;
+    }
+
+
+
     public function contracts()
     {
         return $this->hasMany(Contract::class);
@@ -40,10 +58,6 @@ class Room extends Model
         return $this->belongsTo(RoomType::class, 'roomtype_id');
     }
 
-    /**
-     * Relatie: Een Room heeft documenten (bijv. afbeeldingen).
-     * Filteren op afbeeldingen (type 7) kan in de query of hier via een scope.
-     */
     public function images()
     {
         return $this->hasMany(Document::class)->where('document_type_id', 7);
@@ -58,5 +72,4 @@ class Room extends Model
     {
         return $this->belongsToMany(User::class, 'favorites', 'room_id', 'user_id');
     }
-};
-
+}
