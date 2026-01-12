@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,} from '@angular/core';
 import { AuthService } from '../../../shared/auth.service';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

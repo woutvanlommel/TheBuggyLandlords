@@ -1,1 +1,6 @@
-<p>profile works!</p>
+<div *ngIf="isLoading">Loading...</div>
+
+<div *ngIf="userProfile">
+  <h2>Connection Successful!</h2>
+  <pre>{{ userProfile | json }}</pre>
+</div>

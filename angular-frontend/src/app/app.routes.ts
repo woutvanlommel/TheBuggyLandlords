@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/auth.guard';
 import { RoomDetail } from './pages/room-detail/room-detail';
+import { Dashboard } from './pages/dashboard/dashboard';
+import { Profile } from './pages/dashboard/profile/profile';
 
 export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
@@ -72,4 +74,12 @@ export const routes: Routes = [
 
   // FALLBACK (Onbekende URL -> terug naar start)
   { path: '**', redirectTo: 'kotcompass/zoektplatform' },
+
+    {path: 'dashboard',
+    component: Dashboard,
+    children: [
+      {path: 'profile', component: Profile},
+      {path: '', redirectTo: 'profile', pathMatch: 'full' }
+    ]
+  },
 ];

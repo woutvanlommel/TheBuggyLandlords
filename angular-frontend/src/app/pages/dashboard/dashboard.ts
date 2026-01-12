@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../shared/auth.service';
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
     <div id="mainDashboardId" class="bg-primary min-h-screen w-full pb-10">
@@ -28,35 +29,45 @@ import { AuthService } from '../../shared/auth.service';
         </div>
       </div>
       <main class="relative z-20 w-full">
-        <!-- Tabs on top -->
         <div class="relative z-30 -mb-px px-5">
           <div class="grid grid-cols-3 gap-2 w-full">
-            <button 
-              (click)="setActiveTab('dashboard')"
-              [ngClass]="activeTab === 'dashboard' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all'"
-              class="px-6 py-2.5 font-semibold text-sm w-full">
-              Dashboard
-            </button>
-            <button 
-              (click)="setActiveTab('profiel')"
-              [ngClass]="activeTab === 'profiel' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all'"
-              class="px-6 py-2.5 font-semibold text-sm w-full">
-              Profiel
-            </button>
-            <button 
-              (click)="setActiveTab('instellingen')"
-              [ngClass]="activeTab === 'instellingen' ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0' : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all'"
-              class="px-6 py-2.5 font-semibold text-sm w-full">
-              Instellingen
-            </button>
-          </div>
+
+          <a
+            routerLink="/dashboard"
+            (click)="setActiveTab('dashboard')"
+            [ngClass]="activeTab === 'dashboard'
+              ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
+              : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'"
+            class="px-6 py-2.5 font-semibold text-sm w-full block text-center">
+            Dashboard
+          </a>
+
+          <a
+            routerLink="profile"
+            (click)="setActiveTab('profile')"
+            [ngClass]="activeTab === 'profile'
+              ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
+              : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'"
+            class="px-6 py-2.5 font-semibold text-sm w-full block text-center">
+            Profiel
+          </a>
+
+          <a
+            routerLink="/dashboard"
+            (click)="setActiveTab('instellingen')"
+            [ngClass]="activeTab === 'instellingen'
+              ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
+              : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'"
+            class="px-6 py-2.5 font-semibold text-sm w-full block text-center">
+            Instellingen
+          </a>
+
+        </div>
         </div>
 
-        <!-- Main Content Card -->
         <section class="bg-base-een-100/60 backdrop-blur-md border border-base-twee-300/50 shadow-2xl rounded-3xl p-6 space-y-6 relative z-20">
 
           <div *ngIf="activeTab === 'dashboard'">
-            <!-- Credits + Spotlight Overzicht -->
             <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
               <article class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl">
                 <p class="text-xs font-semibold tracking-wide text-primary-600">Totaal Credits</p>
@@ -75,7 +86,6 @@ import { AuthService } from '../../shared/auth.service';
                   <span class="text-2xl font-bold text-base-twee-900">--</span>
                   <span class="px-3 py-1 text-xs font-semibold rounded-full bg-base-een-300/50 text-base-twee-900">--</span>
                 </div>
-                <!-- Simple status indicator -->
                 <div class="flex gap-1">
                    <div class="h-2 w-8 rounded-full bg-secondary-500"></div>
                    <div class="h-2 w-2 rounded-full bg-secondary-200"></div>
@@ -89,8 +99,7 @@ import { AuthService } from '../../shared/auth.service';
                   <span class="px-3 py-1 text-xs font-semibold rounded-full bg-secondary-200/50 text-secondary-900">--%</span>
                 </div>
                 <div class="h-12">
-                   <!-- Placeholder mini chart -->
-                  <svg viewBox="0 0 120 40" fill="none" stroke-width="3" class="w-full h-full opacity-50">
+                   <svg viewBox="0 0 120 40" fill="none" stroke-width="3" class="w-full h-full opacity-50">
                     <path d="M5 30 L30 18 L55 26 L80 12 L115 22" stroke="currentColor" class="text-primary-500" />
                   </svg>
                 </div>
@@ -109,7 +118,6 @@ import { AuthService } from '../../shared/auth.service';
             </section>
 
             <section class="grid grid-cols-12 gap-4">
-              <!-- Lijst Studenten Per Kot -->
               <article class="col-span-12 lg:col-span-8 bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl h-full">
                 <div class="flex items-center justify-between gap-3 mb-4">
                   <div>
@@ -118,7 +126,7 @@ import { AuthService } from '../../shared/auth.service';
                   </div>
                   <button class="px-3 py-2 rounded-xl bg-base-een-100/50 backdrop-blur-sm text-base-twee-900 border border-base-twee-200 shadow hover:bg-white/80 transition-colors">Beheer</button>
                 </div>
-                
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-base-twee-700">
                         <thead class="text-xs uppercase text-base-twee-500 font-semibold border-b border-base-twee-200/50">
@@ -154,8 +162,7 @@ import { AuthService } from '../../shared/auth.service';
               </article>
 
               <div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
-                 <!-- Berichten Uitsturen -->
-                <article class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl">
+                 <article class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl">
                   <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
                       <p class="text-xs font-semibold tracking-wide text-primary-600">Communicatie</p>
@@ -169,7 +176,6 @@ import { AuthService } from '../../shared/auth.service';
                   </div>
                 </article>
 
-                <!-- Mededelingen -->
                 <article class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl flex-1">
                   <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
@@ -188,12 +194,7 @@ import { AuthService } from '../../shared/auth.service';
             </section>
           </div>
 
-          <div *ngIf="activeTab === 'profiel'">
-             <div class="p-8 text-center bg-base-een-100/50 backdrop-blur-sm rounded-xl border border-primary-100/50">
-                <h3 class="text-xl font-semibold text-base-twee-900">Profiel</h3>
-                <p class="text-base-twee-600 mt-2">Beheer hier je persoonlijke gegevens.</p>
-             </div>
-          </div>
+          <router-outlet></router-outlet>
 
           <div *ngIf="activeTab === 'instellingen'">
              <div class="p-8 text-center bg-base-een-100/50 backdrop-blur-sm rounded-xl border border-primary-100/50">
@@ -201,21 +202,31 @@ import { AuthService } from '../../shared/auth.service';
                 <p class="text-base-twee-600 mt-2">Configureer hier de applicatie.</p>
              </div>
           </div>
-
-    
-    
-    `,
+        </section>
+      </main>
+    </div>
+  `,
   styles: [``],
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   activeTab: string = 'dashboard';
 
+  // FIX: Constructor is now properly closed
   constructor(private router: Router, private authService: AuthService) {}
 
+  // FIX: This is now a separate method, not inside constructor
+  ngOnInit() {
+    if (this.router.url.includes('profile')) {
+      this.activeTab = 'profile';
+    }
+  }
+
+  // FIX: This is now a separate method
   setActiveTab(tab: string) {
     this.activeTab = tab;
   }
 
+  // FIX: This is now a separate method
   onLogout() {
     this.authService.logout().finally(() => this.router.navigate(['/login']));
   }
