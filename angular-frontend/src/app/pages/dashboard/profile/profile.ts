@@ -1,4 +1,4 @@
-import { Component, OnInit,} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { AuthService } from '../../../shared/auth.service';
 import { CommonModule } from '@angular/common';
 
@@ -12,10 +12,13 @@ import { CommonModule } from '@angular/common';
 })
 export class Profile implements OnInit {
 
-  userProfile: any = null;
+  user: any = null;
   isLoading: boolean = true;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadProfile();
@@ -25,8 +28,9 @@ export class Profile implements OnInit {
     this.authService.getProfile().subscribe({
       next: (data) => {
         console.log('User Data Received:', data);
-        this.userProfile = data;
+        this.user = data;
         this.isLoading = false;
+        this.cd.detectChanges();
       },
       error: (error) => {
         console.error('Error fetching profile:', error);
