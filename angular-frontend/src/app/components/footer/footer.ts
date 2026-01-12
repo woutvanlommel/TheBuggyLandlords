@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NewsletterService } from '../../services/newsletter';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   template: `
     <footer class="bg-base-twee py-2">
       <div
@@ -178,14 +180,19 @@ import { RouterLink } from '@angular/router';
               Stay updated on new listings, platform updates, and tips for landlords.
             </p>
 
-            <div class="relative w-full">
+            <form class="relative w-full" method="post" (ngSubmit)="onSubscribe($event)">
               <input
                 type="email"
+                name="email"
+                [(ngModel)]="userEmail"
+                required
                 placeholder="@ enter your email.."
                 class="w-full pl-4 pr-14 py-3 bg-base-een-100 rounded-full text-base-twee-900 placeholder-base-twee-400 shadow-sm focus:outline-none"
               />
               <button
-                class="absolute right-1.5 top-1.5 h-9 w-9 bg-accent-500 rounded-full flex items-center justify-center hover:bg-accent-600 transition-colors shadow-md cursor-pointer"
+                type="submit"
+                class="absolute right-1.5 top-1.5 h-9 w-9 bg-accent-500 rounded-full flex items-center justify-center hover:bg-accent-600 transition-colors shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="!userEmail"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -202,7 +209,7 @@ import { RouterLink } from '@angular/router';
                   />
                 </svg>
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -215,4 +222,27 @@ import { RouterLink } from '@angular/router';
     }
   `,
 })
-export class Footer {}
+export class Footer {
+  userEmail = '';
+
+  constructor(private newsletterService: NewsletterService) {}
+
+  onSubscribe(event?: Event) {
+    if (event) {
+      event.preventDefault(); //prevent form submission reload
+    }
+
+    if (!this.userEmail) return;
+
+    this.newsletterService.subscribe(this.userEmail).subscribe({
+      next: (res) => {
+        alert('Success! You are subscribed.');
+        this.userEmail = '';
+      },
+      error: (err) => {
+        console.error('Full error log:', err);
+        alert('Error: ' + (err.error?.message || 'Laravel not reachable'));
+      },
+    });
+  }
+}
