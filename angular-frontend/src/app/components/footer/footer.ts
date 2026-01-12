@@ -180,7 +180,7 @@ import { NewsletterService } from '../../services/newsletter';
               Stay updated on new listings, platform updates, and tips for landlords.
             </p>
 
-            <form class="relative w-full" (ngSubmit)="onSubscribe()">
+            <form class="relative w-full" method="post" (ngSubmit)="onSubscribe($event)">
               <input
                 type="email"
                 name="email"
@@ -227,17 +227,21 @@ export class Footer {
 
   constructor(private newsletterService: NewsletterService) {}
 
-  onSubscribe() {
+  onSubscribe(event?: Event) {
+    if (event) {
+      event.preventDefault(); // Dit voorkomt de GET refresh
+    }
+
     if (!this.userEmail) return;
 
     this.newsletterService.subscribe(this.userEmail).subscribe({
-      next: () => {
-        alert('Succes! Je bent ingeschreven in de SQL database.');
+      next: (res) => {
+        alert('Succes! Je bent ingeschreven.');
         this.userEmail = '';
       },
       error: (err) => {
-        console.error('Fout:', err);
-        alert('Er ging iets mis. Staat je Laravel server aan?');
+        console.error('Volledige error log:', err);
+        alert('Fout: ' + (err.error?.message || 'Laravel niet bereikbaar'));
       },
     });
   }

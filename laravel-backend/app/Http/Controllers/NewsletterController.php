@@ -10,12 +10,14 @@ class NewsletterController extends Controller
 {
     public function subscribe(Request $request) {
         $data = $request->validate([
-            'name' => 'required|string',
             'email' => 'required|email'
         ]);
 
-        // Opslaan in SQL
-        $subscriber = Subscriber::create($data);
+        // Sla alleen het e-mailadres op; naam mag null zijn
+        $subscriber = Subscriber::create([
+            'name' => null,
+            'email' => $data['email'],
+        ]);
 
         // Verzenden naar EmailJS API
         Http::post('https://api.emailjs.com/api/v1.0/email/send', [
