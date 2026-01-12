@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Room;
 
 class User extends Authenticatable
 {
@@ -23,7 +24,7 @@ class User extends Authenticatable
         'fname',
         'email',
         'password',
-        'phone', 
+        'phone',
         'credits',
         'role_id'
     ];
@@ -70,5 +71,16 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Room::class, 'favorites', 'user_id', 'room_id');
+    }
+
+    public function favoriteRooms()
+    {
+        return $this->belongsToMany(Room::class, 'favorites', 'user_id', 'room_id')
+                        ->withTimestamps();
     }
 }

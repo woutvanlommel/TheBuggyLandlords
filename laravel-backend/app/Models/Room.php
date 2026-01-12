@@ -53,4 +53,10 @@ class Room extends Model
     {
         return $this->hasMany(Document::class);
     }
-}
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'room_id', 'user_id');
+    }
+};
+
