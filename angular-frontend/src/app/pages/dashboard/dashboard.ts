@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../shared/auth.service';
 
 @Component({
@@ -30,10 +30,9 @@ import { AuthService } from '../../shared/auth.service';
       </div>
       <main class="relative z-20 w-full">
         <div class="relative z-30 -mb-px px-5">
-          <div class="grid grid-cols-3 gap-2 w-full">
+        <div class="grid grid-cols-3 gap-2 w-full">
 
           <a
-            routerLink="/dashboard"
             (click)="setActiveTab('dashboard')"
             [ngClass]="activeTab === 'dashboard'
               ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
@@ -43,7 +42,6 @@ import { AuthService } from '../../shared/auth.service';
           </a>
 
           <a
-            routerLink="profile"
             (click)="setActiveTab('profile')"
             [ngClass]="activeTab === 'profile'
               ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
@@ -53,7 +51,6 @@ import { AuthService } from '../../shared/auth.service';
           </a>
 
           <a
-            routerLink="/dashboard"
             (click)="setActiveTab('instellingen')"
             [ngClass]="activeTab === 'instellingen'
               ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
@@ -211,22 +208,37 @@ import { AuthService } from '../../shared/auth.service';
 export class Dashboard implements OnInit {
   activeTab: string = 'dashboard';
 
-  // FIX: Constructor is now properly closed
-  constructor(private router: Router, private authService: AuthService) {}
+  // 2. Inject ActivatedRoute
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {}
 
-  // FIX: This is now a separate method, not inside constructor
   ngOnInit() {
-    if (this.router.url.includes('profile')) {
-      this.activeTab = 'profile';
+    // 3. LISTEN TO URL CHANGES (This fixes the navigation bug)
+    this.route.queryParams.subscribe(params => {
+      if (this.router.url.includes('profile')) {
+        this.activeTab = 'profile';
+      } else if (params['view'] === 'settings') {
+        this.activeTab = 'instellingen';
+      } else {
+        this.activeTab = 'dashboard';
+      }
+    });
+  }
+
+  // 4. Update the helper to navigate instead of just setting a variable
+  setActiveTab(tab: string) {
+    if (tab === 'instellingen') {
+      this.router.navigate(['/dashboard'], { queryParams: { view: 'settings' } });
+    } else if (tab === 'dashboard') {
+      this.router.navigate(['/dashboard']);
+    } else if (tab === 'profile') {
+      this.router.navigate(['/dashboard/profile']);
     }
   }
 
-  // FIX: This is now a separate method
-  setActiveTab(tab: string) {
-    this.activeTab = tab;
-  }
-
-  // FIX: This is now a separate method
   onLogout() {
     this.authService.logout().finally(() => this.router.navigate(['/login']));
   }
