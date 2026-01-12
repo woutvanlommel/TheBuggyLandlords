@@ -81,6 +81,6 @@ class User extends Authenticatable
     public function favoriteRooms()
     {
         return $this->belongsToMany(Room::class, 'favorites', 'user_id', 'room_id')
-                        ->withTimestamps();
+                    ->withTimestamps();
     }
 }
