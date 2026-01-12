@@ -229,19 +229,19 @@ export class Footer {
 
   onSubscribe(event?: Event) {
     if (event) {
-      event.preventDefault(); // Dit voorkomt de GET refresh
+      event.preventDefault(); //prevent form submission reload
     }
 
     if (!this.userEmail) return;
 
     this.newsletterService.subscribe(this.userEmail).subscribe({
       next: (res) => {
-        alert('Succes! Je bent ingeschreven.');
+        alert('Success! You are subscribed.');
         this.userEmail = '';
       },
       error: (err) => {
-        console.error('Volledige error log:', err);
-        alert('Fout: ' + (err.error?.message || 'Laravel niet bereikbaar'));
+        console.error('Full error log:', err);
+        alert('Error: ' + (err.error?.message || 'Laravel not reachable'));
       },
     });
   }

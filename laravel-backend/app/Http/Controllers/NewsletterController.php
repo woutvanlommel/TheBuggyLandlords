@@ -13,13 +13,13 @@ class NewsletterController extends Controller
             'email' => 'required|email'
         ]);
 
-        // Sla alleen het e-mailadres op; naam mag null zijn
+        // olnly save th email, name can be null
         $subscriber = Subscriber::create([
             'name' => null,
             'email' => $data['email'],
         ]);
 
-        // Verzenden naar EmailJS API
+        // send to emailjs
         Http::post('https://api.emailjs.com/api/v1.0/email/send', [
             'service_id' => env('EMAILJS_SERVICE_ID'),
             'template_id' => env('EMAILJS_TEMPLATE_ID'),
