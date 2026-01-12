@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -7,6 +8,8 @@ import { environment } from '../../environments/environment';
 export class AuthService {
   private baseApi = environment.apiUrl;
   private tokenKey = 'auth_token';
+
+  constructor(private http: HttpClient) {}
 
   // Helper om de token op te halen
   getToken(): string | null {
@@ -128,4 +131,14 @@ export class AuthService {
 
     return response.json();
   }
-}
+
+  getProfile() {
+    const token = sessionStorage.getItem(this.tokenKey);
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+
+    return this.http.get<any>(this.baseApi + 'user', { headers: headers});
+    }
+  }
+
