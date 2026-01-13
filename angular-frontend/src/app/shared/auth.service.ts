@@ -142,8 +142,19 @@ export class AuthService {
     return this.http.get<any>(this.baseApi + 'user', { headers: headers});
     }
 
-    updateProfile(data: any) {
-      return this.http.put(`${this.baseUrl}/user/profile`, data);
+
+  updateProfile(data: any) {
+    // 1. Get the correct token key
+    const token = sessionStorage.getItem('auth_token');
+
+    // 2. Build the headers manually (Since the automatic way isn't working)
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    // 3. Send the PUT request WITH the headers
+    return this.http.put(`${this.baseUrl}/user/profile`, data, { headers: headers });
   }
 }
 
