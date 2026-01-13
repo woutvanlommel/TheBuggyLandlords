@@ -13,11 +13,15 @@ class NewsletterController extends Controller
             'email' => 'required|email'
         ]);
 
-        // olnly save th email, name can be null
-        $subscriber = Subscriber::create([
-            'name' => null,
-            'email' => $data['email'],
-        ]);
+        $user = auth('sanctum')->user();
+
+        // Only store the email, link to user when available
+        $subscriber = Subscriber::updateOrCreate(
+            ['email' => $data['email']],
+            [
+                'user_id' => $user?->id,
+            ]
+        );
 
         // send to emailjs
         Http::post('https://api.emailjs.com/api/v1.0/email/send', [
@@ -26,7 +30,7 @@ class NewsletterController extends Controller
             'user_id' => env('EMAILJS_PUBLIC_KEY'),
             'accessToken' => env('EMAILJS_PRIVATE_KEY'),
             'template_params' => [
-                'name' => $subscriber->name,
+                'name' => $user?->fname ?? $user?->name,
                 'email' => $subscriber->email
             ]
         ]);
