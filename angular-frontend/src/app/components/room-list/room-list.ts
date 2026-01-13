@@ -11,7 +11,7 @@ import { RoomCard } from '../room-card/room-card';
   imports: [RoomCard],
   template: `
     <div class="w-full max-w-300 mx-auto p-4">
-      <h2 class="text-5xl text-accent-500 font-bold">Room List</h2>
+      <h2 class="text-5xl text-accent-500 font-bold" id="topList">Room List</h2>
       @if (isLoading()) {
       <div>Loading rooms...</div>
       } @else if (!rooms() || rooms()?.length === 0) {
@@ -28,23 +28,59 @@ import { RoomCard } from '../room-card/room-card';
       </div>
 
       <!-- Pagination controls -->
-      <div class="flex justify-center items-center gap-4 mt-8">
+      <div class="flex flex-wrap justify-center items-center gap-2 mt-8 select-none">
         <button
           (click)="prevPage()"
           [disabled]="currentPage() === 1"
-          class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
+          class="h-10 w-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-gray-600"
+          title="Vorige pagina"
         >
-          Previous
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
         </button>
 
-        <span class="font-bold"> Page {{ currentPage() }} of {{ lastPage() }} </span>
+        @for (page of visiblePages(); track $index) { @if (page === -1) {
+        <span class="px-2 text-gray-400 font-bold">...</span>
+        } @else {
+        <button
+          (click)="goToPage(page)"
+          class="h-10 min-w-[40px] px-2 flex items-center justify-center rounded-lg text-sm font-bold transition-all border"
+          [class.bg-accent-500]="currentPage() === page"
+          [class.text-white]="currentPage() === page"
+          [class.border-accent-500]="currentPage() === page"
+          [class.bg-white]="currentPage() !== page"
+          [class.text-gray-700]="currentPage() !== page"
+          [class.border-gray-200]="currentPage() !== page"
+          [class.hover:bg-gray-50]="currentPage() !== page"
+        >
+          {{ page }}
+        </button>
+        } }
 
         <button
           (click)="nextPage()"
           [disabled]="currentPage() === lastPage()"
-          class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
+          class="h-10 w-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-gray-600"
+          title="Volgende pagina"
         >
-          Next
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </button>
       </div>
 
@@ -85,12 +121,53 @@ export class RoomList {
   nextPage() {
     if (this.currentPage() < this.lastPage()) {
       this.currentPage.update((p) => p + 1);
+      this.scrollToTopList();
     }
   }
 
   prevPage() {
     if (this.currentPage() > 1) {
       this.currentPage.update((p) => p - 1);
+      this.scrollToTopList();
     }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.lastPage()) {
+      this.currentPage.set(page);
+      this.scrollToTopList();
+    }
+  }
+
+  private scrollToTopList() {
+    const element = document.getElementById('topList');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  visiblePages() {
+    const current = this.currentPage();
+    const last = this.lastPage();
+    const delta = 2;
+    const range: number[] = [];
+
+    for (let i = Math.max(2, current - delta); i <= Math.min(last - 1, current + delta); i++) {
+      range.push(i);
+    }
+
+    if (current - delta > 2) {
+      range.unshift(-1);
+    }
+    if (current + delta < last - 1) {
+      range.push(-1);
+    }
+
+    range.unshift(1);
+    if (last > 1) {
+      range.push(last);
+    }
+
+    return range;
   }
 }
