@@ -28,18 +28,24 @@ class NewsletterController extends Controller
             ]
         );
 
-        // send to emailjs
-        Http::post('https://api.emailjs.com/api/v1.0/email/send', [
-            'service_id' => env('EMAILJS_SERVICE_ID'),
-            'template_id' => env('EMAILJS_TEMPLATE_ID'),
-            'user_id' => env('EMAILJS_PUBLIC_KEY'),
-            'accessToken' => env('EMAILJS_PRIVATE_KEY'),
-            'template_params' => [
-                'name' => $user?->fname ?? $user?->name,
-                'email' => $subscriber->email
-            ]
-        ]);
+        /* 
+         * Email logic is handled in the frontend (Angular) via EmailJS directly.
+         * Keeping this commented out to avoid double emails if we ever switch back.
+         */
+        // Http::post('https://api.emailjs.com/api/v1.0/email/send', [
+        //     'service_id' => env('EMAILJS_SERVICE_ID'),
+        //     'template_id' => env('EMAILJS_TEMPLATE_ID'),
+        //     'user_id' => env('EMAILJS_PUBLIC_KEY'),
+        //     'accessToken' => env('EMAILJS_PRIVATE_KEY'),
+        //     'template_params' => [
+        //         'name' => $user?->fname ?? $user?->name,
+        //         'email' => $subscriber->email
+        //     ]
+        // ]);
 
-        return response()->json(['message' => 'Succes!'], 201);
+        return response()->json([
+            'message' => 'Succes!',
+            'was_recently_created' => $subscriber->wasRecentlyCreated
+        ], 201);
     }
 }
