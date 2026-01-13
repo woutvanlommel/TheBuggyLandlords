@@ -24,9 +24,9 @@ export class Profile implements OnInit {
 
   isChangingPassword = false;
   passwordForm = {
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: '',
+    current_password: '',
+    password: '',
+    password_confirmation: '',
   };
 
   constructor(
@@ -80,9 +80,9 @@ export class Profile implements OnInit {
     openPasswordModal() {
   // Clear the form every time we open it
   this.passwordForm = {
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: ''
+    current_password: '',
+    password: '',
+    password_confirmation: ''
   };
   this.isChangingPassword = true;
 }

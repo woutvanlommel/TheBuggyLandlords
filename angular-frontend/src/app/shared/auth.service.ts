@@ -158,10 +158,12 @@ export class AuthService {
   }
 
   updatePassword(data: any) {
-    const token = sessionStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token');
+
+    console.log('UpdatePassword is using this token:', token);
 
     const headers = new HttpHeaders({
-      'Autherization': `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
     return this.http.put(`${this.baseUrl}/user/password`, data, { headers: headers });
