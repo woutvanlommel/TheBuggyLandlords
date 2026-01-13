@@ -141,12 +141,18 @@ export class Profile implements OnInit {
         }
 
         this.isLoading = false;
+        this.cd.detectChanges();
         alert('Profielfoto succesvol bijgewerkt!');
       },
       error: (err) => {
         console.error(err);
         this.isLoading = false;
-        alert('Er is iets misgegaan bij het uploaden.');
+
+        if (err.status === 422) {
+          alert('Ongeldig bestandstype. Alleen JPG, PNG of GIF is toegestaan.');
+        } else {
+          alert ('Er is iets misgegaan bij het uploaden. Probeer het opnieuw.');
+        }
       }
     });
   }

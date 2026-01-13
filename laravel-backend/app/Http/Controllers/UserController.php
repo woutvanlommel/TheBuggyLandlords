@@ -15,7 +15,18 @@ class UserController extends Controller
 
     public function getProfile(Request $request)
     {
-        return response()->json($request->user());
+        $user = $request->user();
+
+        // Find the profile picture (Type ID 8) in our new 'documents' table
+        $avatarDoc = DB::table('document')
+            ->where('user_id', $user->id)
+            ->where('document_type_id', 8)
+            ->first();
+
+        // Add the URL to the user object temporarily
+        $user->avatar_url = $avatarDoc ? $avatarDoc->file_path : null;
+
+        return response()->json($user);
     }
 
 

@@ -17,7 +17,7 @@ class DocumentService
      * @param  string       $folder    Folder inside 'storage/app/public' (default: 'documents')
      * @return string                  The public URL of the file
      */
-    public function uploadForUser($user, UploadedFile $file, int $typeId, string $folder = 'documents')
+    public function uploadForUser($user, UploadedFile $file, int $typeId, string $folder = 'document')
     {
         // 1. GENERATE HASH NAME
         // md5_file() reads the file content and creates a 32-char signature.
@@ -33,14 +33,14 @@ class DocumentService
 
         // 3. DATABASE LOGIC (Upsert)
         // Check if this user already has this specific document type
-        $existingDoc = DB::table('documents')
+        $existingDoc = DB::table('document')
             ->where('user_id', $user->id)
             ->where('document_type_id', $typeId)
             ->first();
 
         if ($existingDoc) {
             // Update existing record
-            DB::table('documents')
+            DB::table('document')
                 ->where('id', $existingDoc->id)
                 ->update([
                     'file_path' => $publicUrl,
@@ -49,7 +49,7 @@ class DocumentService
                 ]);
         } else {
             // Create new record
-            DB::table('documents')->insert([
+            DB::table('document')->insert([
                 'user_id' => $user->id,
                 'document_type_id' => $typeId,
                 'name' => $fileName,
