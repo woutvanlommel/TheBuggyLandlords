@@ -6,37 +6,75 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-search-filter',
   imports: [CommonModule, FormsModule],
   template: `
- <div class="flex flex-col gap-6 w-full max-w-2xl p-4">
-  <div class="flex items-center gap-3">
+ <div class="flex flex-col gap-3 w-full p-4">
+  
+  <!-- Top Row: Search Input + Main Action -->
+  <div class="flex items-center gap-2">
     <div class="relative grow">
-      <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       </div>
       <input
         type="text"
         [(ngModel)]="query"
-        className="w-full bg-gray-100 border-none rounded-full py-3 pl-11 pr-4 focus:ring-2 focus:ring-black transition-all outline-none text-sm"
-        placeholder="Search anything..."
+        (keyup.enter)="onFilterClick()"
+        class="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 pl-10 pr-3 focus:ring-2 focus:ring-black/5 focus:border-black transition-all outline-none text-sm placeholder-gray-400"
+        placeholder="Search location..."
       />
     </div>
-
+    
     <button 
       (click)="onFilterClick()"
-      class="p-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors shrink-0"
+      class="p-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors shadow-sm"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="12" x2="12" y1="18" y2="22"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
     </button>
   </div>
 
-  <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+  <!-- Middle Row: Dropdowns (Compact) -->
+  <div class="grid grid-cols-2 gap-2">
+    <!-- City Select -->
+    <div class="relative">
+      <select 
+        [(ngModel)]="selectedCity"
+        (change)="onFilterClick()"
+        class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-2 pl-3 pr-8 text-xs font-medium cursor-pointer focus:border-black focus:ring-0 transition-colors"
+      >
+        <option value="">All Cities</option>
+        <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+      </select>
+      <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+
+    <!-- Sort Select -->
+    <div class="relative">
+      <select 
+        [(ngModel)]="selectedSort"
+        (change)="onFilterClick()"
+        class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-2 pl-3 pr-8 text-xs font-medium cursor-pointer focus:border-black focus:ring-0 transition-colors"
+      >
+        <option value="newest">Newest</option>
+        <option value="price_asc">Price: Low-High</option>
+        <option value="price_desc">Price: High-Low</option>
+      </select>
+      <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row: Category Pills -->
+  <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
     <button
       *ngFor="let cat of categories"
       (click)="setActiveFilter(cat)"
       [ngClass]="{
-        'bg-black text-white border-black': activeFilter === cat,
-        'bg-white text-gray-600 border-gray-200 hover:border-gray-400': activeFilter !== cat
+        'bg-black text-white border-black shadow-md': activeFilter === cat,
+        'bg-white text-gray-600 border-gray-200 hover:bg-gray-50': activeFilter !== cat
       }"
-      class="px-6 py-2 rounded-full text-xs font-medium border transition-all whitespace-nowrap"
+      class="px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-all whitespace-nowrap shrink-0"
     >
       {{ cat }}
     </button>
@@ -48,14 +86,22 @@ import { FormsModule } from '@angular/forms';
 export class SearchFilter {
   query: string = '';
   activeFilter: string = 'All';
+  selectedCity: string = '';
+  selectedSort: string = 'newest';
   
-  categories: string[] = ['All', 'Design', 'Code', 'Resources', 'UI/UX'];
+  categories: string[] = ['All', 'Kot', 'Studio', 'Apartment'];
+  cities: string[] = ['Antwerpen', 'Gent', 'Leuven', 'Brussel', 'Mechelen', 'Kortrijk'];
 
   setActiveFilter(category: string): void {
     this.activeFilter = category;
   }
 
   onFilterClick(): void {
-    console.log('Filter button clicked');
+    console.log('Filter:', {
+      query: this.query,
+      category: this.activeFilter,
+      city: this.selectedCity,
+      sort: this.selectedSort
+    });
   }
 }
