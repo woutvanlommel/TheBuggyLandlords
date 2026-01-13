@@ -192,22 +192,29 @@ import { NewsletterService } from '../../services/newsletter';
               <button
                 type="submit"
                 class="absolute right-1.5 top-1.5 h-9 w-9 bg-accent-500 rounded-full flex items-center justify-center hover:bg-accent-600 transition-colors shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                [disabled]="!userEmail"
+                [disabled]="!userEmail || isLoading"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="w-5 h-5 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                  />
-                </svg>
+                @if (isLoading) {
+                  <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                } @else {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
+                }
               </button>
             </form>
           </div>
@@ -224,6 +231,7 @@ import { NewsletterService } from '../../services/newsletter';
 })
 export class Footer {
   userEmail = '';
+  isLoading = false;
 
   constructor(private newsletterService: NewsletterService) {}
 
@@ -232,16 +240,21 @@ export class Footer {
       event.preventDefault(); //prevent form submission reload
     }
 
-    if (!this.userEmail) return;
+    if (!this.userEmail || this.isLoading) return;
+
+    this.isLoading = true;
 
     this.newsletterService.subscribe(this.userEmail).subscribe({
       next: (res) => {
         alert('Success! You are subscribed.');
         this.userEmail = '';
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Full error log:', err);
-        alert('Error: ' + (err.error?.message || 'Laravel not reachable'));
+        const errorMessage = err.error?.message || err.text || err.message || 'Subscription failed';
+        alert('Error: ' + errorMessage);
+        this.isLoading = false;
       },
     });
   }
