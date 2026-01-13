@@ -169,6 +169,19 @@ export class AuthService {
     return this.http.put(`${this.baseUrl}/user/password`, data, { headers: headers });
   }
 
+  updateAvatar(file: File) {
+    const token = sessionStorage.getItem('auth_token');
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post<{ url: string }>(`${this.baseUrl}/user/avatar`, formData, { headers: headers });
+  }
+
 
 }
 

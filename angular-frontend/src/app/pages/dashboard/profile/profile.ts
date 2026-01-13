@@ -107,6 +107,37 @@ export class Profile implements OnInit {
         }
       }
     });
+  }
+
+    onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+
+    if (file) {
+      // Optional: Check size before sending (e.g. 4MB)
+      if (file.size > 4 * 1024 * 1024) {
+        alert('Bestand is te groot (max 4MB)');
+        return;
+      }
+
+      this.uploadAvatar(file);
     }
   }
+
+  uploadAvatar(file: File) {
+    this.authService.updateAvatar(file).subscribe({
+      next: (response: any) => {
+        // Update the user object immediately so the image changes on screen
+        if (this.user) {
+          this.user.avatar_url = response.url;
+        }
+        alert('Profielfoto bijgewerkt!');
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Uploaden mislukt.');
+      }
+    });
+  }
+    }
+
 
