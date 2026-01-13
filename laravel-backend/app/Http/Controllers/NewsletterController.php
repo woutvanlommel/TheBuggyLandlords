@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Subscriber;
 use Illuminate\Support\Facades\Http;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class NewsletterController extends Controller
 {
@@ -13,7 +14,11 @@ class NewsletterController extends Controller
             'email' => 'required|email'
         ]);
 
-        $user = auth('sanctum')->user();
+        $user = null;
+        if ($token = $request->bearerToken()) {
+            $accessToken = PersonalAccessToken::findToken($token);
+            $user = $accessToken?->tokenable;
+        }
 
         // Only store the email, link to user when available
         $subscriber = Subscriber::updateOrCreate(
