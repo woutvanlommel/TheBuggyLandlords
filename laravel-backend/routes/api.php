@@ -243,4 +243,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/profile', [UserController::class, 'getProfile']);
     Route::put('/user/profile', [UserController::class, 'updateProfile']);
 
+    Route::put('/user/password', [UserController::class, 'updatePassword']);
+
 });

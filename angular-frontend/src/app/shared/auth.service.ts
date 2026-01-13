@@ -156,5 +156,17 @@ export class AuthService {
     // 3. Send the PUT request WITH the headers
     return this.http.put(`${this.baseUrl}/user/profile`, data, { headers: headers });
   }
+
+  updatePassword(data: any) {
+    const token = sessionStorage.getItem('auth_token');
+
+    const headers = new HttpHeaders({
+      'Autherization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    return this.http.put(`${this.baseUrl}/user/password`, data, { headers: headers });
+  }
+
+
 }
 

@@ -22,6 +22,13 @@ export class Profile implements OnInit {
     phone: '',
   }
 
+  isChangingPassword = false;
+  passwordForm = {
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  };
+
   constructor(
     private authService: AuthService,
     private cd: ChangeDetectorRef
@@ -67,7 +74,39 @@ export class Profile implements OnInit {
             console.error('Error updating profile:', err);
             alert('Er is een fout opgetreden bij het bijwerken van het profiel.');
           }
-    });
+      });
   }
+
+    openPasswordModal() {
+  // Clear the form every time we open it
+  this.passwordForm = {
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  };
+  this.isChangingPassword = true;
 }
+
+  closePasswordModal() {
+    this.isChangingPassword = false;
+  }
+
+  savePassword() {
+    this.authService.updatePassword(this.passwordForm).subscribe({
+      next: () => {
+        alert('Wachtwoord is gewijzigd!');
+        this.closePasswordModal();
+      },
+      error: (err) => {
+        console.error(err);
+        // Check if the backend sent a specific error message
+        if (err.error && err.error.errors && err.error.errors.current_password) {
+          alert(err.error.errors.current_password[0]); // "Huidige wachtwoord onjuist"
+        } else {
+          alert('Er is iets misgegaan. Controleer of de wachtwoorden overeenkomen.');
+        }
+      }
+    });
+    }
+  }
 
