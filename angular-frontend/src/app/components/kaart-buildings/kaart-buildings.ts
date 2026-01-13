@@ -14,19 +14,17 @@ import * as L from 'leaflet';
 import { RoomService } from '../../shared/room.service';
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { SearchFilter } from '../search-filter/search-filter';
+
 
 // ... Component decorator en styles blijven hetzelfde ...
 @Component({
   selector: 'app-kaart-buildings',
   standalone: true,
-  imports: [SearchFilter],
+  imports: [],
   template: ` 
   <div class="relative h-full w-full group">
     <!-- Search Filter Overlay - Positioned above map controls -->
-    <div class="absolute top-4 left-4 z-9999 w-full max-w-sm pointer-events-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100">
-        <app-search-filter></app-search-filter>
-    </div>
+    
 
     <!-- De Kaart -->
     <div id="map" class="h-full w-full z-10 custom-map-popups"></div>
