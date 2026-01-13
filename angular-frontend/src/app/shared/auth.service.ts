@@ -8,6 +8,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 export class AuthService {
   private baseApi = environment.apiUrl;
   private tokenKey = 'auth_token';
+  private baseUrl = 'http://127.0.0.1:8000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -140,5 +141,9 @@ export class AuthService {
 
     return this.http.get<any>(this.baseApi + 'user', { headers: headers});
     }
+
+    updateProfile(data: any) {
+      return this.http.put(`${this.baseUrl}/user/profile`, data);
   }
+}
 
