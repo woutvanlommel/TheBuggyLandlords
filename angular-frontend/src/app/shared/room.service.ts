@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,11 @@ export class RoomService {
 
   constructor(private http: HttpClient) {}
 
-  getPublicRooms(page: number = 1, limit: number = 9, highlighted: boolean = false): Observable<any> {
+  getPublicRooms(
+    page: number = 1,
+    limit: number = 9,
+    highlighted: boolean = false
+  ): Observable<any> {
     const token = sessionStorage.getItem('auth_token');
 
     let headers = new HttpHeaders();
@@ -23,9 +27,7 @@ export class RoomService {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
 
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
 
     if (highlighted) {
       params = params.set('highlighted', 'true');
@@ -52,8 +54,9 @@ export class RoomService {
     let headers = new HttpHeaders();
     if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<any[]>(this.baseApi + 'public/rooms', { headers, params }).pipe(
-      tap((rooms) => this.mapRoomsSubject.next(rooms)) // <--- Update de 'map' lijst
+    return this.http.get<any>(this.baseApi + 'public/rooms', { headers, params }).pipe(
+      tap((response: any) => this.mapRoomsSubject.next(response.data)),
+      map((response: any) => response.data) // <--- DEZE REGEL IS CRUCIAAL
     );
   }
 

@@ -17,7 +17,9 @@ import { RoomCard } from '../room-card/room-card';
       } @else if (!rooms() || rooms()?.length === 0) {
       <div>Geen highlighted kamers gevonden.</div>
       } @else {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-300 mx-auto">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-300 mx-auto py-4"
+      >
         @for (room of rooms(); track room.id) {
         <div class="w-full">
           <app-room-card [room]="room"></app-room-card>

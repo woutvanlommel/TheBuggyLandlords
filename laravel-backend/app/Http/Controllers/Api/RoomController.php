@@ -39,7 +39,9 @@ class RoomController extends Controller
 
         // $rooms = $q->take(20)->get();
 
-        $perPage = $request->input('limit', 12);
+        $defaultLimit = $request->has(['minLat', 'maxLat']) ? 500 : 12;
+
+        $perPage = $request->input('limit', $defaultLimit);
         $paginator = $q->paginate($perPage);
 
         $paginator->getCollection()->transform(function($room){
