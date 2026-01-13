@@ -6,15 +6,13 @@ import { DocumentType } from '../../models/document-type';
 import { RoomService } from '../../shared/room.service';
 import { RouterLink } from '@angular/router';
 
-
 @Component({
   selector: 'app-room-card',
   standalone: true,
   imports: [RouterLink, CommonModule],
   template: `
-    <div class="rounded-xl shadow-md my-4 max-w-md bg-white w-full">
+    <div class="rounded-xl shadow-md max-w-md bg-white w-full">
       <div class="flex flex-col gap-4 items-start relative">
-
         <button
           (click)="toggleFavorite($event)"
           class="absolute top-3 right-3 z-10 p-2 bg-white/80 hover:bg-white rounded-full shadow-sm transition-transform active:scale-95"
@@ -31,7 +29,11 @@ import { RouterLink } from '@angular/router';
             [class.text-red-500]="room?.is_favorited"
             [class.text-gray-400]="!room?.is_favorited"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+            />
           </svg>
         </button>
         @if (imageDocs.length) {
@@ -99,20 +101,20 @@ export class RoomCard implements OnInit {
     }
   }
   toggleFavorite(event: Event) {
-      event.stopPropagation(); // Prevents clicking the card from triggering other clicks (if any)
+    event.stopPropagation(); // Prevents clicking the card from triggering other clicks (if any)
 
-      if (!this.room || !this.room.id) return;
+    if (!this.room || !this.room.id) return;
 
-      this.room.is_favorited = !this.room.is_favorited;
+    this.room.is_favorited = !this.room.is_favorited;
 
-      this.roomService.toggleFavorite(this.room.id).subscribe({
-        next: (response: any) => {
-          if (this.room) {
-            this.room.is_favorited = response.is_favorited;
-            this.cdr.detectChanges();
-          }
-        },
-        error: (err: any) => console.error('Error toggling favorite:', err)
-      });
-    }
+    this.roomService.toggleFavorite(this.room.id).subscribe({
+      next: (response: any) => {
+        if (this.room) {
+          this.room.is_favorited = response.is_favorited;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err: any) => console.error('Error toggling favorite:', err),
+    });
   }
+}
