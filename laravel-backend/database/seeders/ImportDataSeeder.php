@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class ImportDataSeeder extends Seeder
 {
@@ -35,12 +36,13 @@ class ImportDataSeeder extends Seeder
 
             -- 3. Types en Faciliteiten
             INSERT INTO `complainttype` (`id`, `type`) VALUES (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
-            INSERT INTO `documenttype` (id, type) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding'), (8, 'Profielfoto');
+            INSERT INTO `documenttype` (id, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding'), (8, 'Profielfoto');
             INSERT INTO `facility` (`id`, `facility`) VALUES (1, 'Snel Internet'), (2, 'Eigen badkamer'), (3, 'Gemeenschappelijke keuken'), (4, 'Eigen keuken'), (5, 'Fietsenstalling'), (6, 'Bemeubeld'), (7, 'Tuin/Koer'), (8, 'Wasmachine aanwezig'), (9, 'Dichtbij station'), (10, 'Huisdieren toegelaten');
             INSERT INTO `condition` (`id`, `name`, `description`) VALUES (1, 'Kamer Yentl', 'Alles is inorde.'), (2, 'Kamer Alessio', 'Wc bril hangt scheef.'), (3, 'Kamer Wout', 'Isolatie raamwanden ontbreekt.');
 
             -- 4. USERS (Voorheen Account)
             -- Let op: tabelnaam 'users', kolom 'email' ipv 'mail', en 'role_id' wordt behouden
+            -- 4. USERS (Added created_at and updated_at)
             INSERT INTO `users` (`id`, `name`, `fname`, `password`, `phone`, `email`, `credits`, `role_id`, `created_at`, `updated_at`) VALUES
             (1, 'Peeters', 'Lotte', '$2y$10$dummyhash', '0470123456', 'lotte.peeters@student.be', 100, 1, NOW(), NOW()),
             (2, 'Janssens', 'Robbe', '$2y$10$dummyhash', '0470123457', 'robbe.janssens@student.be', 200, 1, NOW(), NOW()),
@@ -205,7 +207,7 @@ class ImportDataSeeder extends Seeder
             (1, 1, 1), (2, 5, 2), (3, 8, 5);
 
             -- 10. Berichten (Met sender_id en recipient_id)
-            INSERT INTO messages (sender_id, recipient_id, content, is_read, created_at, updated_at) VALUES
+            INSERT INTO `messages` (sender_id, recipient_id, content, is_read, created_at, updated_at) VALUES
             (1, 2, 'Welcome to the building! Please read the attached rules.', 1, '2023-10-01 09:00:00', '2023-10-01 09:05:00'),
             (1, 2, 'Just a reminder that rent is due on Friday.', 0, '2023-10-25 10:30:00', '2023-10-25 10:30:00'),
             (1, 3, 'Maintenance will be checking the fire alarms tomorrow at 2 PM.', 0, '2023-10-26 14:15:00', '2023-10-26 14:15:00'),
