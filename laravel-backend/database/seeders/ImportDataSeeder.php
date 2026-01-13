@@ -35,54 +35,55 @@ class ImportDataSeeder extends Seeder
 
             -- 3. Types en Faciliteiten
             INSERT INTO `complainttype` (`id`, `type`) VALUES (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
-            INSERT INTO `documenttype` (`id`, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding');
+            INSERT INTO documenttype (id, type) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding'), (8, 'Profielfoto');
             INSERT INTO `facility` (`id`, `facility`) VALUES (1, 'Snel Internet'), (2, 'Eigen badkamer'), (3, 'Gemeenschappelijke keuken'), (4, 'Eigen keuken'), (5, 'Fietsenstalling'), (6, 'Bemeubeld'), (7, 'Tuin/Koer'), (8, 'Wasmachine aanwezig'), (9, 'Dichtbij station'), (10, 'Huisdieren toegelaten');
             INSERT INTO `condition` (`id`, `name`, `description`) VALUES (1, 'Kamer Yentl', 'Alles is inorde.'), (2, 'Kamer Alessio', 'Wc bril hangt scheef.'), (3, 'Kamer Wout', 'Isolatie raamwanden ontbreekt.');
 
             -- 4. USERS (Voorheen Account)
             -- Let op: tabelnaam 'users', kolom 'email' ipv 'mail', en 'role_id' wordt behouden
-            INSERT INTO `users` (`id`, `name`, `fname`, `password`, `phone`, `email`, `credits`, `role_id`) VALUES
-            (1, 'Peeters', 'Lotte', '$2y$10$dummyhash', '0470123456', 'lotte.peeters@student.be', 100, 1),
-            (2, 'Janssens', 'Robbe', '$2y$10$dummyhash', '0470123457', 'robbe.janssens@student.be', 200, 1),
-            (3, 'Maes', 'Noah', '$2y$10$dummyhash', '0470123458', 'noah.maes@student.be', 150, 1),
-            (4, 'Jacobs', 'Emma', '$2y$10$dummyhash', '0470123459', 'emma.jacobs@student.be', 80, 1),
-            (5, 'Mertens', 'Arthur', '$2y$10$dummyhash', '0470123460', 'arthur.mertens@student.be', 120, 1),
-            (6, 'Willems', 'Mila', '$2y$10$dummyhash', '0470123461', 'mila.willems@student.be', 90, 1),
-            (7, 'Claes', 'Liam', '$2y$10$dummyhash', '0470123462', 'liam.claes@student.be', 110, 1),
-            (8, 'Goossens', 'Olivia', '$2y$10$dummyhash', '0470123463', 'olivia.goossens@student.be', 75, 1),
-            (9, 'Wouters', 'Louis', '$2y$10$dummyhash', '0470123464', 'louis.wouters@student.be', 60, 1),
-            (10, 'De Smet', 'Louise', '$2y$10$dummyhash', '0470123465', 'louise.desmet@student.be', 95, 1),
-            (11, 'Vermeulen', 'Lucas', '$2y$10$dummyhash', '0470123466', 'lucas.vermeulen@student.be', 130, 1),
-            (12, 'Pauwels', 'Elise', '$2y$10$dummyhash', '0470123467', 'elise.pauwels@student.be', 85, 1),
-            (13, 'Dubois', 'Adam', '$2y$10$dummyhash', '0470123468', 'adam.dubois@student.be', 140, 1),
-            (14, 'Hermans', 'Marie', '$2y$10$dummyhash', '0470123469', 'marie.hermans@student.be', 70, 1),
-            (15, 'Michiels', 'Jules', '$2y$10$dummyhash', '0470123470', 'jules.michiels@student.be', 160, 1),
-            (16, 'Martens', 'Ella', '$2y$10$dummyhash', '0470123471', 'ella.martens@student.be', 105, 1),
-            (17, 'Vandenberghe', 'Victor', '$2y$10$dummyhash', '0470123472', 'victor.vandenberghe@student.be', 115, 1),
-            (18, 'Desmet', 'Julie', '$2y$10$dummyhash', '0470123473', 'julie.desmet@student.be', 125, 1),
-            (19, 'De Backer', 'Gabriel', '$2y$10$dummyhash', '0470123474', 'gabriel.debacker@student.be', 135, 1),
-            (20, 'Lemmens', 'Sarah', '$2y$10$dummyhash', '0470123475', 'sarah.lemmens@student.be', 145, 1),
-            (21, 'Verstraete', 'Mohamed', '$2y$10$dummyhash', '0470123476', 'mohamed.verstraete@student.be', 155, 1),
-            (22, 'D\'hondt', 'Yasmine', '$2y$10$dummyhash', '0470123477', 'yasmine.dhondt@student.be', 165, 1),
-            (23, 'Van Damme', 'Thomas', '$2y$10$dummyhash', '0470123478', 'thomas.vandamme@student.be', 175, 1),
-            (24, 'Segers', 'Amber', '$2y$10$dummyhash', '0470123479', 'amber.segers@student.be', 185, 1),
-            (25, 'Cornelis', 'Nathan', '$2y$10$dummyhash', '0470123480', 'nathan.cornelis@student.be', 195, 1),
-            (26, 'Declercq', 'Fien', '$2y$10$dummyhash', '0470123481', 'fien.declercq@student.be', 205, 1),
-            (27, 'Brouwers', 'Seppe', '$2y$10$dummyhash', '0470123482', 'seppe.brouwers@student.be', 215, 1),
-            (28, 'De Clercq', 'Noor', '$2y$10$dummyhash', '0470123483', 'noor.declercq@student.be', 225, 1),
-            (29, 'Thys', 'Mats', '$2y$10$dummyhash', '0470123484', 'mats.thys@student.be', 235, 1),
-            (30, 'Govaerts', 'Lena', '$2y$10$dummyhash', '0470123485', 'lena.govaerts@student.be', 245, 1),
-            (31, 'Peeters', 'Kobe', '$2y$10$dummyhash', '0480112233', 'kobe.peeters@immo.be', 255, 2),
-            (32, 'Janssens', 'Anna', '$2y$10$dummyhash', '0480112234', 'anna.janssens@kotbaas.be', 265, 2),
-            (33, 'Maes', 'Alexander', '$2y$10$dummyhash', '0480112235', 'alexander.maes@rent.be', 275, 2),
-            (34, 'Jacobs', 'Elena', '$2y$10$dummyhash', '0480112236', 'elena.jacobs@invest.be', 285, 2),
-            (35, 'Mertens', 'Mathis', '$2y$10$dummyhash', '0480112237', 'mathis.mertens@landlord.be', 295, 2),
-            (36, 'Willems', 'Hanne', '$2y$10$dummyhash', '0480112238', 'hanne.willems@studios.be', 305, 2),
-            (37, 'Claes', 'Elias', '$2y$10$dummyhash', '0480112239', 'elias.claes@koten.be', 315, 2),
-            (38, 'Goossens', 'Oona', '$2y$10$dummyhash', '0480112240', 'oona.goossens@kamers.be', 325, 2),
-            (39, 'Wouters', 'Arne', '$2y$10$dummyhash', '0490998877', 'admin.arne@app.be', 335, 3),
-            (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3),
-            (41, 'test', 'tester', '$2y$12$Bvai5AbRmpewVj6qwCy4g.GnzS7Fbu./6IxBkQBAvyOuc0Lw2FpXO', '0412345678', 'test@test.com', 5, 3);
+            INSERT INTO `users` (`id`, `name`, `fname`, `password`, `phone`, `email`, `credits`, `role_id`, `created_at`, `updated_at`) VALUES
+            (1, 'Peeters', 'Lotte', '$2y$10$dummyhash', '0470123456', 'lotte.peeters@student.be', 100, 1, NOW(), NOW()),
+            (2, 'Janssens', 'Robbe', '$2y$10$dummyhash', '0470123457', 'robbe.janssens@student.be', 200, 1, NOW(), NOW()),
+            (3, 'Maes', 'Noah', '$2y$10$dummyhash', '0470123458', 'noah.maes@student.be', 150, 1, NOW(), NOW()),
+            (4, 'Jacobs', 'Emma', '$2y$10$dummyhash', '0470123459', 'emma.jacobs@student.be', 80, 1, NOW(), NOW()),
+            (5, 'Mertens', 'Arthur', '$2y$10$dummyhash', '0470123460', 'arthur.mertens@student.be', 120, 1, NOW(), NOW()),
+            (6, 'Willems', 'Mila', '$2y$10$dummyhash', '0470123461', 'mila.willems@student.be', 90, 1, NOW(), NOW()),
+            (7, 'Claes', 'Liam', '$2y$10$dummyhash', '0470123462', 'liam.claes@student.be', 110, 1, NOW(), NOW()),
+            (8, 'Goossens', 'Olivia', '$2y$10$dummyhash', '0470123463', 'olivia.goossens@student.be', 75, 1, NOW(), NOW()),
+            (9, 'Wouters', 'Louis', '$2y$10$dummyhash', '0470123464', 'louis.wouters@student.be', 60, 1, NOW(), NOW()),
+            (10, 'De Smet', 'Louise', '$2y$10$dummyhash', '0470123465', 'louise.desmet@student.be', 95, 1, NOW(), NOW()),
+            (11, 'Vermeulen', 'Lucas', '$2y$10$dummyhash', '0470123466', 'lucas.vermeulen@student.be', 130, 1, NOW(), NOW()),
+            (12, 'Pauwels', 'Elise', '$2y$10$dummyhash', '0470123467', 'elise.pauwels@student.be', 85, 1, NOW(), NOW()),
+            (13, 'Dubois', 'Adam', '$2y$10$dummyhash', '0470123468', 'adam.dubois@student.be', 140, 1, NOW(), NOW()),
+            (14, 'Hermans', 'Marie', '$2y$10$dummyhash', '0470123469', 'marie.hermans@student.be', 70, 1, NOW(), NOW()),
+            (15, 'Michiels', 'Jules', '$2y$10$dummyhash', '0470123470', 'jules.michiels@student.be', 160, 1, NOW(), NOW()),
+            (16, 'Martens', 'Ella', '$2y$10$dummyhash', '0470123471', 'ella.martens@student.be', 105, 1, NOW(), NOW()),
+            (17, 'Vandenberghe', 'Victor', '$2y$10$dummyhash', '0470123472', 'victor.vandenberghe@student.be', 115, 1, NOW(), NOW()),
+            (18, 'Desmet', 'Julie', '$2y$10$dummyhash', '0470123473', 'julie.desmet@student.be', 125, 1, NOW(), NOW()),
+            (19, 'De Backer', 'Gabriel', '$2y$10$dummyhash', '0470123474', 'gabriel.debacker@student.be', 135, 1, NOW(), NOW()),
+            (20, 'Lemmens', 'Sarah', '$2y$10$dummyhash', '0470123475', 'sarah.lemmens@student.be', 145, 1, NOW(), NOW()),
+            (21, 'Verstraete', 'Mohamed', '$2y$10$dummyhash', '0470123476', 'mohamed.verstraete@student.be', 155, 1, NOW(), NOW()),
+            (22, 'hondt', 'Yasmine', '$2y$10$dummyhash', '0470123477', 'yasmine.dhondt@student.be', 165, 1, NOW(), NOW()),
+            (23, 'Van Damme', 'Thomas', '$2y$10$dummyhash', '0470123478', 'thomas.vandamme@student.be', 175, 1, NOW(), NOW()),
+            (24, 'Segers', 'Amber', '$2y$10$dummyhash', '0470123479', 'amber.segers@student.be', 185, 1, NOW(), NOW()),
+            (25, 'Cornelis', 'Nathan', '$2y$10$dummyhash', '0470123480', 'nathan.cornelis@student.be', 195, 1, NOW(), NOW()),
+            (26, 'Declercq', 'Fien', '$2y$10$dummyhash', '0470123481', 'fien.declercq@student.be', 205, 1, NOW(), NOW()),
+            (27, 'Brouwers', 'Seppe', '$2y$10$dummyhash', '0470123482', 'seppe.brouwers@student.be', 215, 1, NOW(), NOW()),
+            (28, 'De Clercq', 'Noor', '$2y$10$dummyhash', '0470123483', 'noor.declercq@student.be', 225, 1, NOW(), NOW()),
+            (29, 'Thys', 'Mats', '$2y$10$dummyhash', '0470123484', 'mats.thys@student.be', 235, 1, NOW(), NOW()),
+            (30, 'Govaerts', 'Lena', '$2y$10$dummyhash', '0470123485', 'lena.govaerts@student.be', 245, 1, NOW(), NOW()),
+            (31, 'Peeters', 'Kobe', '$2y$10$dummyhash', '0480112233', 'kobe.peeters@immo.be', 255, 2, NOW(), NOW()),
+            (32, 'Janssens', 'Anna', '$2y$10$dummyhash', '0480112234', 'anna.janssens@kotbaas.be', 265, 2, NOW(), NOW()),
+            (33, 'Maes', 'Alexander', '$2y$10$dummyhash', '0480112235', 'alexander.maes@rent.be', 275, 2, NOW(), NOW()),
+            (34, 'Jacobs', 'Elena', '$2y$10$dummyhash', '0480112236', 'elena.jacobs@invest.be', 285, 2, NOW(), NOW()),
+            (35, 'Mertens', 'Mathis', '$2y$10$dummyhash', '0480112237', 'mathis.mertens@landlord.be', 295, 2, NOW(), NOW()),
+            (36, 'Willems', 'Hanne', '$2y$10$dummyhash', '0480112238', 'hanne.willems@studios.be', 305, 2, NOW(), NOW()),
+            (37, 'Claes', 'Elias', '$2y$10$dummyhash', '0480112239', 'elias.claes@koten.be', 315, 2, NOW(), NOW()),
+            (38, 'Goossens', 'Oona', '$2y$10$dummyhash', '0480112240', 'oona.goossens@kamers.be', 325, 2, NOW(), NOW()),
+            (39, 'Wouters', 'Arne', '$2y$10$dummyhash', '0490998877', 'admin.arne@app.be', 335, 3, NOW(), NOW()),
+            (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3, NOW(), NOW()),
+            (41, 'test', 'tester', '$2y$12$Bvai5AbRmpewVj6qwCy4g.GnzS7Fbu./6IxBkQBAvyOuc0Lw2FpXO', '0412345678', 'test@test.com', 5, 3, NOW(), NOW());
+
 
             -- 5. Gebouwen (Met user_id/eigenaar)
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`, `user_id`) VALUES
