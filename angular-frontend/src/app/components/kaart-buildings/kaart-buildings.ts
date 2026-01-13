@@ -15,11 +15,17 @@ import { RoomService } from '../../shared/room.service';
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
+
 // ... Component decorator en styles blijven hetzelfde ...
 @Component({
   selector: 'app-kaart-buildings',
   standalone: true,
-  template: ` <div class="relative h-full w-full group">
+  imports: [],
+  template: ` 
+  <div class="relative h-full w-full group">
+    <!-- Search Filter Overlay - Positioned above map controls -->
+    
+
     <!-- De Kaart -->
     <div id="map" class="h-full w-full z-10 custom-map-popups"></div>
 
