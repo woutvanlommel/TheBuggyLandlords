@@ -5,6 +5,9 @@
 <div *ngIf="!isLoading && user" class="grid gap-6 lg:grid-cols-3">
 
   <article class="lg:col-span-1 bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-3xl p-6 shadow-xl flex flex-col items-center text-center">
+    <p style="color: red; font-weight: bold;">
+      DEBUG URL: {{ user.avatar_url || 'No URL Found' }}
+    </p>
     <div class="relative mb-4">
       <img
         [src]="user.avatar_url

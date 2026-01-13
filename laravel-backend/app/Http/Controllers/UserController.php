@@ -17,6 +17,10 @@ class UserController extends Controller
     {
         $user = $request->user();
 
+        $debugCheck = DB::table('document')
+        ->where('user_id', $user->id)
+        ->get();
+
         // Find the profile picture (Type ID 8) in our new 'documents' table
         $avatarDoc = DB::table('document')
             ->where('user_id', $user->id)
