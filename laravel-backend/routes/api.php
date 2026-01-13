@@ -12,6 +12,7 @@ use App\Models\Contract;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Api\RoomController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -236,5 +237,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- FAVORIETEN BEHEREN ---
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
+
+    // --- Voor profile tab ---
+
+    Route::get('/user/profile', [UserController::class, 'getProfile']);
+    Route::put('/user/profile', [UserController::class, 'updateProfile']);
+
+    Route::put('/user/password', [UserController::class, 'updatePassword']);
 
 });
