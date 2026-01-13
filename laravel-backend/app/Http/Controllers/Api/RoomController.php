@@ -25,6 +25,10 @@ class RoomController extends Controller
             $q->where('building_id', $request->building_id);
         }
 
+        if($request->has('highlighted') && $request->highlighted === 'true') {
+            $q->where('is_highlighted', true);
+        }
+
         // Bounding box filter: minLat, maxLat, minLng, maxLng
         if ($request->has(['minLat','maxLat','minLng','maxLng'])) {
             $q->whereHas('building', function ($b) use ($request) {
@@ -33,9 +37,14 @@ class RoomController extends Controller
             });
         }
 
-        $rooms = $q->take(20)->get();
+        // $rooms = $q->take(20)->get();
 
-        $rooms = $rooms->map(function ($room) {
+        $defaultLimit = $request->has(['minLat', 'maxLat']) ? 500 : 12;
+
+        $perPage = $request->input('limit', $defaultLimit);
+        $paginator = $q->paginate($perPage);
+
+        $paginator->getCollection()->transform(function($room){
             $roomArray = $room->toArray();
 
             if ($room->building) {
@@ -57,7 +66,7 @@ class RoomController extends Controller
             return $roomArray;
         });
 
-        return response()->json($rooms);
+        return response()->json($paginator);
     }
 
     /**
