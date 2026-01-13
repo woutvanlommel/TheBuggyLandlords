@@ -36,13 +36,20 @@ class ImportDataSeeder extends Seeder
 
             -- 3. Types en Faciliteiten
             INSERT INTO `complainttype` (`id`, `type`) VALUES (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
+<<<<<<< HEAD
             INSERT INTO `documenttype` (`id`, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding'), (8, 'Profielfoto');
+=======
+            INSERT INTO `documenttype` (id, type) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding'), (8, 'Profielfoto');
+>>>>>>> 86d251a2347d2b78de8d787f2d1da85a59dd410f
             INSERT INTO `facility` (`id`, `facility`) VALUES (1, 'Snel Internet'), (2, 'Eigen badkamer'), (3, 'Gemeenschappelijke keuken'), (4, 'Eigen keuken'), (5, 'Fietsenstalling'), (6, 'Bemeubeld'), (7, 'Tuin/Koer'), (8, 'Wasmachine aanwezig'), (9, 'Dichtbij station'), (10, 'Huisdieren toegelaten');
             INSERT INTO `condition` (`id`, `name`, `description`) VALUES (1, 'Kamer Yentl', 'Alles is inorde.'), (2, 'Kamer Alessio', 'Wc bril hangt scheef.'), (3, 'Kamer Wout', 'Isolatie raamwanden ontbreekt.');
 
             -- 4. USERS (Voorheen Account)
             -- Let op: tabelnaam 'users', kolom 'email' ipv 'mail', en 'role_id' wordt behouden
+<<<<<<< HEAD
             -- 4. USERS (Added created_at and updated_at)
+=======
+>>>>>>> 86d251a2347d2b78de8d787f2d1da85a59dd410f
             INSERT INTO `users` (`id`, `name`, `fname`, `password`, `phone`, `email`, `credits`, `role_id`, `created_at`, `updated_at`) VALUES
             (1, 'Peeters', 'Lotte', '$2y$10$dummyhash', '0470123456', 'lotte.peeters@student.be', 100, 1, NOW(), NOW()),
             (2, 'Janssens', 'Robbe', '$2y$10$dummyhash', '0470123457', 'robbe.janssens@student.be', 200, 1, NOW(), NOW()),
@@ -85,6 +92,10 @@ class ImportDataSeeder extends Seeder
             (39, 'Wouters', 'Arne', '$2y$10$dummyhash', '0490998877', 'admin.arne@app.be', 335, 3, NOW(), NOW()),
             (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3, NOW(), NOW()),
             (41, 'test', 'tester', '$2y$12$Bvai5AbRmpewVj6qwCy4g.GnzS7Fbu./6IxBkQBAvyOuc0Lw2FpXO', '0412345678', 'test@test.com', 5, 3, NOW(), NOW());
+<<<<<<< HEAD
+=======
+
+>>>>>>> 86d251a2347d2b78de8d787f2d1da85a59dd410f
 
             -- 5. Gebouwen (Met user_id/eigenaar)
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`, `user_id`) VALUES
@@ -93,7 +104,7 @@ class ImportDataSeeder extends Seeder
             (11, 5, '2', 1, 33), (12, 8, '33', 4, 34), (13, 9, '12A', 4, 35), (14, 10, '7', 4, 36), (15, 12, '55', 7, 37),
             (16, 13, '89', 7, 38), (17, 14, '21', 7, 31), (18, 15, '6', 7, 32), (19, 17, '10', 10, 33), (20, 18, '44', 10, 34),
             (21, 19, '1', 10, 35), (22, 20, '100', 12, 36), (23, 21, '32', 15, 37), (24, 22, '14', 5, 38), (25, 23, '99', 16, 31),
-            (26, 24, '12', 17, 32), (27, 25, '77', 22, 33), (28, 26, '3', 24, 34), (29, 27, '5B', 25, 35), (30, 28, '8', 26, 36);
+            (26, 24, '12', 17, 32), (27, 25, '77', 22, 33), (28, 26, '3', 24, 34), (29, 27, '5B', 25, 35), (30, 28, '8', 26, 36), (31, 29, '15', 1, 37);
 
             -- 6. Kamers (Gebruik nu user_id ipv account_id)
             INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`, `is_highlighted`, `roomtype_id`) VALUES

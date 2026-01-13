@@ -10,6 +10,8 @@ use App\Models\Complaint;
 use App\Models\Room;
 use App\Models\Contract;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\Api\RoomController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,59 +81,14 @@ Route::post('/login', function (Request $request) {
  * Publieke lijst van beschikbare kamers (Voorbeeld)
  * Iedereen mag zien welke kamers er zijn, maar geen contracten zien.
  */
-Route::get('/public/rooms', function () {
-    // Haal kamers op, inclusief straat, plaats en afbeeldingen EN de eigenaar (via building)
-    $rooms = Room::with([
-        'building.street',
-        'building.place',
-        'building.owner',
-        'images',
-        'roomtype'
-    ])->take(20)->get();
-
-    // Voeg url-attribuut toe aan elk document in images
-    $rooms = $rooms->map(function ($room) {
-        $roomArray = $room->toArray();
-        if (isset($room->images)) {
-            $roomArray['images'] = collect($room->images)->map(function ($doc) {
-                $arr = $doc->toArray();
-                $arr['url'] = $doc->url;
-                return $arr;
-            })->all();
-        }
-        // Voeg roomtype toe
-        $roomArray['roomtype'] = $room->roomtype ? $room->roomtype->type : null;
-        return $roomArray;
-    });
-
-    return response()->json($rooms);
-});
+Route::get('/public/rooms', [RoomController::class, 'index']);
 
 /**
  * Publieke detailroute voor één kamer
  */
-Route::get('/public/rooms/{id}', function ($id) {
-    $room = Room::with([
-        'building.street',
-        'building.place',
-        'building.owner',
-        'images',
-        'roomtype'
-    ])->findOrFail($id);
+Route::get('/public/rooms/{id}', [RoomController::class, 'show']);
 
-    $roomArray = $room->toArray();
-    if (isset($room->images)) {
-        $roomArray['images'] = collect($room->images)->map(function ($doc) {
-            $arr = $doc->toArray();
-            $arr['url'] = $doc->url;
-            return $arr;
-        })->all();
-    }
-    $roomArray['roomtype'] = $room->roomtype ? $room->roomtype->type : null;
-
-    return response()->json($roomArray);
-});
-
+Route::post('/subscribe', [NewsletterController::class, 'subscribe']);
 
 // ========================================================================
 // 2. PROTECTED ROUTES (Token vereist via Sanctum)

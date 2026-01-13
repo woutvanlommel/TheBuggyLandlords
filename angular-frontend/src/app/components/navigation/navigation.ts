@@ -46,7 +46,7 @@ import { RouterLink } from '@angular/router';
         <!-- Desktop menu -->
         <div class="hidden md:flex justify-end items-center gap-4">
           <div class="flex items-center justify-center py-2 px-6 bg-accent rounded-md">
-            <a routerLink="/kotcompass/zoekplatform" class="text-base md:text-lg text-white"
+            <a routerLink="/kotcompass/rooms" class="text-base md:text-lg text-white"
               >Zoek je kot</a
             >
           </div>

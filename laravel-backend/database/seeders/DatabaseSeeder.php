@@ -22,6 +22,10 @@ class DatabaseSeeder extends Seeder
             RoomSeeder::class,
         ]);
 
+        $this->call([
+            BuildingLocationSeeder::class,
+        ]);
+
 
         $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
         $room = \App\Models\Room::first();

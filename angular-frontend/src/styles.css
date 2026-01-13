@@ -2,12 +2,13 @@
 
 @import 'tailwindcss';
 @config "../tailwind.config.ts";
+@import 'leaflet/dist/leaflet.css';
 
-html, body{
+html,
+body {
   scroll-behavior: smooth !important;
 }
 
-.custom-scrollbar{
+.custom-scrollbar {
   scroll-behavior: smooth !important;
 }
-
