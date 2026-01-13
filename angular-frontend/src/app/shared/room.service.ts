@@ -15,7 +15,7 @@ export class RoomService {
 
   constructor(private http: HttpClient) {}
 
-  getPublicRooms() {
+  getPublicRooms(page: number = 1, limit: number = 9, highlighted: boolean = false): Observable<any> {
     const token = sessionStorage.getItem('auth_token');
 
     let headers = new HttpHeaders();
@@ -23,7 +23,15 @@ export class RoomService {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
 
-    return this.http.get<any[]>(this.baseApi + 'public/rooms', { headers: headers });
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (highlighted) {
+      params = params.set('highlighted', 'true');
+    }
+
+    return this.http.get<any>(this.baseApi + 'public/rooms', { headers: headers, params: params });
   }
 
   // Gebruikt door ZOEK pagina (Update de state voor de map)
