@@ -109,13 +109,16 @@ export class Profile implements OnInit {
     });
   }
 
-    onFileSelected(event: any) {
+    // ... inside ProfileComponent class ...
+
+  // 1. Function triggered when user selects a file
+  onFileSelected(event: any) {
     const file: File = event.target.files[0];
 
     if (file) {
-      // Optional: Check size before sending (e.g. 4MB)
+      // Optional: Check if file is too big (e.g. > 4MB)
       if (file.size > 4 * 1024 * 1024) {
-        alert('Bestand is te groot (max 4MB)');
+        alert('Het bestand is te groot. Maximaal 4MB.');
         return;
       }
 
@@ -123,21 +126,31 @@ export class Profile implements OnInit {
     }
   }
 
+  // 2. Function to send file to backend
   uploadAvatar(file: File) {
+    // Show a loading state if you want (optional)
+    this.isLoading = true;
+
     this.authService.updateAvatar(file).subscribe({
-      next: (response: any) => {
-        // Update the user object immediately so the image changes on screen
+      next: (response) => {
+        // SUCCESS: Update the user's avatar URL immediately on screen
         if (this.user) {
+          // If the URL is relative (/storage/...), prepend the domain
+          // If your backend already sends the full http link, remove the prefix part
           this.user.avatar_url = response.url;
         }
-        alert('Profielfoto bijgewerkt!');
+
+        this.isLoading = false;
+        alert('Profielfoto succesvol bijgewerkt!');
       },
       error: (err) => {
         console.error(err);
-        alert('Uploaden mislukt.');
+        this.isLoading = false;
+        alert('Er is iets misgegaan bij het uploaden.');
       }
     });
   }
+
     }
 
 

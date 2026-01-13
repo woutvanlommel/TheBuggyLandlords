@@ -245,4 +245,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/user/password', [UserController::class, 'updatePassword']);
 
+    Route::post('/user/avatar', [UserController::class, 'updateAvatar']);
+
 });

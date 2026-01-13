@@ -172,13 +172,16 @@ export class AuthService {
   updateAvatar(file: File) {
     const token = sessionStorage.getItem('auth_token');
 
+    // 1. Create a "virtual form" to hold the file
     const formData = new FormData();
-    formData.append('avatar', file);
+    formData.append('avatar', file); // 'avatar' must match the name in Laravel validation
 
+    // 2. Set headers (Note: DO NOT set Content-Type manually for file uploads!)
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
 
+    // 3. Post to the route we made
     return this.http.post<{ url: string }>(`${this.baseUrl}/user/avatar`, formData, { headers: headers });
   }
 

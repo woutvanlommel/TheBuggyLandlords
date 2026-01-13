@@ -7,9 +7,11 @@
   <article class="lg:col-span-1 bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-3xl p-6 shadow-xl flex flex-col items-center text-center">
     <div class="relative mb-4">
       <img
-        [src]="'https://ui-avatars.com/api/?name=' + (user.name || 'User') + '&background=0D9488&color=fff&size=128'"
+        [src]="user.avatar_url
+          ? 'http://127.0.0.1:8000' + user.avatar_url
+          : 'https://ui-avatars.com/api/?name=' + (user.name || 'User') + '&background=0D9488&color=fff&size=128'"
         alt="Avatar"
-        class="w-32 h-32 rounded-full border-4 border-white shadow-md"
+        class="w-32 h-32 rounded-full border-4 border-white shadow-md object-cover"
       >
       <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
     </div>
@@ -31,6 +33,7 @@
     Bewerk Foto
   </button>
 </div>
+  </article>
 
   <article class="lg:col-span-2 bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-3xl p-8 shadow-xl">
     <div class="flex items-center justify-between mb-6">
