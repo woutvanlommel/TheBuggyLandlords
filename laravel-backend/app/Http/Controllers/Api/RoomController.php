@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Room;
+use App\Models\Street;
+use App\Models\Place;
 use Illuminate\Http\Request;
 
 class RoomController extends Controller
@@ -25,8 +27,54 @@ class RoomController extends Controller
             $q->where('building_id', $request->building_id);
         }
 
-        if($request->has('highlighted') && $request->highlighted === 'true') {
+        if ($request->has('highlighted') && $request->highlighted === 'true') {
             $q->where('is_highlighted', true);
+        }
+
+        // --- NEW FILTERS ---
+
+        // 1. City Filter
+        if ($request->filled('city') && $request->city !== 'All Cities' && $request->city !== '') {
+            $q->whereHas('building.place', function($query) use ($request) {
+                $query->where('place', $request->city);
+            });
+        }
+
+        // 2. Category (RoomType) Filter
+        if ($request->filled('category') && $request->category !== 'All') {
+            $q->whereHas('roomtype', function($query) use ($request) {
+                $query->where('type', $request->category);
+            });
+        }
+
+        // 3. Text Search (Street or City)
+        if ($request->filled('query')) {
+            $search = $request->input('query');
+            $q->whereHas('building', function($b) use ($search) {
+                $b->whereHas('street', function($s) use ($search) {
+                    $s->where('street', 'LIKE', "%{$search}%");
+                })->orWhereHas('place', function($p) use ($search) {
+                    $p->where('place', 'LIKE', "%{$search}%");
+                });
+            });
+        }
+
+        // 4. Sorting
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'price_asc':
+                    $q->orderBy('price', 'asc');
+                    break;
+                case 'price_desc':
+                    $q->orderBy('price', 'desc');
+                    break;
+                case 'newest':
+                default:
+                    $q->orderBy('id', 'desc');
+                    break;
+            }
+        } else {
+            $q->orderBy('id', 'desc');
         }
 
         // Bounding box filter: minLat, maxLat, minLng, maxLng
@@ -67,6 +115,68 @@ class RoomController extends Controller
         });
 
         return response()->json($paginator);
+    }
+
+
+    public function searchSuggestions(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query || strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        // Search streets
+        $streets = Street::where('street', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->pluck('street')
+            ->toArray();
+
+        // Search places
+        $places = Place::where('place', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->pluck('place')
+            ->toArray();
+
+        // Merge and unique
+        $suggestions = array_unique(array_merge($streets, $places));
+        
+        // Return as simple list
+        return response()->json(array_values($suggestions));
+    }
+
+    public function searchLocation(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query) return response()->json(null, 404);
+
+        // 1. Try Place match
+        $place = Place::where('place', $query)->first();
+        if ($place) {
+            // Find a building in this place to get coords
+            $building = \App\Models\Building::where('place_id', $place->id)->whereNotNull('latitude')->first();
+            if ($building) {
+                return response()->json([
+                    'lat' => $building->latitude,
+                    'lng' => $building->longitude,
+                    'zoom' => 13
+                ]);
+            }
+        }
+
+        // 2. Try Street match
+        $street = Street::where('street', $query)->first();
+        if ($street) {
+            $building = \App\Models\Building::where('street_id', $street->id)->whereNotNull('latitude')->first();
+            if ($building) {
+                return response()->json([
+                    'lat' => $building->latitude,
+                    'lng' => $building->longitude,
+                    'zoom' => 15
+                ]);
+            }
+        }
+
+        return response()->json(null, 404);
     }
 
     /**

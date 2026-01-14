@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, map } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +12,26 @@ export class RoomService {
   // 1. Voor de zoekpagina (Map updates)
   private mapRoomsSubject = new BehaviorSubject<any[]>([]);
   public mapRooms$ = this.mapRoomsSubject.asObservable();
+  
+  // Filter state
+  private currentFilters: any = {};
+  public refreshTrigger$ = new Subject<void>();
+  
+  // Map Center control
+  private mapCenterSubject = new Subject<{lat: number, lng: number, zoom: number}>();
+  public mapCenter$ = this.mapCenterSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+
+  updateFilters(filters: any) {
+    this.currentFilters = { ...this.currentFilters, ...filters };
+    this.refreshTrigger$.next();
+  }
+
+  setMapCenter(lat: number, lng: number, zoom: number = 13) {
+    this.mapCenterSubject.next({lat, lng, zoom});
+  }
+
 
   getPublicRooms(
     page: number = 1,
@@ -43,11 +61,16 @@ export class RoomService {
     minLng: number,
     maxLng: number
   ): Observable<any[]> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('minLat', minLat.toString())
       .set('maxLat', maxLat.toString())
       .set('minLng', minLng.toString())
       .set('maxLng', maxLng.toString());
+
+    if (this.currentFilters.query) params = params.set('query', this.currentFilters.query);
+    if (this.currentFilters.category) params = params.set('category', this.currentFilters.category);
+    if (this.currentFilters.city) params = params.set('city', this.currentFilters.city);
+    if (this.currentFilters.sort) params = params.set('sort', this.currentFilters.sort);
 
     // ... headers logica ...
     const token = sessionStorage.getItem('auth_token');
@@ -62,6 +85,16 @@ export class RoomService {
 
   getRoomById(id: number) {
     return this.http.get<any>(`${this.baseApi}public/rooms/${id}`);
+  }
+
+  getSearchSuggestions(query: string): Observable<string[]> {
+    const params = new HttpParams().set('query', query);
+    return this.http.get<string[]>(`${this.baseApi}public/search-suggestions`, { params });
+  }
+
+  getSearchLocation(query: string): Observable<any> {
+    const params = new HttpParams().set('query', query);
+    return this.http.get<any>(`${this.baseApi}public/search-location`, { params });
   }
 
   toggleFavorite(roomId: number) {

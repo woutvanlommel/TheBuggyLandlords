@@ -82,8 +82,9 @@ Route::post('/login', function (Request $request) {
  * Publieke lijst van beschikbare kamers (Voorbeeld)
  * Iedereen mag zien welke kamers er zijn, maar geen contracten zien.
  */
-Route::get('/public/rooms', [RoomController::class, 'index']);
-
+ Route::get('/public/rooms', [RoomController::class, 'index']);
+Route::get('/public/search-suggestions', [RoomController::class, 'searchSuggestions']);
+Route::get('/public/search-location', [RoomController::class, 'searchLocation']);
 /**
  * Publieke detailroute voor één kamer
  */

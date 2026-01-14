@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RoomService } from '../../shared/room.service';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
 
 @Component({
   selector: 'app-search-filter',
@@ -9,7 +11,7 @@ import { FormsModule } from '@angular/forms';
  <div class="w-full bg-white border-b border-gray-200 p-3 lg:px-6 lg:py-3 flex flex-col lg:flex-row gap-3 lg:items-center shadow-sm z-30 relative">
   
   <!-- Group 1: Search (Takes available space) -->
-  <div class="flex items-center gap-2 w-full lg:flex-1 min-w-0">
+  <div class="flex items-center gap-2 w-full lg:flex-1 min-w-0 relative">
     <div class="relative grow text-gray-400 focus-within:text-accent transition-colors">
       <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -17,10 +19,22 @@ import { FormsModule } from '@angular/forms';
       <input
         type="text"
         [(ngModel)]="query"
+        (ngModelChange)="onSearchInput($event)"
         (keyup.enter)="onFilterClick()"
+        (blur)="onBlur()"
         class="w-full bg-gray-50 text-gray-900 border border-gray-200 rounded-xl py-2 pl-9 pr-3 focus:ring-2 focus:ring-accent focus:border-accent transition-all outline-none text-sm placeholder-gray-400"
         placeholder="Search location..."
+        autocomplete="off"
       />
+      <!-- CUSTOM AUTOCOMPLETE DROPDOWN -->
+      <div *ngIf="suggestions.length > 0 && showSuggestions" 
+           class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+        <div *ngFor="let suggestion of suggestions"
+             (click)="selectSuggestion(suggestion)" 
+             class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 font-medium">
+          {{ suggestion }}
+        </div>
+      </div>
     </div>
     
     <button 
@@ -104,15 +118,103 @@ export class SearchFilter {
   selectedCity: string = '';
   selectedSort: string = 'newest';
   
-  categories: string[] = ['All', 'Kot', 'Studio', 'Apartment'];
+  categories: string[] = ['All', 'Kamer', 'Studio', 'Appartement', 'Duplex'];
   cities: string[] = ['Antwerpen', 'Gent', 'Leuven', 'Brussel', 'Mechelen', 'Kortrijk'];
+
+  private citiesMap: {[key: string]: {lat: number, lng: number}} = {
+    'Antwerpen': {lat: 51.2194, lng: 4.4025},
+    'Gent': {lat: 51.0543, lng: 3.7174},
+    'Leuven': {lat: 50.8798, lng: 4.7005},
+    'Brussel': {lat: 50.8503, lng: 4.3517},
+    'Mechelen': {lat: 51.0259, lng: 4.4771},
+    'Kortrijk': {lat: 50.8280, lng: 3.2649}
+  };
+
+  suggestions: string[] = [];
+  showSuggestions: boolean = false;
+  private searchSubject = new Subject<string>();
+
+  constructor(private roomService: RoomService) {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (!query || query.length < 2) return of([]);
+        return this.roomService.getSearchSuggestions(query).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe(suggestions => {
+      this.suggestions = suggestions;
+      this.showSuggestions = suggestions.length > 0;
+    });
+  }
+
+  onSearchInput(value: string): void {
+    this.searchSubject.next(value);
+  }
+
+  selectSuggestion(suggestion: string): void {
+    this.query = suggestion;
+    this.showSuggestions = false;
+    this.onFilterClick();
+  }
+
+  onBlur(): void {
+    // Small delay to allow click event to fire on suggestions
+    setTimeout(() => {
+      this.showSuggestions = false;
+    }, 200);
+  }
 
   setActiveFilter(category: string): void {
     this.activeFilter = category;
+    this.onFilterClick();
   }
 
   onFilterClick(): void {
-    console.log('Filter:', {
+    // 1. If we have a query, try to center map on it first
+    if (this.query && this.query.length > 2) {
+      // Check if it's a predefined city
+      if (this.citiesMap[this.query]) {
+        const c = this.citiesMap[this.query];
+        this.roomService.setMapCenter(c.lat, c.lng);
+        this.submitFilter();
+        return;
+      }
+
+      // Try geocoding via backend
+      this.roomService.getSearchLocation(this.query).subscribe({
+        next: (loc) => {
+          if (loc) {
+            this.roomService.setMapCenter(loc.lat, loc.lng, loc.zoom);
+          }
+          this.submitFilter();
+        },
+        error: () => {
+          // If not found, just filter
+          this.submitFilter();
+        }
+      });
+      return;
+    }
+
+    // 2. Map Center if City Dropdown is selected (and no text query that overrides it)
+    if (!this.query) {
+      if (this.selectedCity && this.citiesMap[this.selectedCity]) {
+        const c = this.citiesMap[this.selectedCity];
+        this.roomService.setMapCenter(c.lat, c.lng);
+      } else if (!this.selectedCity) {
+        // All Cities -> Zoom out to show Belgium (centered on Leuven usually)
+        this.roomService.setMapCenter(50.8798, 4.7005, 8);
+      }
+    }
+
+    this.submitFilter();
+  }
+
+  submitFilter(): void {
+    this.roomService.updateFilters({
       query: this.query,
       category: this.activeFilter,
       city: this.selectedCity,
