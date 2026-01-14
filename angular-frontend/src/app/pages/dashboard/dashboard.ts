@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../shared/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -92,17 +93,32 @@ export class Dashboard implements OnInit {
   ) {}
 
   ngOnInit() {
-    // 3. LISTEN TO URL CHANGES (This fixes the navigation bug)
-    this.route.queryParams.subscribe((params) => {
-      if (this.router.url.includes('profile')) {
-        this.activeTab = 'profile';
-      } else if (this.router.url.includes('credits')) {
-        this.activeTab = 'credits';
-      } else {
-        this.activeTab = 'dashboard';
-      }
-    });
+  // A. Run immediately on load to set the correct tab
+  this.updateTabFromUrl();
+
+  // B. Listen for FUTURE navigation changes
+  this.router.events.pipe(
+    filter(event => event instanceof NavigationEnd) // Only trigger when navigation finishes
+  ).subscribe(() => {
+    this.updateTabFromUrl(); // Update the tab again
+  });
+}
+
+// Helper function to keep logic clean
+updateTabFromUrl() {
+  const currentUrl = this.router.url;
+
+  if (currentUrl.includes('/credits')) {
+    this.activeTab = 'credits';
   }
+  else if (currentUrl.includes('/profile')) {
+    this.activeTab = 'profile';
+  }
+  else {
+    // If it's not profile or credits, it must be the main dashboard/stats
+    this.activeTab = 'dashboard';
+  }
+}
 
   // 4. Update the helper to navigate instead of just setting a variable
   setActiveTab(tab: string) {
