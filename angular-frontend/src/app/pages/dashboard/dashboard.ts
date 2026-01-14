@@ -75,15 +75,6 @@ import { AuthService } from '../../shared/auth.service';
           class="bg-base-een-100/60 backdrop-blur-md border border-base-twee-300/50 shadow-2xl rounded-3xl p-6 space-y-6 relative z-20"
         >
           <router-outlet></router-outlet>
-
-          <div *ngIf="activeTab === 'instellingen'">
-            <div
-              class="p-8 text-center bg-base-een-100/50 backdrop-blur-sm rounded-xl border border-primary-100/50"
-            >
-              <h3 class="text-xl font-semibold text-base-twee-900">Instellingen</h3>
-              <p class="text-base-twee-600 mt-2">Configureer hier de applicatie.</p>
-            </div>
-          </div>
         </section>
       </main>
     </div>
@@ -105,8 +96,8 @@ export class Dashboard implements OnInit {
     this.route.queryParams.subscribe((params) => {
       if (this.router.url.includes('profile')) {
         this.activeTab = 'profile';
-      } else if (params['view'] === 'settings') {
-        this.activeTab = 'instellingen';
+      } else if (this.router.url.includes('credits')) {
+        this.activeTab = 'credits';
       } else {
         this.activeTab = 'dashboard';
       }
@@ -115,12 +106,12 @@ export class Dashboard implements OnInit {
 
   // 4. Update the helper to navigate instead of just setting a variable
   setActiveTab(tab: string) {
-    if (tab === 'instellingen') {
-      this.router.navigate(['/dashboard'], { queryParams: { view: 'settings' } });
-    } else if (tab === 'dashboard') {
+    if (tab === 'dashboard') {
       this.router.navigate(['/dashboard/stats']);
     } else if (tab === 'profile') {
       this.router.navigate(['/dashboard/profile']);
+    } else if (tab === 'credits') {
+      this.router.navigate(['/dashboard/credits']);
     }
   }
 

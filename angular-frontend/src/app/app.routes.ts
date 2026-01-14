@@ -4,6 +4,7 @@ import { RoomDetail } from './pages/room-detail/room-detail';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Profile } from './pages/dashboard/profile/profile';
 import { DashboardStats } from './pages/dashboard/dashboard-stats/dashboard-stats';
+import { Credits } from './pages/dashboard/credits/credits';
 
 export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
@@ -87,5 +88,9 @@ export const routes: Routes = [
       { path: 'profile', component: Profile },
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
     ],
+      {path: 'profile', component: Profile},
+      {path: 'credits', component: Credits},
+      {path: '', redirectTo: 'profile', pathMatch: 'full' }
+    ]
   },
 ];
