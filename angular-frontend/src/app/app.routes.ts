@@ -75,19 +75,18 @@ export const routes: Routes = [
         path: 'stats',
         component: DashboardStats,
       },
+      {
+        path: 'profile',
+        component: Profile,
+      },
+      {
+        path: 'credits',
+        component: Credits,
+      },
     ],
   },
 
   // FALLBACK (Onbekende URL -> terug naar start)
-  { path: '**', redirectTo: 'kotcompass/zoektplatform' },
-
-  {
-    path: 'dashboard',
-    component: Dashboard,
-    children: [
-      { path: 'profile', component: Profile },
-      { path: 'credits', component: Credits },
-      { path: '', redirectTo: 'profile', pathMatch: 'full' },
-    ],
-  },
+  { path: '**', redirectTo: 'kotcompass/zoekplatform' },
 ];
+
