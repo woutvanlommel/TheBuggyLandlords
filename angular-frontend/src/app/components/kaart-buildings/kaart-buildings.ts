@@ -133,6 +133,17 @@ export class KaartBuildings implements OnInit, OnDestroy {
         this.fetchRooms();
       }
     });
+
+    // SUBSCRIPTIONS FOR SEARCH/FILTER
+    this.roomService.refreshTrigger$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+        if(this.map) this.fetchRooms(); 
+    });
+
+    this.roomService.mapCenter$.pipe(takeUntil(this.destroy$)).subscribe(center => {
+        if (this.map) {
+            this.map.setView([center.lat, center.lng], center.zoom);
+        }
+    });
   }
 
   ngOnInit(): void {
