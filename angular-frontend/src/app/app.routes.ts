@@ -3,6 +3,7 @@ import { authGuard } from './shared/auth.guard';
 import { RoomDetail } from './pages/room-detail/room-detail';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Profile } from './pages/dashboard/profile/profile';
+import { Credits } from './pages/dashboard/credits/credits';
 
 export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
@@ -79,6 +80,7 @@ export const routes: Routes = [
     component: Dashboard,
     children: [
       {path: 'profile', component: Profile},
+      {path: 'credits', component: Credits},
       {path: '', redirectTo: 'profile', pathMatch: 'full' }
     ]
   },
