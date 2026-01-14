@@ -111,7 +111,7 @@ export class Dashboard implements OnInit {
   // 4. Update the helper to navigate instead of just setting a variable
   setActiveTab(tab: string) {
     if (tab === 'dashboard') {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/dashboard/dashboard-stats']);
     } else if (tab === 'profile') {
       this.router.navigate(['/dashboard/profile']);
     } else if (tab === 'credits') {
