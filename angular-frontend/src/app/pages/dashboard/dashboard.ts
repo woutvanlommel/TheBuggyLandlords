@@ -58,15 +58,15 @@ import { AuthService } from '../../shared/auth.service';
             </a>
 
             <a
-              (click)="setActiveTab('instellingen')"
+              (click)="setActiveTab('credits')"
               [ngClass]="
-                activeTab === 'instellingen'
+                activeTab === 'credits'
                   ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
                   : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'
               "
               class="px-6 py-2.5 font-semibold text-sm w-full block text-center"
             >
-              Instellingen
+              Credits
             </a>
           </div>
         </div>
