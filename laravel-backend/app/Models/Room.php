@@ -21,11 +21,12 @@ class Room extends Model
         'price',
         'building_id',
         'is_highlighted',
+        'highlight_expires_at',
     ];
 
     protected $casts = [
         'is_highlighted' => 'boolean',
-
+        'highlight_expires_at' => 'datetime',
     ];
 
 
@@ -53,7 +54,7 @@ class Room extends Model
         return $this->belongsTo(Building::class);
     }
 
-    public function roomtype()
+    public function roomType()
     {
         return $this->belongsTo(RoomType::class, 'roomtype_id');
     }
