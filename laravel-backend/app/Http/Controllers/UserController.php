@@ -17,20 +17,25 @@ class UserController extends Controller
     {
         $user = $request->user();
 
-        $debugCheck = DB::table('document')
-        ->where('user_id', $user->id)
-        ->get();
-
-        // Find the profile picture (Type ID 8) in our new 'documents' table
+        // 1. Fetch the document from the database
+        // (Make sure 'document' matches your actual table name!)
         $avatarDoc = DB::table('document')
             ->where('user_id', $user->id)
             ->where('document_type_id', 8)
             ->first();
 
-        // Add the URL to the user object temporarily
-        $user->avatar_url = $avatarDoc ? $avatarDoc->file_path : null;
+        // 2. Get the URL string
+        $url = $avatarDoc ? $avatarDoc->file_path : null;
 
-        return response()->json($user);
+        // 3. CONVERT TO ARRAY (This is the critical fix)
+        // We convert the Model to a simple Array so Laravel stops filtering data.
+        $userData = $user->toArray();
+
+        // 4. Add the URL to the Array manually
+        $userData['avatar_url'] = $url;
+
+        // 5. Send the Array, NOT the User Object
+        return response()->json($userData);
     }
 
 
