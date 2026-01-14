@@ -84,17 +84,23 @@ class ImportDataSeeder extends Seeder
             (38, 'Goossens', 'Oona', '$2y$10$dummyhash', '0480112240', 'oona.goossens@kamers.be', 325, 2, NOW(), NOW()),
             (39, 'Wouters', 'Arne', '$2y$10$dummyhash', '0490998877', 'admin.arne@app.be', 335, 3, NOW(), NOW()),
             (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3, NOW(), NOW()),
-            (41, 'test', 'tester', '$2y$12$Bvai5AbRmpewVj6qwCy4g.GnzS7Fbu./6IxBkQBAvyOuc0Lw2FpXO', '0412345678', 'test@test.com', 5, 3, NOW(), NOW());
+            (41, 'Micciche', 'Alessio', '$2y$12$hX9vntjAtmV71O0Z0qId/u.vd.Vzt09a/cPhKj9wFEMaFiXVS9tUK', '0487192277', 'alessiomicciche@outlook.com', 10, 3, NOW(), NOW()),
+            (42, 'test', 'verhuurder', '$2y$12$RnsHvS0Mnbiyrx23IWgGUuWYC4lpvOMbmlsoamBzWE6qH5AuI/bJy', '123456789', 'test@verhuurder.com', 20, 2, NOW(), NOW()),
+            (43, 'test', 'huurder', '$2y$12$RnsHvS0Mnbiyrx23IWgGUuWYC4lpvOMbmlsoamBzWE6qH5AuI/bJy', '0412345678', 'test@huurder.com', 5, 1, NOW(), NOW()),
+            (44, 'test', 'admin', '$2y$12$RnsHvS0Mnbiyrx23IWgGUuWYC4lpvOMbmlsoamBzWE6qH5AuI/bJy', '0412345678', 'test@admin.com', 20000, 3, NOW(), NOW());
 
 
-            -- 5. Gebouwen (Met user_id/eigenaar)
+           -- 5. Gebouwen (Met user_id/eigenaar)
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`, `user_id`) VALUES
             (1, 1, '12', 1, 31), (2, 2, '5A', 1, 32), (3, 6, '110', 4, 33), (4, 7, '23', 4, 34), (5, 11, '4B', 7, 35),
             (6, 16, '88', 10, 36), (7, 1, '14bis', 1, 37), (8, 6, '9', 4, 38), (9, 3, '45', 1, 31), (10, 4, '101', 1, 32),
             (11, 5, '2', 1, 33), (12, 8, '33', 4, 34), (13, 9, '12A', 4, 35), (14, 10, '7', 4, 36), (15, 12, '55', 7, 37),
             (16, 13, '89', 7, 38), (17, 14, '21', 7, 31), (18, 15, '6', 7, 32), (19, 17, '10', 10, 33), (20, 18, '44', 10, 34),
             (21, 19, '1', 10, 35), (22, 20, '100', 12, 36), (23, 21, '32', 15, 37), (24, 22, '14', 5, 38), (25, 23, '99', 16, 31),
-            (26, 24, '12', 17, 32), (27, 25, '77', 22, 33), (28, 26, '3', 24, 34), (29, 27, '5B', 25, 35), (30, 28, '8', 26, 36), (31, 29, '15', 1, 37);
+            (26, 24, '12', 17, 32), (27, 25, '77', 22, 33), (28, 26, '3', 24, 34), (29, 27, '5B', 25, 35), (30, 28, '8', 26, 36), 
+            (31, 29, '15', 1, 37),
+            -- Nieuwe buildings voor User 42:
+            (32, 16, '64', 10, 42), (33, 16, '48', 10, 42), (34, 16, '49', 10, 42), (35, 16, '6', 10, 42), (36, 16, '118', 10, 42);
 
             -- 6. Kamers (Gebruik nu user_id ipv account_id)
             INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`, `is_highlighted`, `roomtype_id`) VALUES
@@ -103,7 +109,17 @@ class ImportDataSeeder extends Seeder
             (11, '1L', 480, 4, 0, 2), (12, '1R', 480, 4, 0, 2), (13, 'Studio 1', 650, 5, 1, 1), (14, 'Studio 2', 670, 5, 0, 1), (15, 'K1', 350, 6, 0, 2),
             (16, 'K2', 360, 6, 0, 2), (17, 'K3', 350, 6, 0, 2), (18, 'K4', 370, 6, 0, 2), (19, '3.01', 510, 7, 0, 2), (20, '3.02', 510, 7, 0, 2),
             (21, '01', 440, 8, 0, 2), (22, '02', 440, 8, 0, 2), (23, 'Penthouse', 800, 9, 1, 3), (24, 'A1', 490, 10, 0, 2), (25, 'A2', 495, 10, 0, 2),
-            (26, 'B1', 505, 10, 0, 2), (27, '1.1', 425, 11, 0, 2), (28, '1.2', 425, 11, 0, 2), (29, 'Gelijkvloers', 580, 12, 0, 2), (30, 'Dakapp', 700, 13, 1, 4);
+            (26, 'B1', 505, 10, 0, 2), (27, '1.1', 425, 11, 0, 2), (28, '1.2', 425, 11, 0, 2), (29, 'Gelijkvloers', 580, 12, 0, 2), (30, 'Dakapp', 700, 13, 1, 4),
+            -- Nieuwe kamers voor Building 32 (3 kamers)
+            (31, '1.01', 450, 32, 1, 2), (32, '1.02', 460, 32, 0, 2), (33, '1.03', 440, 32, 0, 2),
+            -- Nieuwe kamers voor Building 33 (4 kamers)
+            (34, 'K1', 380, 33, 0, 2), (35, 'K2', 390, 33, 0, 2), (36, 'K3', 390, 33, 0, 2), (37, 'K4', 400, 33, 0, 2),
+            -- Nieuwe kamers voor Building 34 (3 kamers)
+            (38, 'A', 500, 34, 1, 1), (39, 'B', 490, 34, 0, 2), (40, 'C', 490, 34, 0, 2),
+            -- Nieuwe kamers voor Building 35 (4 kamers - Studio's)
+            (41, 'Studio 1', 600, 35, 1, 3), (42, 'Studio 2', 620, 35, 0, 3), (43, 'Studio 3', 610, 35, 0, 3), (44, 'Studio 4', 600, 35, 0, 3),
+            -- Nieuwe kamers voor Building 36 (3 kamers)
+            (45, 'GLV', 450, 36, 0, 2), (46, '1.01', 460, 36, 0, 2), (47, '2.01', 470, 36, 0, 2);
 
             INSERT INTO `roomtype` (`id`, `type`) VALUES
             (1, 'Studio'),
