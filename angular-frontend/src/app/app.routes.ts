@@ -86,11 +86,8 @@ export const routes: Routes = [
     component: Dashboard,
     children: [
       { path: 'profile', component: Profile },
+      { path: 'credits', component: Credits },
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
     ],
-      {path: 'profile', component: Profile},
-      {path: 'credits', component: Credits},
-      {path: '', redirectTo: 'profile', pathMatch: 'full' }
-    ]
   },
 ];
