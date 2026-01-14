@@ -79,14 +79,21 @@ export class LandlordSpotlightComponent implements OnInit {
   async loadProperties() {
     try {
       const buildings = await this.verhuurderService.getMyBuildings();
-      // Basic mapping from building to UI property
-      this.properties = buildings.map((b: any) => ({
-        id: b.id,
-        title: b.name || `${b.street} ${b.number}`,
-        address: `${b.city}, ${b.postal_code}`,
-        isSpotlightActive: !!b.is_spotlight_active,
-        image: b.image_url || 'assets/placeholder-room.jpg'
-      }));
+      // Flatten buildings to get all rooms and map them
+      this.properties = [];
+      buildings.forEach((b: any) => {
+          if (b.rooms && b.rooms.length > 0) {
+              b.rooms.forEach((r: any) => {
+                  this.properties.push({
+                      id: r.id, // Use Room ID
+                      title: `Room ${r.roomnumber} in ${b.street} ${b.housenumber}`,
+                      address: `${b.place.place} ${b.place.zipcode}`,
+                      isSpotlightActive: !!r.is_highlighted, // Use Room's highlighted status
+                      image: 'assets/placeholder-room.jpg' // Default image
+                  });
+              });
+          }
+      });
     } catch (e) {
       console.error('Failed to load landlord properties', e);
     }

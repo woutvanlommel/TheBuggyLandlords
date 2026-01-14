@@ -53,7 +53,7 @@ class Room extends Model
         return $this->belongsTo(Building::class);
     }
 
-    public function roomtype()
+    public function roomType()
     {
         return $this->belongsTo(RoomType::class, 'roomtype_id');
     }

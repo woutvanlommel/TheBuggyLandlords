@@ -248,4 +248,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/user/avatar', [UserController::class, 'updateAvatar']);
 
+    // --- CREDITS SYSTEM ---
+    Route::group(['prefix' => 'credits'], function () {
+        Route::get('/balance', [App\Http\Controllers\Api\CreditController::class, 'getBalance']);
+        Route::get('/packages', [App\Http\Controllers\Api\CreditController::class, 'getPackages']);
+        Route::post('/buy', [App\Http\Controllers\Api\CreditController::class, 'buyPackage']);
+        Route::post('/spotlight', [App\Http\Controllers\Api\CreditController::class, 'toggleSpotlight']);
+        Route::post('/unlock-chat', [App\Http\Controllers\Api\CreditController::class, 'unlockChat']);
+    });
+
 });
