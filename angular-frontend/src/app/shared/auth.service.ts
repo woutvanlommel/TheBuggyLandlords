@@ -134,7 +134,7 @@ export class AuthService {
   }
 
   getProfile() {
-    const token = sessionStorage.getItem(this.tokenKey);
+    const token = sessionStorage.getItem('auth_token');
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
     });
