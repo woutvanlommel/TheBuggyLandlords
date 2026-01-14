@@ -51,7 +51,7 @@ import { CreditService } from '../../../shared/credit.service';
         <section class="mt-8 text-center bg-primary-100 rounded-xl p-6">
            <h3 class="text-primary-800 font-bold mb-2">Need help with billing?</h3>
            <p class="text-primary-600 text-sm mb-4">Our support team is available 24/7 for payment issues.</p>
-           <button class="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-primary-700 transition">Contact Support</button>
+           <a href="mailto:KotCompass@outlook.com" class="inline-block bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-primary-700 transition">Contact Support</a>
         </section>
     </div>
   `,

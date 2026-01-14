@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, map } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface CreditPackage {
@@ -18,6 +18,13 @@ export class CreditService {
   
   private balanceSubject = new BehaviorSubject<number>(0); 
   public balance$ = this.balanceSubject.asObservable();
+
+  // Hardcoded packages as requested
+  private packages: CreditPackage[] = [
+    { id: 1, name: 'Starter', credits: 50, price: 25 },
+    { id: 2, name: 'Pro', credits: 100, price: 45 },
+    { id: 3, name: 'Enterprise', credits: 500, price: 200 }
+  ];
 
   constructor(private http: HttpClient) {
     this.refreshBalance();
@@ -37,7 +44,7 @@ export class CreditService {
   }
 
   getPackages(): Observable<CreditPackage[]> {
-    return this.http.get<CreditPackage[]>(`${this.apiUrl}/packages`);
+    return of(this.packages);
   }
 
   buyPackage(packageId: number): Observable<boolean> {
