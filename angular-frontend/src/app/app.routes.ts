@@ -3,6 +3,7 @@ import { authGuard } from './shared/auth.guard';
 import { RoomDetail } from './pages/room-detail/room-detail';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Profile } from './pages/dashboard/profile/profile';
+import { DashboardStats } from './pages/dashboard/dashboard-stats/dashboard-stats';
 import { Credits } from './pages/dashboard/credits/credits';
 
 export const routes: Routes = [
@@ -65,20 +66,28 @@ export const routes: Routes = [
     title: 'Mijn Dashboard',
     // 2. Kinderen (Sub-routes): Erven automatisch de beveiliging van de ouder (dashboard)
     children: [
-      // Voorbeeld: /dashboard/rooms
-      // { path: 'faq',
-      //   loadComponent: () => import('./pages/faq/faq').then(m => m.Faq),
-      //   title: 'Veelgestelde vragen',
-      // },
+      {
+        path: '',
+        redirectTo: 'stats',
+        pathMatch: 'full',
+      },
+      {
+        path: 'stats',
+        component: DashboardStats,
+      },
     ],
   },
 
   // FALLBACK (Onbekende URL -> terug naar start)
   { path: '**', redirectTo: 'kotcompass/zoektplatform' },
 
-    {path: 'dashboard',
+  {
+    path: 'dashboard',
     component: Dashboard,
     children: [
+      { path: 'profile', component: Profile },
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+    ],
       {path: 'profile', component: Profile},
       {path: 'credits', component: Credits},
       {path: '', redirectTo: 'profile', pathMatch: 'full' }
