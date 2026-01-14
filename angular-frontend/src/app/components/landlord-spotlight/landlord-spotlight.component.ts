@@ -86,8 +86,8 @@ export class LandlordSpotlightComponent implements OnInit {
               b.rooms.forEach((r: any) => {
                   this.properties.push({
                       id: r.id, // Use Room ID
-                      title: `Room ${r.roomnumber} in ${b.street} ${b.housenumber}`,
-                      address: `${b.place.place} ${b.place.zipcode}`,
+                      title: `Room ${r?.roomnumber} in ${b?.street?.street} ${b?.housenumber}`,
+                      address: `${b?.place?.place} ${b?.place?.zipcode}`,
                       isSpotlightActive: !!r.is_highlighted, // Use Room's highlighted status
                       image: 'assets/placeholder-room.jpg' // Default image
                   });

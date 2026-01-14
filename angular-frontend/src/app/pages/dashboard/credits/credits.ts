@@ -65,6 +65,7 @@ export class Credits implements OnInit {
   constructor(private creditService: CreditService, private authService: AuthService) {}
 
   ngOnInit() {
+    this.creditService.refreshBalance();
     this.creditService.balance$.subscribe(b => this.balance = b);
     this.userRole = sessionStorage.getItem('user_role');
   }

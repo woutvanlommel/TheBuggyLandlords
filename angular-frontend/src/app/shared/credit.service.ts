@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -27,11 +27,23 @@ export class CreditService {
   ];
 
   constructor(private http: HttpClient) {
-    this.refreshBalance();
+    // Only refresh if we have a token (user logged in)
+    if (sessionStorage.getItem('auth_token')) {
+      this.refreshBalance();
+    }
+  }
+
+  private getHeaders(): HttpHeaders {
+    const token = sessionStorage.getItem('auth_token');
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
   }
 
   refreshBalance() {
-    this.http.get<{balance: number}>(`${this.apiUrl}/balance`)
+    this.http.get<{balance: number}>(`${this.apiUrl}/balance`, { headers: this.getHeaders() })
       .pipe(map(res => res.balance))
       .subscribe({
         next: (val) => this.balanceSubject.next(val),
@@ -48,7 +60,7 @@ export class CreditService {
   }
 
   buyPackage(packageId: number): Observable<boolean> {
-    return this.http.post<any>(`${this.apiUrl}/buy`, { package_id: packageId }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/buy`, { package_id: packageId }, { headers: this.getHeaders() }).pipe(
       tap(res => {
         if (res.success) {
           this.refreshBalance();
@@ -60,7 +72,7 @@ export class CreditService {
 
   // LANDLORD FLOW
   toggleSpotlight(propertyId: number, isActive: boolean): Observable<boolean> {
-    return this.http.post<any>(`${this.apiUrl}/spotlight`, { property_id: propertyId, active: isActive }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/spotlight`, { property_id: propertyId, active: isActive }, { headers: this.getHeaders() }).pipe(
       tap(res => {
          if (res.success) this.refreshBalance();
       }),
@@ -70,7 +82,7 @@ export class CreditService {
 
   // TENANT FLOW
   unlockChat(propertyId: number): Observable<boolean> {
-    return this.http.post<any>(`${this.apiUrl}/unlock-chat`, { property_id: propertyId }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/unlock-chat`, { property_id: propertyId }, { headers: this.getHeaders() }).pipe(
       tap(res => {
         if (res.success) this.refreshBalance();
       }),
