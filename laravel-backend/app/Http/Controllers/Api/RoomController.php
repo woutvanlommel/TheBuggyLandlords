@@ -40,13 +40,6 @@ class RoomController extends Controller
             });
         }
 
-        // 2. Category (RoomType) Filter
-        if ($request->filled('category') && $request->category !== 'All') {
-            $q->whereHas('roomtype', function($query) use ($request) {
-                $query->where('type', $request->category);
-            });
-        }
-
         // 3. Text Search (Street or City)
         if ($request->filled('query')) {
             $search = $request->input('query');
@@ -56,6 +49,44 @@ class RoomController extends Controller
                 })->orWhereHas('place', function($p) use ($search) {
                     $p->where('place', 'LIKE', "%{$search}%");
                 });
+            });
+        }
+
+        // Bounding box filter: minLat, maxLat, minLng, maxLng
+        if ($request->has(['minLat','maxLat','minLng','maxLng'])) {
+            $q->whereHas('building', function ($b) use ($request) {
+                $b->whereBetween('latitude', [$request->minLat, $request->maxLat])
+                  ->whereBetween('longitude', [$request->minLng, $request->maxLng]);
+            });
+        }
+
+        // --- FETCH AVAILABLE TYPES BASED ON CURRENT FILTERS (EXCEPT CATEGORY) ---
+        // We look for types present in the filtered set (location/search) to update the UI.
+        try {
+            // Clone the query state *before* category filters are applied
+            $typesQuery = clone $q;
+            
+            // We need to ensure we don't have ambiguous column selects if the base query used 'with' or 'select'
+            // So we explicitly select the type column.
+            // NOTE: Table is 'room' (singular) based on Model, and FK is 'roomtype_id'.
+            // Joined table is 'roomtype' (singular).
+            $availableTypes = $typesQuery
+                ->join('roomtype', 'room.roomtype_id', '=', 'roomtype.id')
+                ->select('roomtype.type')
+                ->distinct()
+                ->pluck('roomtype.type'); // Be specific
+        } catch (\Exception $e) {
+            // Fallback if query fails, so we don't break the map
+            \Illuminate\Support\Facades\Log::error('Available Types Query Failed: ' . $e->getMessage());
+            // Fallback to all types or empty (so UI shows defaults or all)
+            $availableTypes = \App\Models\RoomType::pluck('type'); 
+        }
+
+        // 2. Category (RoomType) Filter (NOW SUPPORTS MULTIPLE)
+        if ($request->filled('category') && $request->category !== 'All') {
+            $categories = explode(',', $request->category); // Support 'Studio,Appartement'
+            $q->whereHas('roomtype', function($query) use ($categories) {
+                $query->whereIn('type', $categories);
             });
         }
 
@@ -77,13 +108,6 @@ class RoomController extends Controller
             $q->orderBy('id', 'desc');
         }
 
-        // Bounding box filter: minLat, maxLat, minLng, maxLng
-        if ($request->has(['minLat','maxLat','minLng','maxLng'])) {
-            $q->whereHas('building', function ($b) use ($request) {
-                $b->whereBetween('latitude', [$request->minLat, $request->maxLat])
-                  ->whereBetween('longitude', [$request->minLng, $request->maxLng]);
-            });
-        }
 
         // $rooms = $q->take(20)->get();
 
@@ -114,7 +138,10 @@ class RoomController extends Controller
             return $roomArray;
         });
 
-        return response()->json($paginator);
+        $response = $paginator->toArray();
+        $response['available_types'] = $availableTypes ?? [];
+
+        return response()->json($response);
     }
 
 

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RoomService } from '../../shared/room.service';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-search-filter',
@@ -91,8 +91,8 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError 
         *ngFor="let cat of categories"
         (click)="setActiveFilter(cat)"
         [ngClass]="{
-          'bg-primary text-white border-primary shadow-sm': activeFilter === cat,
-          'bg-white text-gray-600 border-gray-200 hover:bg-gray-50': activeFilter !== cat
+          'bg-primary text-white border-primary shadow-sm': isActive(cat),
+          'bg-white text-gray-600 border-gray-200 hover:bg-gray-50': !isActive(cat)
         }"
         class="px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wide border transition-all whitespace-nowrap shrink-0"
       >
@@ -112,14 +112,16 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError 
   `,
   styles: ``,
 })
-export class SearchFilter {
+export class SearchFilter implements OnInit, OnDestroy {
   query: string = '';
-  activeFilter: string = 'All';
+  // activeFilter: string = 'All'; // Removed
+  activeFilters: string[] = []; // New multi-select
+  
   selectedCity: string = '';
   selectedSort: string = 'newest';
   
-  categories: string[] = ['All', 'Kamer', 'Studio', 'Appartement', 'Duplex'];
-  cities: string[] = ['Antwerpen', 'Gent', 'Leuven', 'Brussel', 'Mechelen', 'Kortrijk'];
+  categories: string[] = ['All']; // Will be populated dynamically from server
+  cities: string[] = ['Antwerpen', 'Gent', 'Leuven', 'Brussel', 'Mechelen', 'Kortrijk', 'Hasselt'];
 
   private citiesMap: {[key: string]: {lat: number, lng: number}} = {
     'Antwerpen': {lat: 51.2194, lng: 4.4025},
@@ -127,15 +129,18 @@ export class SearchFilter {
     'Leuven': {lat: 50.8798, lng: 4.7005},
     'Brussel': {lat: 50.8503, lng: 4.3517},
     'Mechelen': {lat: 51.0259, lng: 4.4771},
-    'Kortrijk': {lat: 50.8280, lng: 3.2649}
+    'Kortrijk': {lat: 50.8280, lng: 3.2649},
+    'Hasselt': {lat: 50.9307, lng: 5.3378}
   };
 
   suggestions: string[] = [];
   showSuggestions: boolean = false;
   private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
   constructor(private roomService: RoomService) {
     this.searchSubject.pipe(
+      takeUntil(this.destroy$), // Clean up
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(query => {
@@ -149,6 +154,24 @@ export class SearchFilter {
       this.showSuggestions = suggestions.length > 0;
     });
   }
+
+  ngOnInit() {
+    // Listen for available types based on location
+    this.roomService.availableTypes$.pipe(takeUntil(this.destroy$)).subscribe(types => {
+      if (types && types.length > 0) {
+        // Keep 'All' plus the dynamic types. 
+        // Ensure unique values handling
+        const uniqueTypes = [...new Set(types)];
+        this.categories = ['All', ...uniqueTypes];
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
 
   onSearchInput(value: string): void {
     this.searchSubject.next(value);
@@ -167,8 +190,22 @@ export class SearchFilter {
     }, 200);
   }
 
+  isActive(category: string): boolean {
+    if (category === 'All') return this.activeFilters.length === 0;
+    return this.activeFilters.includes(category);
+  }
+
   setActiveFilter(category: string): void {
-    this.activeFilter = category;
+    if (category === 'All') {
+      this.activeFilters = [];
+    } else {
+      const idx = this.activeFilters.indexOf(category);
+      if (idx > -1) {
+        this.activeFilters.splice(idx, 1);
+      } else {
+        this.activeFilters.push(category);
+      }
+    }
     this.onFilterClick();
   }
 
@@ -216,7 +253,7 @@ export class SearchFilter {
   submitFilter(): void {
     this.roomService.updateFilters({
       query: this.query,
-      category: this.activeFilter,
+      category: this.activeFilters.length > 0 ? this.activeFilters : 'All',
       city: this.selectedCity,
       sort: this.selectedSort
     });

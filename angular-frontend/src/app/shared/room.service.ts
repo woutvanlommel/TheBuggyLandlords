@@ -17,6 +17,10 @@ export class RoomService {
   private currentFilters: any = {};
   public refreshTrigger$ = new Subject<void>();
   
+  // Available Types (Dynamic)
+  private availableTypesSubject = new BehaviorSubject<string[]>([]);
+  public availableTypes$ = this.availableTypesSubject.asObservable();
+
   // Map Center control
   private mapCenterSubject = new Subject<{lat: number, lng: number, zoom: number}>();
   public mapCenter$ = this.mapCenterSubject.asObservable();
@@ -68,7 +72,16 @@ export class RoomService {
       .set('maxLng', maxLng.toString());
 
     if (this.currentFilters.query) params = params.set('query', this.currentFilters.query);
-    if (this.currentFilters.category) params = params.set('category', this.currentFilters.category);
+    
+    if (this.currentFilters.category) {
+        let cat = this.currentFilters.category;
+        // Support array -> comma string
+        if (Array.isArray(cat)) {
+            cat = cat.length > 0 ? cat.join(',') : 'All';
+        }
+        params = params.set('category', cat);
+    }
+
     if (this.currentFilters.city) params = params.set('city', this.currentFilters.city);
     if (this.currentFilters.sort) params = params.set('sort', this.currentFilters.sort);
 
@@ -78,7 +91,13 @@ export class RoomService {
     if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
     return this.http.get<any>(this.baseApi + 'public/rooms', { headers, params }).pipe(
-      tap((response: any) => this.mapRoomsSubject.next(response.data)),
+      tap((response: any) => {
+          this.mapRoomsSubject.next(response.data);
+          // Update available types if present in response
+          if (response.available_types) {
+              this.availableTypesSubject.next(response.available_types);
+          }
+      }),
       map((response: any) => response.data) // <--- DEZE REGEL IS CRUCIAAL
     );
   }
