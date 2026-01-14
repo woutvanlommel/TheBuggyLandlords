@@ -26,6 +26,11 @@ class Building extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
+
     protected static function booted()
     {
         // Bij het aanmaken van een nieuw building

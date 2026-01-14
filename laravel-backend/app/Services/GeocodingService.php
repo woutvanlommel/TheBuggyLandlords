@@ -10,7 +10,7 @@ class GeocodingService
     {
         $address = "$housenumber $street, $place";
 
-        echo "Trying to geocode: $address\n";
+        // echo "Trying to geocode: $address\n";
 
         try {
             $client = new Client(['verify' => false]);
@@ -22,6 +22,7 @@ class GeocodingService
                 'query' => [
                     'key' => $apiKey,
                     'q' => $address,
+                    'countrycodes' => 'be', // Limit to Belgium
                     'format' => 'json',
                     'limit' => 1,
                 ]
@@ -32,7 +33,7 @@ class GeocodingService
             if (is_array($data) && count($data) > 0) {
                 $result = $data[0];
 
-                echo "✓ Found: lat={$result['lat']}, lon={$result['lon']}\n";
+                // echo "✓ Found: lat={$result['lat']}, lon={$result['lon']}\n";
 
                 return [
                     'latitude' => (float) $result['lat'],
@@ -40,10 +41,11 @@ class GeocodingService
                 ];
             }
         } catch (\Exception $e) {
-            echo "Error: " . $e->getMessage() . "\n";
+            // echo "Error: " . $e->getMessage() . "\n";
+            // Log error instead?
         }
 
-        echo "✗ No results found\n";
+        // echo "✗ No results found\n";
         return null;
     }
 }

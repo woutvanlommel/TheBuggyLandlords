@@ -8,4 +8,5 @@ class Street extends Model
 {
     protected $table = 'street';
     public $timestamps = false;
+    protected $fillable = ['street'];
 }
