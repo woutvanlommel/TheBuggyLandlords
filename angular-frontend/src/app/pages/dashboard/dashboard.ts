@@ -74,10 +74,6 @@ import { AuthService } from '../../shared/auth.service';
         <section
           class="bg-base-een-100/60 backdrop-blur-md border border-base-twee-300/50 shadow-2xl rounded-3xl p-6 space-y-6 relative z-20"
         >
-          <!-- <div *ngIf="activeTab === 'dashboard'">
-            
-          </div> -->
-
           <router-outlet></router-outlet>
         </section>
       </main>
