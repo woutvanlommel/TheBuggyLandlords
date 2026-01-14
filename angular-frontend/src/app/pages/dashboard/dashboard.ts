@@ -51,12 +51,12 @@ import { AuthService } from '../../shared/auth.service';
           </a>
 
           <a
-            (click)="setActiveTab('credits')"
-            [ngClass]="activeTab === 'credits'
+            (click)="setActiveTab('instellingen')"
+            [ngClass]="activeTab === 'instellingen'
               ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
               : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'"
             class="px-6 py-2.5 font-semibold text-sm w-full block text-center">
-            Credits
+            Instellingen
           </a>
 
         </div>
@@ -192,6 +192,13 @@ import { AuthService } from '../../shared/auth.service';
           </div>
 
           <router-outlet></router-outlet>
+
+          <div *ngIf="activeTab === 'instellingen'">
+             <div class="p-8 text-center bg-base-een-100/50 backdrop-blur-sm rounded-xl border border-primary-100/50">
+                <h3 class="text-xl font-semibold text-base-twee-900">Instellingen</h3>
+                <p class="text-base-twee-600 mt-2">Configureer hier de applicatie.</p>
+             </div>
+          </div>
         </section>
       </main>
     </div>
@@ -213,8 +220,8 @@ export class Dashboard implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (this.router.url.includes('profile')) {
         this.activeTab = 'profile';
-      } else if (this.router.url.includes('credits')) {
-        this.activeTab = 'credits';
+      } else if (params['view'] === 'settings') {
+        this.activeTab = 'instellingen';
       } else {
         this.activeTab = 'dashboard';
       }
@@ -223,12 +230,12 @@ export class Dashboard implements OnInit {
 
   // 4. Update the helper to navigate instead of just setting a variable
   setActiveTab(tab: string) {
-    if (tab === 'dashboard') {
+    if (tab === 'instellingen') {
+      this.router.navigate(['/dashboard'], { queryParams: { view: 'settings' } });
+    } else if (tab === 'dashboard') {
       this.router.navigate(['/dashboard']);
     } else if (tab === 'profile') {
       this.router.navigate(['/dashboard/profile']);
-    } else if (tab === 'credits') {
-      this.router.navigate(['/dashboard/credits']);
     }
   }
 
