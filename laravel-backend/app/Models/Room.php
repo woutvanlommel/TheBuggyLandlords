@@ -21,11 +21,12 @@ class Room extends Model
         'price',
         'building_id',
         'is_highlighted',
+        'highlight_expires_at',
     ];
 
     protected $casts = [
         'is_highlighted' => 'boolean',
-
+        'highlight_expires_at' => 'datetime',
     ];
 
 

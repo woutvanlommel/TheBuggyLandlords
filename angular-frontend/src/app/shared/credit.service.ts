@@ -80,6 +80,15 @@ export class CreditService {
     );
   }
 
+  activateSpotlight(propertyId: number, days: number): Observable<boolean> {
+    return this.http.post<any>(`${this.apiUrl}/activate-spotlight`, { property_id: propertyId, days: days }, { headers: this.getHeaders() }).pipe(
+      tap(res => {
+         if (res.success) this.refreshBalance();
+      }),
+      map(res => res.success)
+    );
+  }
+
   // TENANT FLOW
   unlockChat(propertyId: number): Observable<boolean> {
     return this.http.post<any>(`${this.apiUrl}/unlock-chat`, { property_id: propertyId }, { headers: this.getHeaders() }).pipe(

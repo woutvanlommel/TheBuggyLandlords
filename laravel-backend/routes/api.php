@@ -254,6 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/packages', [App\Http\Controllers\Api\CreditController::class, 'getPackages']);
         Route::post('/buy', [App\Http\Controllers\Api\CreditController::class, 'buyPackage']);
         Route::post('/spotlight', [App\Http\Controllers\Api\CreditController::class, 'toggleSpotlight']);
+        Route::post('/activate-spotlight', [App\Http\Controllers\Api\CreditController::class, 'activateSpotlight']);
         Route::post('/unlock-chat', [App\Http\Controllers\Api\CreditController::class, 'unlockChat']);
     });
 

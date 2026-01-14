@@ -72,10 +72,62 @@ class CreditController extends Controller
      * Toggle Spotlight (Landlord)
      * Using Room's is_highlighted field
      */
+    /**
+     * Activate Spotlight with Timer (Landlord)
+     * COST: 1 Credit = 1 Day
+     */
+    public function activateSpotlight(Request $request) 
+    {
+        $request->validate([
+            'property_id' => 'required|integer', 
+            'days' => 'required|integer|min:1'
+        ]);
+
+        $roomId = $request->input('property_id');
+        $days = (int) $request->input('days');
+        $cost = $days; // 1 credit per day
+        $user = $request->user();
+
+        $room = Room::find($roomId);
+
+        if (!$room) {
+            return response()->json(['success' => false, 'message' => 'Room not found'], 404);
+        }
+
+        // Verify ownership
+        $isOwner = $room->building && $room->building->user_id === $user->id;
+        if (!$isOwner) {
+            return response()->json(['success' => false, 'message' => 'Not authorized'], 403);
+        }
+
+        // Check balance
+        if ($user->credits < $cost) {
+            return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
+        }
+
+        // Deduct credits
+        $user->credits -= $cost;
+        $user->save();
+
+        // Update Room
+        $room->is_highlighted = true;
+        $room->highlight_expires_at = now()->addDays($days);
+        $room->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Spotlight activated for {$days} days",
+            'new_balance' => $user->credits
+        ]);
+    }
+
+    /**
+     * Toggle Spotlight (Landlord)
+     */
     public function toggleSpotlight(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|integer', // This will be room_id
+            'property_id' => 'required|integer', 
             'active' => 'required|boolean'
         ]);
 
@@ -89,37 +141,30 @@ class CreditController extends Controller
             return response()->json(['success' => false, 'message' => 'Room not found'], 404);
         }
 
-        // Verify ownership (Room -> Building -> User)
         if ($room->building->user_id !== $user->id) {
             return response()->json(['success' => false, 'message' => 'Not authorized'], 403);
         }
 
-        // If turning ON, check balance
-        if ($isActive) {
-            if ($user->credits < 1) {
-                return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
-            }
-            // Deduct 1 credit (Daily cost applied once for demo?? Or is it an activation fee?)
-            // "Boost visibility for 1 credit/day" implies a recurring job.
-            // For this implementation, we just deduct 1 credit on activation or per toggle?
-            // User requirement: "Boost visibility for 1 credit/day"
-            // Implementation: Simple deduction on activation for now, or assume cron job handles daily deduction.
-            // To mimic immediate effect, we deduct 1 now? The previous mock did "1 credit deducted".
-            // Let's deduct 1 credit immediately on activation.
-            
-             // Only deduct if we are activating it and it wasn't valid before?
-             // Since we have no expiry date logic here yet, let's just deduct 1 credit per activation.
-             $user->credits -= 1;
-             $user->save();
+        if (!$isActive) {
+            $room->is_highlighted = false;
+            $room->highlight_expires_at = null; 
+            $room->save();
+            return response()->json(['success' => true]);
         }
 
-        $room->is_highlighted = $isActive;
+        if ($user->credits < 1) {
+             return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
+        }
+        
+        $user->credits -= 1;
+        $user->save();
+        
+        $room->is_highlighted = true;
+        // Default 1 day if toggled via old button
+        $room->highlight_expires_at = now()->addDay();
         $room->save();
 
-        return response()->json([
-            'success' => true, 
-            'new_balance' => $user->credits
-        ]);
+        return response()->json(['success' => true]);
     }
 
     /**
