@@ -8,4 +8,5 @@ class Place extends Model
 {
     protected $table = 'place';
     public $timestamps = false;
+    protected $fillable = ['place', 'zipcode'];
 }

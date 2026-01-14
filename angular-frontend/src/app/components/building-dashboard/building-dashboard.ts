@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 
 @Component({
   selector: 'app-building-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>
@@ -14,8 +15,9 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
       </div>
       <button
         class="px-3 py-2 rounded-xl bg-base-een-100/50 backdrop-blur-sm text-base-twee-900 border border-base-twee-200 shadow hover:bg-white/80 transition-colors"
+        (click)="showAddBuildingModal = true"
       >
-        Beheer
+        Voeg gebouw toe
       </button>
     </div>
 
@@ -59,10 +61,10 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
             </div>
             <div>
               <h4 class="font-semibold text-base-twee-900">
-                {{ building.street }} {{ building.number }}
+                {{ building.street?.street }} {{ building.housenumber }}
               </h4>
               <p class="text-xs text-base-twee-500">
-                {{ building.city }} • {{ building.rooms?.length || 0 }} Kamers
+                {{ building.place?.place }} • {{ building.rooms?.length || 0 }} Kamers
               </p>
             </div>
           </div>
@@ -99,18 +101,21 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
                 @for (room of building.rooms; track room.id) {
                 <tr class="hover:bg-base-een-200/30 transition-colors">
                   <td class="px-4 py-3 font-medium text-base-twee-900">
-                    {{ room.name || 'Kamer ' + room.id }}
+                    <!-- Display room name if exists, otherwise Room Type + Number (e.g. "Kot 1.01") -->
+                    {{
+                      room.name || (room.roomtype ? room.roomtype.type + ' ' : '') + room.roomnumber
+                    }}
                   </td>
                   <td class="px-4 py-3">
                     <!-- Mock data checks, adjust based on real API -->
-                    @if (room.active_contract?.subscriber; as subscriber) {
+                    @if (room.active_contract?.user; as tenant) {
                     <div class="flex items-center gap-2">
                       <div
                         class="w-6 h-6 rounded-full bg-secondary-200 flex items-center justify-center text-secondary-800 text-xs font-bold"
                       >
-                        {{ subscriber.first_name.charAt(0) }}
+                        {{ tenant.fname.charAt(0) }}
                       </div>
-                      <span>{{ subscriber.first_name }} {{ subscriber.last_name }}</span>
+                      <span>{{ tenant.fname }} {{ tenant.name }}</span>
                     </div>
                     } @else {
                     <span class="text-base-twee-400 italic">Geen huurder</span>
@@ -147,17 +152,144 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
       </div>
       }
     </div>
+
+    @if (showAddBuildingModal) {
+    <!-- Modal Backdrop -->
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 rounded-xl"
+      (click)="closeModal()"
+    >
+      <!-- Modal Content -->
+      <div
+        class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+        (click)="$event.stopPropagation()"
+      >
+        <div
+          class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50"
+        >
+          <h3 class="text-lg font-bold text-gray-900">Nieuw Gebouw</h3>
+          <button
+            (click)="closeModal()"
+            class="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1 hover:bg-gray-100"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Straat</label>
+            <input
+              type="text"
+              [(ngModel)]="newBuilding.street"
+              class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
+              placeholder="Bijv. Kerkstraat"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Huisnummer</label>
+              <input
+                type="text"
+                [(ngModel)]="newBuilding.number"
+                class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
+                placeholder="12A"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+              <input
+                type="text"
+                [(ngModel)]="newBuilding.postalCode"
+                class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
+                placeholder="3000"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Stad/Gemeente</label>
+            <input
+              type="text"
+              [(ngModel)]="newBuilding.city"
+              class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
+              placeholder="Leuven"
+            />
+          </div>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+          <button
+            (click)="closeModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            Annuleren
+          </button>
+          <button
+            (click)="submitNewBuilding()"
+            [disabled]="!newBuilding.street || !newBuilding.city"
+            class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Toevoegen
+          </button>
+        </div>
+      </div>
+    </div>
+    }
   `,
   styles: ``,
 })
 export class BuildingDashboard implements OnInit {
   buildings: any[] = [];
   loading: boolean = true;
+  showAddBuildingModal: boolean = false;
+  newBuilding: any = {
+    street: '',
+    number: '',
+    postalCode: '',
+    city: '',
+  };
 
-  constructor(private verhuurderService: VerhuurderService) {}
+  constructor(private verhuurderService: VerhuurderService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.loadBuildings();
+  }
+
+  closeModal() {
+    this.showAddBuildingModal = false;
+    this.newBuilding = { street: '', number: '', postalCode: '', city: '' };
+  }
+
+  async submitNewBuilding() {
+    try {
+      this.loading = true; // Show loading state briefly or handle differently
+      // Call service to save to database
+      await this.verhuurderService.addBuilding(this.newBuilding);
+
+      // Refresh list
+      await this.loadBuildings();
+
+      this.closeModal();
+    } catch (error) {
+      console.error('Error adding building:', error);
+      alert('Kon gebouw niet toevoegen. Probeer het later opnieuw.');
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
   }
 
   async loadBuildings() {
@@ -167,14 +299,18 @@ export class BuildingDashboard implements OnInit {
       // For now we assume query works, or we mock if it fails/returns empty while developing
       const data = await this.verhuurderService.getMyBuildings();
 
+      const buildingsArray = Array.isArray(data) ? data : (data as any).data || [];
+
       // Add 'expanded' property to each building for UI state
-      this.buildings = data.map((b: any) => ({ ...b, expanded: false }));
+      this.buildings = buildingsArray.map((b: any) => ({ ...b, expanded: false }));
+      console.log('Loaded buildings:', this.buildings);
     } catch (error) {
       console.error('Error loading buildings:', error);
       // Fallback/Mock data for demonstration if API fails or backend not ready
       this.buildings = [];
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
