@@ -107,6 +107,56 @@ export class Profile implements OnInit {
         }
       }
     });
+  }
+
+    // ... inside ProfileComponent class ...
+
+  // 1. Function triggered when user selects a file
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+
+    if (file) {
+      // Optional: Check if file is too big (e.g. > 4MB)
+      if (file.size > 4 * 1024 * 1024) {
+        alert('Het bestand is te groot. Maximaal 4MB.');
+        return;
+      }
+
+      this.uploadAvatar(file);
     }
   }
+
+  // 2. Function to send file to backend
+  uploadAvatar(file: File) {
+    // Show a loading state if you want (optional)
+    this.isLoading = true;
+
+    this.authService.updateAvatar(file).subscribe({
+      next: (response) => {
+        // SUCCESS: Update the user's avatar URL immediately on screen
+        if (this.user) {
+          // If the URL is relative (/storage/...), prepend the domain
+          // If your backend already sends the full http link, remove the prefix part
+          this.user.avatar_url = response.url;
+        }
+
+        this.isLoading = false;
+        this.cd.detectChanges();
+        alert('Profielfoto succesvol bijgewerkt!');
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+
+        if (err.status === 422) {
+          alert('Ongeldig bestandstype. Alleen JPG, PNG of GIF is toegestaan.');
+        } else {
+          alert ('Er is iets misgegaan bij het uploaden. Probeer het opnieuw.');
+        }
+      }
+    });
+  }
+
+    }
+
 
