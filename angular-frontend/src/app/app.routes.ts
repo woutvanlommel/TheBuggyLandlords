@@ -7,6 +7,7 @@ import { DashboardStats } from './pages/dashboard/dashboard-stats/dashboard-stat
 import { Credits } from './pages/dashboard/credits/credits';
 import { BuildingEditing } from './components/building-editing/building-editing';
 import { RoomEditing } from './components/room-editing/room-editing';
+import { CheckoutComponent } from './pages/dashboard/checkout/checkout';
 
 export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
@@ -92,6 +93,10 @@ export const routes: Routes = [
       {
         path: 'room/:id',
         component: RoomEditing,
+      },
+      {
+        path: 'checkout/:packageId',
+        component: CheckoutComponent,
       },
     ],
   },

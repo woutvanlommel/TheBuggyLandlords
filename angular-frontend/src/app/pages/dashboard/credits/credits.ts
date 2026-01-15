@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router'; // Added Router
 import { CreditPackagesComponent } from '../../../components/credit-packages/credit-packages.component';
 import { LandlordSpotlightComponent } from '../../../components/landlord-spotlight/landlord-spotlight.component';
 import { CreditService } from '../../../shared/credit.service';
@@ -23,6 +24,11 @@ import { AuthService } from '../../../shared/auth.service';
                     {{ balance }}
                   </span>
                   <span class="mt-1 text-sm font-bold text-base-twee-500 uppercase tracking-widest">Beschikbaar</span>
+            </div>
+            
+            <!-- Pending Verification Spinner -->
+            <div *ngIf="verifying" class="mt-2 text-primary-600 text-sm font-semibold animate-pulse">
+                Verifying payment...
             </div>
         </div>
 
@@ -61,8 +67,14 @@ import { AuthService } from '../../../shared/auth.service';
 export class Credits implements OnInit {
   balance: number = 0;
   isLandlord: boolean = false;
+  verifying: boolean = false;
 
-  constructor(private creditService: CreditService, private authService: AuthService) {}
+  constructor(
+    private creditService: CreditService, 
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.creditService.refreshBalance();
@@ -71,5 +83,48 @@ export class Credits implements OnInit {
     // Normalize role check (handle case-insensitive)
     const role = sessionStorage.getItem('user_role');
     this.isLandlord = !!role && role.toLowerCase() === 'verhuurder';
+
+    // Check for Payment Return
+    this.route.queryParams.subscribe(params => {
+      const paymentIntentId = params['payment_intent'];
+      const redirectStatus = params['redirect_status'];
+
+      if (paymentIntentId && redirectStatus === 'succeeded') {
+         this.handlePaymentReturn(paymentIntentId);
+      }
+    });
+  }
+
+  handlePaymentReturn(paymentIntentId: string) {
+      if (this.verifying) return;
+      this.verifying = true;
+
+      // Clear params from URL so we don't re-verify on refresh
+      this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { payment_intent: null, payment_intent_client_secret: null, redirect_status: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+      });
+
+      this.creditService.verifyPayment(paymentIntentId).subscribe({
+          next: (res) => {
+              this.verifying = false;
+              if (res.success) {
+                  alert(`Payment Successful!\nAdded: ${res.credits_added} credits.\nBalance: ${res.new_balance}`);
+                  this.creditService.refreshBalance(); // Force refresh
+              } else {
+                  console.error('Payment verified but logic failed', res);
+                  alert('Payment processed. Credits will be updated shortly.');
+              }
+          },
+          error: (err) => {
+              this.verifying = false;
+              console.error('Verification Error', err);
+              // It's possible the webhook handled it already, or a transient error.
+              // Just refresh balance to be sure.
+              this.creditService.refreshBalance();
+          }
+      });
   }
 }
