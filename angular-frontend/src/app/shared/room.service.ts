@@ -103,7 +103,12 @@ export class RoomService {
   }
 
   getRoomById(id: number) {
-    return this.http.get<any>(`${this.baseApi}public/rooms/${id}`);
+    const token = sessionStorage.getItem('auth_token');
+    let headers = new HttpHeaders();
+    if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return this.http.get<any>(`${this.baseApi}public/rooms/${id}`, { headers });
   }
 
   getSearchSuggestions(query: string): Observable<string[]> {

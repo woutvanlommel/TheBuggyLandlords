@@ -3,19 +3,29 @@ import { RoomService } from '../../shared/room.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RoomCard } from '../../components/room-card/room-card';
+import { ContactCard } from '../../components/contact-card/contact-card';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, RoomCard],
+  imports: [CommonModule, RoomCard, ContactCard],
   template: `
     @if (isLoading) {
     <div><p>Laden...</p></div>
     } @else if (hasError) {
     <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
-    <div class="mx-auto w-30/100 my-4">
+    <div class="mx-auto w-30/100 my-4 flex flex-col gap-6">
       <app-room-card [room]="room"></app-room-card>
+      
+      <!-- Contact Card: owner is the landlord -->
+      <app-contact-card 
+          [user]="room.building?.owner"
+          [roomId]="room.id"
+          [isSpotlighted]="room.is_highlighted"
+          [isUnlocked]="room.is_unlocked"
+          (unlocked)="refreshData()">
+      </app-contact-card>
     </div>
     }
   `,
@@ -29,9 +39,13 @@ export class RoomDetail {
   hasError = false;
 
   ngOnInit() {
+    this.refreshData();
+  }
+
+  refreshData() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
-      this.isLoading = true;
+      if (!this.room) this.isLoading = true; // only show loading on first load
       this.hasError = false;
       this.roomService.getRoomById(id).subscribe({
         next: (data) => {
@@ -47,9 +61,12 @@ export class RoomDetail {
         },
         error: (err) => {
           console.error('Fout bij ophalen kamer:', err);
-          this.room = null;
-          this.isLoading = false;
-          this.hasError = true;
+          
+          if (!this.room) {
+             this.room = null;
+             this.isLoading = false;
+             this.hasError = true;
+          }
           try {
             this.cdr.detectChanges();
           } catch (e) {

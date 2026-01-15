@@ -267,20 +267,38 @@ class CreditController extends Controller
     public function unlockChat(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|integer' // room_id or building_id?
+            'property_id' => 'required|integer' // room_id
         ]);
 
         $user = $request->user();
+        $roomId = $request->input('property_id');
+
+        // Check if already unlocked
+        $alreadyUnlocked = \App\Models\UnlockedRoom::where('user_id', $user->id)
+            ->where('room_id', $roomId)
+            ->exists();
+
+        if ($alreadyUnlocked) {
+            return response()->json([
+                'success' => true,
+                'new_balance' => $user->credits,
+                'already_unlocked' => true
+            ]);
+        }
+
         if ($user->credits < 1) {
             return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
         }
 
-        // Logic to record the unlock?
-        // Ideally we store this in a 'unlocked_chats' pivot table or similar.
-        // For MVP/Demo: Just deduct credit.
-        
+        // Deduct credit
         $user->credits -= 1;
         $user->save();
+
+        // Record unlock
+        \App\Models\UnlockedRoom::create([
+            'user_id' => $user->id,
+            'room_id' => $roomId
+        ]);
 
         return response()->json([
             'success' => true,

@@ -52,6 +52,7 @@ export class AuthService {
       sessionStorage.setItem(this.tokenKey, data.token);
     }
     if (data.user) {
+      sessionStorage.setItem('user_id', data.user.id);
       sessionStorage.setItem('user_fname', data.user.fname);
       sessionStorage.setItem('user_name', data.user.name);
       if (data.user.role) {
@@ -84,6 +85,7 @@ export class AuthService {
       sessionStorage.setItem(this.tokenKey, data.token);
     }
     if (data.user) {
+      sessionStorage.setItem('user_id', data.user.id);
       sessionStorage.setItem('user_fname', data.user.fname);
       sessionStorage.setItem('user_name', data.user.name);
       if (data.user.role) {
