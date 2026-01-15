@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,40 +10,26 @@ import { environment } from '../../environments/environment';
 export class VerhuurderService {
   private baseApi = environment.apiUrl;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private http: HttpClient) {}
 
   // Haal alle gebouwen (en hun kamers) op van de verhuurder
   async getMyBuildings(): Promise<any[]> {
-    const response = await fetch(this.baseApi + 'my-buildings', {
-      method: 'GET',
-      headers: this.authService.getAuthHeaders(), // Met token!
+    // Convert Headers object to plain object for HttpClient
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+        headersObj[key] = value;
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch buildings');
-    }
-    return response.json();
+    return firstValueFrom(this.http.get<any[]>(this.baseApi + 'my-buildings', { headers: headersObj }));
   }
 
   // Voeg een nieuw gebouw toe
   async addBuilding(buildingData: any): Promise<any> {
-    const headers = this.authService.getAuthHeaders();
-    
-    // De headers is een Headers object, dus we moeten append/set gebruiken als we iets willen toevoegen
-    // AuthService voegt al correcte auth en content-type headers toe.
-
-    const response = await fetch(this.baseApi + 'add-building', {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(buildingData),
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+        headersObj[key] = value;
     });
 
-    if (!response.ok) {
-      // Probeer de JSON error te lezen
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Add Building failed:', errorData);
-      throw new Error(errorData.message || 'Failed to add building');
-    }
-    return response.json();
+    return firstValueFrom(this.http.post(this.baseApi + 'add-building', buildingData, { headers: headersObj }));
   }
 }
