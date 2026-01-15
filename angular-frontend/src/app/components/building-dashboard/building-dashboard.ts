@@ -2,11 +2,14 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerhuurderService } from '../../shared/verhuurder.service';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroPlusMicro } from '@ng-icons/heroicons/micro';
 
 @Component({
   selector: 'app-building-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgIcon],
+  viewProviders: [provideIcons({ heroPlusMicro })],
   template: `
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>
@@ -69,17 +72,31 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
             </div>
           </div>
 
-          <svg
-            [class.rotate-180]="building.expanded"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-5 text-base-twee-400 transform transition-transform duration-200"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-          </svg>
+          <div class="flex justify-end items-center gap-4">
+            @if(building.expanded) {
+            <div
+              class="flex items-center justify-center p-2 rounded-md bg-primary hover:bg-primary-700 transition-colors duration-100 ease text-white"
+              (click)="addRoom()"
+            >
+              <ng-icon name="heroPlusMicro" class="size-8"></ng-icon>
+            </div>
+            }
+            <svg
+              [class.rotate-180]="building.expanded"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-5 text-base-twee-400 transform transition-transform duration-200"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </div>
         </div>
 
         <!-- Accordion Content (Table) -->
@@ -154,96 +171,127 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
     </div>
 
     @if (showAddBuildingModal) {
-    <!-- Modal Backdrop -->
-    <div
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 rounded-xl"
-      (click)="closeModal()"
-    >
-      <!-- Modal Content -->
+    <!-- Full Screen Overlay -->
+    <div class="fixed inset-0 z-9999 bg-base-een-100 overflow-y-auto flex flex-col rounded-xl">
+      <!-- Header -->
       <div
-        class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
-        (click)="$event.stopPropagation()"
+        class="sticky top-0 z-10 bg-white border-b border-base-twee-200 px-6 py-4 flex items-center justify-between shadow-sm"
       >
-        <div
-          class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50"
-        >
-          <h3 class="text-lg font-bold text-gray-900">Nieuw Gebouw</h3>
-          <button
-            (click)="closeModal()"
-            class="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1 hover:bg-gray-100"
+        <div class="flex items-center gap-4">
+          <div
+            class="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center text-primary-600"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              class="w-6 h-6"
             >
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-          </button>
+          </div>
+          <h3 class="text-xl font-bold text-base-twee-900">Nieuw Gebouw Toevoegen</h3>
         </div>
-
-        <div class="p-6 space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Straat</label>
-            <input
-              type="text"
-              [(ngModel)]="newBuilding.street"
-              class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
-              placeholder="Bijv. Kerkstraat"
-            />
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Huisnummer</label>
-              <input
-                type="text"
-                [(ngModel)]="newBuilding.number"
-                class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
-                placeholder="12A"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
-              <input
-                type="text"
-                [(ngModel)]="newBuilding.postalCode"
-                class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
-                placeholder="3000"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Stad/Gemeente</label>
-            <input
-              type="text"
-              [(ngModel)]="newBuilding.city"
-              class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none"
-              placeholder="Leuven"
-            />
-          </div>
-        </div>
-
-        <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-          <button
-            (click)="closeModal()"
-            class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+        <button
+          (click)="closeModal()"
+          class="p-2 hover:bg-base-een-200 rounded-full transition-colors text-base-twee-500 hover:text-base-twee-900"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            Annuleren
-          </button>
-          <button
-            (click)="submitNewBuilding()"
-            [disabled]="!newBuilding.street || !newBuilding.city"
-            class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Form Content -->
+      <div class="flex-1 p-6 md:p-12 flex justify-center">
+        <div class="w-full max-w-2xl">
+          <div
+            class="bg-white rounded-[2.5rem] shadow-xl border border-base-twee-100 p-8 md:p-12 space-y-8"
           >
-            Toevoegen
-          </button>
+            <section class="space-y-6">
+              <div>
+                <label
+                  class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
+                  >Straatnaam</label
+                >
+                <input
+                  type="text"
+                  [(ngModel)]="newBuilding.street"
+                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
+                  placeholder="Bijv. Diestsestraat"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
+                    >Huisnummer</label
+                  >
+                  <input
+                    type="text"
+                    [(ngModel)]="newBuilding.number"
+                    class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
+                    placeholder="123"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
+                    >Postcode</label
+                  >
+                  <input
+                    type="text"
+                    [(ngModel)]="newBuilding.postalCode"
+                    class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
+                    placeholder="3000"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
+                  >Stad / Gemeente</label
+                >
+                <input
+                  type="text"
+                  [(ngModel)]="newBuilding.city"
+                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
+                  placeholder="Leuven"
+                />
+              </div>
+            </section>
+
+            <div class="pt-8 border-t border-base-een-100 flex flex-col sm:flex-row gap-4">
+              <button
+                (click)="closeModal()"
+                class="flex-1 px-8 py-4 rounded-2xl text-lg font-bold text-base-twee-600 hover:bg-base-een-100 transition-colors"
+              >
+                Annuleren
+              </button>
+              <button
+                (click)="submitNewBuilding()"
+                [disabled]="!newBuilding.street || !newBuilding.city"
+                class="flex-[2] px-8 py-4 rounded-2xl text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all transform active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                Gebouw Toevoegen
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -290,6 +338,11 @@ export class BuildingDashboard implements OnInit {
       this.loading = false;
       this.cdr.detectChanges();
     }
+  }
+
+  async addRoom() {
+    // Logic to add a room can be implemented here
+    alert('Functie om kamers toe te voegen is nog niet geïmplementeerd.');
   }
 
   async loadBuildings() {
