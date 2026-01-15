@@ -229,6 +229,16 @@ class RoomController extends Controller
 
         $roomArray = $room->toArray();
 
+        // Check if unlocked for current user
+        $user = request()->user('sanctum');
+        $roomArray['is_unlocked'] = false;
+        
+        if ($user) {
+            $roomArray['is_unlocked'] = \App\Models\UnlockedRoom::where('user_id', $user->id)
+                ->where('room_id', $id)
+                ->exists();
+        }
+
         if ($room->building) {
             $roomArray['building']['latitude'] = $room->building->latitude;
             $roomArray['building']['longitude'] = $room->building->longitude;
