@@ -25,7 +25,12 @@ import { RouterLink } from '@angular/router';
     <div class="space-y-4" [class]="showAddBuildingModal ? 'min-h-180' : 'min-h-[150px]'">
       <!-- Loading State -->
       @if (loading) {
-      <div class="text-center py-4 text-base-twee-500">Gebouwen laden...</div>
+      <div class="flex flex-col gap-2 justify-center items-center">
+        <div class="text-center py-4 text-base-twee-500">Gebouwen laden...</div>
+        <div
+          class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent mb-4"
+        ></div>
+      </div>
       }
 
       <!-- Empty State -->

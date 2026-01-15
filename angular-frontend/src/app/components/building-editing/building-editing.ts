@@ -60,7 +60,7 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Building Details Form -->
-          <div class="lg:col-span-1 space-y-6">
+          <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-24 self-start">
             <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
               <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-2">
                 <svg
@@ -218,9 +218,7 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
               ></quill-editor>
             </div>
 
-            <div
-              class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100 min-h-[500px]"
-            >
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100 h-fit">
               <div class="flex items-center justify-between mb-8">
                 <h2 class="text-xl font-bold text-base-twee-900 flex items-center gap-2">
                   <svg
@@ -323,7 +321,7 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
                       </div>
                       <div>
                         <h4 class="font-bold text-base-twee-900">
-                          {{ room.name || room.roomtype?.type || 'Kamer' }}
+                          {{ room.name || room.roomtype?.type || 'Kamer' }} - {{ room.roomnumber }}
                         </h4>
                         <p
                           class="text-[10px] text-base-twee-400 font-bold uppercase tracking-widest"
@@ -401,10 +399,10 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
         <!-- Add/Edit Room Modal -->
         <div
           *ngIf="showRoomModal"
-          class="fixed inset-0 z-[100] bg-base-twee-900/60 backdrop-blur-md flex items-center justify-center p-4"
+          class="fixed inset-0 z-100 bg-base-twee-900/60 backdrop-blur-md flex items-center justify-center p-4 rounded-2xl"
         >
           <div
-            class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+            class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col my-auto"
             (click)="$event.stopPropagation()"
           >
             <div
