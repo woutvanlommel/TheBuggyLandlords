@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NewsletterService } from '../../services/newsletter';
@@ -233,7 +233,7 @@ export class Footer {
   userEmail = '';
   isLoading = false;
 
-  constructor(private newsletterService: NewsletterService) {}
+  constructor(private newsletterService: NewsletterService, private cdr: ChangeDetectorRef) {}
 
   onSubscribe(event?: Event) {
     if (event) {
@@ -246,15 +246,17 @@ export class Footer {
 
     this.newsletterService.subscribe(this.userEmail).subscribe({
       next: (res) => {
-        alert('Success! You are subscribed.');
-        this.userEmail = '';
         this.isLoading = false;
+        this.userEmail = '';
+        this.cdr.detectChanges();
+        setTimeout(() => alert('Success! You are subscribed.'), 100);
       },
       error: (err) => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
         console.error('Full error log:', err);
         const errorMessage = err.error?.message || err.text || err.message || 'Subscription failed';
-        alert('Error: ' + errorMessage);
-        this.isLoading = false;
+        setTimeout(() => alert('Error: ' + errorMessage), 100);
       },
     });
   }
