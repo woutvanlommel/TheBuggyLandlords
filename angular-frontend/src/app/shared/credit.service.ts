@@ -35,7 +35,10 @@ export class CreditService {
 
   private getHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('auth_token');
-    let headers = new HttpHeaders();
+    let headers = new HttpHeaders()
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json');
+    
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
@@ -57,6 +60,20 @@ export class CreditService {
 
   getPackages(): Observable<CreditPackage[]> {
     return of(this.packages);
+  }
+
+  createPaymentIntent(packageId: number): Observable<{clientSecret: string}> {
+    return this.http.post<{clientSecret: string}>(`${this.apiUrl}/payment-intent`, { package_id: packageId }, { headers: this.getHeaders() });
+  }
+
+  verifyPayment(paymentIntentId: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/verify-payment`, { paymentIntentId }, { headers: this.getHeaders() }).pipe(
+      tap(res => {
+        if (res.success) {
+          this.refreshBalance();
+        }
+      })
+    );
   }
 
   buyPackage(packageId: number): Observable<boolean> {

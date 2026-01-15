@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\Room;
 use App\Models\Building;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
 
 class CreditController extends Controller
 {
@@ -34,7 +37,98 @@ class CreditController extends Controller
     }
 
     /**
-     * Buy credits
+     * Start Stripe Payment Intent
+     */
+    public function createPaymentIntent(Request $request)
+    {
+        $request->validate([
+            'package_id' => 'required|integer|in:1,2,3',
+        ]);
+
+        $packages = [
+            1 => ['credits' => 50, 'price' => 25],
+            2 => ['credits' => 100, 'price' => 45],
+            3 => ['credits' => 500, 'price' => 200]
+        ];
+
+        $package = $packages[$request->package_id];
+        $amount = $package['price'] * 100; // Stripe expects cents
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $amount,
+                'currency' => 'eur',
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                ],
+                'metadata' => [
+                    'user_id' => $request->user()->id,
+                    'package_id' => $request->package_id,
+                    'credits' => $package['credits']
+                ],
+            ]);
+
+            return response()->json([
+                'clientSecret' => $paymentIntent->client_secret,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Verify Stripe Payment and Add Credits
+     */
+    public function verifyPayment(Request $request)
+    {
+        $request->validate([
+            'paymentIntentId' => 'required|string',
+        ]);
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            Log::info('Verifying Payment: ' . $request->paymentIntentId);
+            $paymentIntent = PaymentIntent::retrieve($request->paymentIntentId);
+            Log::info('PaymentIntent Status: ' . $paymentIntent->status);
+
+            if ($paymentIntent->status === 'succeeded') {
+                $credits = (int) $paymentIntent->metadata->credits;
+                $userId = $paymentIntent->metadata->user_id;
+
+                Log::info("Metadata - Credits: {$credits}, User: {$userId}, AuthUser: " . $request->user()->id);
+
+                if ($request->user()->id != $userId) {
+                    Log::warning('User ID mismatch');
+                    return response()->json(['error' => 'Unauthorized payment verification'], 403);
+                }
+
+                $user = $request->user();
+                $oldCredits = $user->credits;
+                
+                // Refresh user from DB to ensure we have latest data
+                $user = User::find($user->id); 
+                
+                $user->credits += $credits;
+                $user->save();
+                
+                Log::info("Credits Updated. Old: {$oldCredits}, Added: {$credits}, New: {$user->credits}");
+
+                return response()->json(['success' => true, 'credits_added' => $credits, 'new_balance' => $user->credits]);
+            } else {
+                return response()->json(['success' => false, 'status' => $paymentIntent->status]);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Verify Error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Buy credits (LEGACY / TESTING)
      */
     public function buyPackage(Request $request)
     {
