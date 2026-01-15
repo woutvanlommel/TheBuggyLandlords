@@ -27,7 +27,14 @@ class VerhuurderController extends Controller
         }
 
         $buildings = $user->buildings()
-            ->with(['rooms.roomtype', 'rooms.contracts.user', 'street', 'place'])
+            ->with([
+                'rooms.roomType', 
+                'rooms.contracts' => function($query) {
+                    $query->where('is_active', 1)->with('user');
+                }, 
+                'street', 
+                'place'
+            ])
             ->get();
 
         $buildings->each(function($building) {
@@ -92,6 +99,25 @@ class VerhuurderController extends Controller
     }
 
     /**
+     * Haal een specifiek gebouw op
+     */
+    public function showBuilding(Request $request, $id)
+    {
+        $user = $request->user();
+        $building = Building::where('user_id', $user->id)
+            ->with(['rooms.roomType', 'rooms.contracts' => function($query) {
+                $query->where('is_active', 1)->with('user');
+            }, 'street', 'place'])
+            ->findOrFail($id);
+
+        $building->rooms->each(function($room) {
+            $room->active_contract = $room->contracts->first();
+        });
+
+        return response()->json($building);
+    }
+
+    /**
      * Update een bestaand gebouw
      */
     public function updateBuilding(Request $request, $id, GeocodingService $geocoder)
@@ -149,13 +175,19 @@ class VerhuurderController extends Controller
     public function showRoom(Request $request, $id)
     {
         $user = $request->user();
-        $room = Room::with(['roomtype', 'images'])->findOrFail($id);
 
-        if ($room->building->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        try {
+            $room = Room::with(['roomType', 'images', 'building'])->findOrFail($id);
+
+            // Veiligheidscheck op building
+            if (!$room->building || $room->building->user_id !== $user->id) {
+                return response()->json(['message' => 'Unauthorized or Building not found'], 403);
+            }
+
+            return response()->json($room);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Kamer niet gevonden: ' . $e->getMessage()], 404);
         }
-
-        return response()->json($room);
     }
 
     /**
@@ -177,7 +209,7 @@ class VerhuurderController extends Controller
         ]);
 
         $room = Room::create($validated);
-        return response()->json(['message' => 'Kamer toegevoegd', 'room' => $room]);
+        return response()->json(['message' => 'Kamer toegevoegd', 'room' => $room->load('roomType')]);
     }
 
     /**
@@ -188,8 +220,8 @@ class VerhuurderController extends Controller
         $user = $request->user();
         $room = Room::findOrFail($id);
 
-        if ($room->building->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (!$room->building || $room->building->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized or building missing'], 403);
         }
 
         $validated = $request->validate([
@@ -202,7 +234,7 @@ class VerhuurderController extends Controller
         ]);
 
         $room->update($validated);
-        return response()->json(['message' => 'Kamer bijgewerkt', 'room' => $room]);
+        return response()->json(['message' => 'Kamer bijgewerkt', 'room' => $room->load('roomType')]);
     }
 
     /**

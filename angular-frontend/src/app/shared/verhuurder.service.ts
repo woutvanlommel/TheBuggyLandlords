@@ -9,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class VerhuurderService {
   private baseApi = environment.apiUrl;
+  private roomTypesCache: any[] | null = null;
 
   constructor(private authService: AuthService, private http: HttpClient) {}
 
@@ -22,6 +23,18 @@ export class VerhuurderService {
 
     return firstValueFrom(
       this.http.get<any[]>(this.baseApi + 'my-buildings', { headers: headersObj })
+    );
+  }
+
+  // Haal één specifiek gebouw op
+  async getBuilding(id: number): Promise<any> {
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    return firstValueFrom(
+      this.http.get<any>(`${this.baseApi}buildings/${id}`, { headers: headersObj })
     );
   }
 
@@ -109,7 +122,18 @@ export class VerhuurderService {
 
   // Haal kamertypes op
   async getRoomTypes(): Promise<any[]> {
-    return firstValueFrom(this.http.get<any[]>(this.baseApi + 'room-types'));
+    if (this.roomTypesCache) return this.roomTypesCache;
+
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    const types = await firstValueFrom(
+      this.http.get<any[]>(this.baseApi + 'room-types', { headers: headersObj })
+    );
+    this.roomTypesCache = types;
+    return types;
   }
 
   // Upload een afbeelding voor een kamer

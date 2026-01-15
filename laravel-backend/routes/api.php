@@ -216,6 +216,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- SPECIFIEK VOOR VERHUURDERS ---
 
     Route::get('/my-buildings', [VerhuurderController::class, 'getMyBuildings']);
+    Route::get('/buildings/{id}', [VerhuurderController::class, 'showBuilding']);
     Route::post('/add-building', [VerhuurderController::class, 'storeBuilding']);
     Route::put('/buildings/{id}', [VerhuurderController::class, 'updateBuilding']);
     Route::delete('/buildings/{id}', [VerhuurderController::class, 'deleteBuilding']);

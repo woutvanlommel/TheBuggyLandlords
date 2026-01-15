@@ -244,10 +244,8 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
               </div>
 
               <!-- Room Grid -->
-              <div
-                *ngIf="!loading && building?.rooms?.length > 0"
-                class="grid grid-cols-1 md:grid-cols-2 gap-4"
-              >
+              @if (!loading && building?.rooms?.length > 0) {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @for (room of building.rooms; track room.id) {
                 <div
                   class="bg-base-een-100/30 border border-base-twee-100 p-5 rounded-3xl group hover:border-primary-200 hover:bg-white transition-all"
@@ -275,7 +273,7 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
                       class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <button
-                        (click)="openEditRoomModal(room)"
+                        routerLink="/dashboard/room/{{ room.id }}"
                         class="p-2 hover:bg-primary-50 rounded-xl text-primary-600 transition-colors"
                         title="Bewerken"
                       >
@@ -331,128 +329,131 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
                 </div>
                 }
               </div>
+              }
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Add/Edit Room Modal -->
-      <div
-        *ngIf="showRoomModal"
-        class="fixed inset-0 z-[100] bg-base-twee-900/60 backdrop-blur-md flex items-center justify-center p-4"
-      >
+        <!-- Add/Edit Room Modal -->
         <div
-          class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
-          (click)="$event.stopPropagation()"
+          *ngIf="showRoomModal"
+          class="fixed inset-0 z-[100] bg-base-twee-900/60 backdrop-blur-md flex items-center justify-center p-4"
         >
           <div
-            class="px-8 py-6 border-b border-base-twee-100 flex justify-between items-center bg-base-een-50/30"
+            class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+            (click)="$event.stopPropagation()"
           >
-            <h3 class="text-xl font-bold text-base-twee-900">
-              {{ editingRoomId ? 'Kot Bewerken' : 'Nieuw Kot Toevoegen' }}
-            </h3>
-            <button
-              (click)="closeRoomModal()"
-              class="p-2 hover:bg-white rounded-full transition-colors text-base-twee-400 hover:text-base-twee-900"
+            <div
+              class="px-8 py-6 border-b border-base-twee-100 flex justify-between items-center bg-base-een-50/30"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <h3 class="text-xl font-bold text-base-twee-900">
+                {{ editingRoomId ? 'Kot Bewerken' : 'Nieuw Kot Toevoegen' }}
+              </h3>
+              <button
+                (click)="closeRoomModal()"
+                class="p-2 hover:bg-white rounded-full transition-colors text-base-twee-400 hover:text-base-twee-900"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div class="p-8 space-y-6">
-            <div>
-              <label
-                class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
-                >Naam / Omschrijving</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="currentRoom.name"
-                class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 outline-none transition-all"
-                placeholder="Bijv. Kot 1.01 (straatkant)"
-              />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="p-8 space-y-6">
               <div>
                 <label
                   class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
-                  >Kamernummer</label
+                  >Naam / Omschrijving</label
                 >
                 <input
                   type="text"
-                  [(ngModel)]="currentRoom.roomnumber"
+                  [(ngModel)]="currentRoom.name"
                   class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 outline-none transition-all"
-                  placeholder="1.01"
+                  placeholder="Bijv. Kot 1.01 (straatkant)"
                 />
               </div>
-              <div>
-                <label
-                  class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
-                  >Type</label
-                >
-                <select
-                  [(ngModel)]="currentRoom.roomtype_id"
-                  class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 bg-white focus:border-primary-500 outline-none transition-all appearance-none"
-                >
-                  <option *ngFor="let type of roomTypes" [value]="type.id">{{ type.type }}</option>
-                </select>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
+                    >Kamernummer</label
+                  >
+                  <input
+                    type="text"
+                    [(ngModel)]="currentRoom.roomnumber"
+                    class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 outline-none transition-all"
+                    placeholder="1.01"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
+                    >Type</label
+                  >
+                  <select
+                    [(ngModel)]="currentRoom.roomtype_id"
+                    class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 bg-white focus:border-primary-500 outline-none transition-all appearance-none"
+                  >
+                    <option *ngFor="let type of roomTypes" [value]="type.id">
+                      {{ type.type }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
+                    >Huurprijs (€)</label
+                  >
+                  <input
+                    type="number"
+                    [(ngModel)]="currentRoom.price"
+                    class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
+                    >Oppervlakte (m²)</label
+                  >
+                  <input
+                    type="number"
+                    [(ngModel)]="currentRoom.surface"
+                    class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 outline-none transition-all"
+                  />
+                </div>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
-                  >Huurprijs (€)</label
-                >
-                <input
-                  type="number"
-                  [(ngModel)]="currentRoom.price"
-                  class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 outline-none transition-all"
-                />
-              </div>
-              <div>
-                <label
-                  class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5"
-                  >Oppervlakte (m²)</label
-                >
-                <input
-                  type="number"
-                  [(ngModel)]="currentRoom.surface"
-                  class="w-full px-5 py-3 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 outline-none transition-all"
-                />
-              </div>
+            <div class="p-8 border-t border-base-twee-100 flex gap-3">
+              <button
+                (click)="closeRoomModal()"
+                class="flex-1 py-4 text-base-twee-600 font-bold hover:bg-base-een-100 rounded-2xl transition-colors"
+              >
+                Annuleren
+              </button>
+              <button
+                (click)="saveRoom()"
+                [disabled]="!currentRoom.roomnumber || !currentRoom.price"
+                class="flex-[1.5] py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50"
+              >
+                Kot Opslaan
+              </button>
             </div>
-          </div>
-
-          <div class="p-8 border-t border-base-twee-100 flex gap-3">
-            <button
-              (click)="closeRoomModal()"
-              class="flex-1 py-4 text-base-twee-600 font-bold hover:bg-base-een-100 rounded-2xl transition-colors"
-            >
-              Annuleren
-            </button>
-            <button
-              (click)="saveRoom()"
-              [disabled]="!currentRoom.roomnumber || !currentRoom.price"
-              class="flex-[1.5] py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50"
-            >
-              Kot Opslaan
-            </button>
           </div>
         </div>
       </div>
@@ -504,10 +505,8 @@ export class BuildingEditing implements OnInit {
 
     try {
       this.loading = true;
-      // Fetch all buildings and find this one
-      // Idealiter zou er een getBuilding(id) zijn, maar we gebruiken wat we hebben
-      const buildings = await this.verhuurderService.getMyBuildings();
-      this.building = buildings.find((b: any) => b.id === +id);
+      // Gebruik de specifieke endpoint voor betere performance
+      this.building = await this.verhuurderService.getBuilding(+id);
 
       if (this.building) {
         this.editBuilding = {
@@ -522,6 +521,7 @@ export class BuildingEditing implements OnInit {
       }
     } catch (error) {
       console.error('Error loading building:', error);
+      alert('Er is een fout opgetreden bij het laden van het gebouw.');
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
