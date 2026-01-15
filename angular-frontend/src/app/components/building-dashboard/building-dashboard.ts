@@ -5,11 +5,12 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroPlusMicro } from '@ng-icons/heroicons/micro';
 import { RouterLink } from '@angular/router';
+import { QuillEditorComponent } from 'ngx-quill';
 
 @Component({
   selector: 'app-building-dashboard',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule, NgIcon],
+  imports: [RouterLink, CommonModule, FormsModule, NgIcon, QuillEditorComponent],
   viewProviders: [provideIcons({ heroPlusMicro })],
   template: `
     <div class="flex items-center justify-between gap-3 mb-4">
@@ -424,7 +425,12 @@ export class BuildingDashboard implements OnInit {
 
   closeModal() {
     this.showAddBuildingModal = false;
-    this.newBuilding = { street: '', number: '', postalCode: '', city: '' };
+    this.newBuilding = {
+      street: '',
+      number: '',
+      postalCode: '',
+      city: '',
+    };
     this.suggestions = [];
   }
 
