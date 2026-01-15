@@ -35,37 +35,26 @@ import { filter } from 'rxjs/operators';
         <div class="relative z-30 -mb-px px-5">
           <div class="grid grid-cols-3 gap-2 w-full">
             <a
-              (click)="setActiveTab('dashboard')"
-              [ngClass]="
-                activeTab === 'dashboard'
-                  ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
-                  : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'
-              "
-              class="px-6 py-2.5 font-semibold text-sm w-full block text-center"
+              routerLink="stats"
+              routerLinkActive="bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0"
+              [routerLinkActiveOptions]="{exact: true}"
+              class="px-6 py-2.5 font-semibold text-sm w-full block text-center text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer overflow-hidden z-10"
             >
               Dashboard
             </a>
 
             <a
-              (click)="setActiveTab('profile')"
-              [ngClass]="
-                activeTab === 'profile'
-                  ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
-                  : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'
-              "
-              class="px-6 py-2.5 font-semibold text-sm w-full block text-center"
+              routerLink="profile"
+              routerLinkActive="bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0"
+              class="px-6 py-2.5 font-semibold text-sm w-full block text-center text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer overflow-hidden z-10"
             >
               Profiel
             </a>
 
             <a
-              (click)="setActiveTab('credits')"
-              [ngClass]="
-                activeTab === 'credits'
-                  ? 'bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0'
-                  : 'text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer'
-              "
-              class="px-6 py-2.5 font-semibold text-sm w-full block text-center"
+              routerLink="credits"
+              routerLinkActive="bg-base-een-100/60 backdrop-blur-md border-t border-x border-base-twee-300/50 text-base-twee-900 rounded-t-2xl border-b-0"
+              class="px-6 py-2.5 font-semibold text-sm w-full block text-center text-base-twee-600 hover:text-base-twee-900 hover:bg-base-een-200/30 rounded-t-2xl transition-all cursor-pointer overflow-hidden z-10"
             >
               Credits
             </a>
@@ -85,7 +74,6 @@ import { filter } from 'rxjs/operators';
 export class Dashboard implements OnInit {
   activeTab: string = 'dashboard';
 
-  // 2. Inject ActivatedRoute
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -93,45 +81,10 @@ export class Dashboard implements OnInit {
   ) {}
 
   ngOnInit() {
-  // A. Run immediately on load to set the correct tab
-  this.updateTabFromUrl();
-
-  // B. Listen for FUTURE navigation changes
-  this.router.events.pipe(
-    filter(event => event instanceof NavigationEnd) // Only trigger when navigation finishes
-  ).subscribe(() => {
-    this.updateTabFromUrl(); // Update the tab again
-  });
-}
-
-// Helper function to keep logic clean
-updateTabFromUrl() {
-  const currentUrl = this.router.url;
-
-  if (currentUrl.includes('/credits')) {
-    this.activeTab = 'credits';
-  }
-  else if (currentUrl.includes('/profile')) {
-    this.activeTab = 'profile';
-  }
-  else {
-    // If it's not profile or credits, it must be the main dashboard/stats
-    this.activeTab = 'dashboard';
-  }
-}
-
-  // 4. Update the helper to navigate instead of just setting a variable
-  setActiveTab(tab: string) {
-    if (tab === 'dashboard') {
-      this.router.navigate(['/dashboard/stats']);
-    } else if (tab === 'profile') {
-      this.router.navigate(['/dashboard/profile']);
-    } else if (tab === 'credits') {
-      this.router.navigate(['/dashboard/credits']);
-    }
   }
 
   onLogout() {
-    this.authService.logout().finally(() => this.router.navigate(['/login']));
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

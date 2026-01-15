@@ -36,7 +36,7 @@ import { AuthService } from '../../../shared/auth.service';
         </section>
 
         <!-- SECTION 2: LANDLORD TOOLS (SPOTLIGHT) -->
-        <section *ngIf="userRole === 'Verhuurder'" class="bg-base-een-100/50 rounded-2xl border border-dashed border-base-twee-300 p-6">
+        <section *ngIf="isLandlord" class="bg-base-een-100/50 rounded-2xl border border-dashed border-base-twee-300 p-6">
             <div class="flex items-center gap-3 mb-6">
                 <div class="bg-accent-100 p-2 rounded-lg text-accent-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -60,13 +60,16 @@ import { AuthService } from '../../../shared/auth.service';
 })
 export class Credits implements OnInit {
   balance: number = 0;
-  userRole: string | null = null;
+  isLandlord: boolean = false;
 
   constructor(private creditService: CreditService, private authService: AuthService) {}
 
   ngOnInit() {
     this.creditService.refreshBalance();
     this.creditService.balance$.subscribe(b => this.balance = b);
-    this.userRole = sessionStorage.getItem('user_role');
+    
+    // Normalize role check (handle case-insensitive)
+    const role = sessionStorage.getItem('user_role');
+    this.isLandlord = !!role && role.toLowerCase() === 'verhuurder';
   }
 }
