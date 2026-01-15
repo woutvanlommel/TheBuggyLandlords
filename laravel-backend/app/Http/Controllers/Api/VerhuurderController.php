@@ -10,6 +10,9 @@ use App\Models\Street;
 use App\Models\RoomType;
 use App\Services\GeocodingService;
 use App\Models\Document;
+use App\Models\ExtraCost;
+use App\Models\Facility;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -209,7 +212,8 @@ class VerhuurderController extends Controller
         $user = $request->user();
 
         try {
-            $room = Room::with(['roomType', 'images', 'building'])->findOrFail($id);
+            $room = Room::with(['roomType', 'images', 'building', 'extraCosts', 'facilities'])
+                        ->findOrFail($id);
 
             // Veiligheidscheck op building
             if (!$room->building || $room->building->user_id !== $user->id) {
@@ -263,7 +267,24 @@ class VerhuurderController extends Controller
             'name' => 'nullable|string',
             'description' => 'nullable|string',
             'surface' => 'nullable|numeric',
+            'extra_costs' => 'nullable|array',
+            'extra_costs.*.id' => 'nullable|exists:extracost,id',
+            'extra_costs.*p.price' => 'nullable|numeric',
+            'facilities' => 'nullable|array',
+            'facilities.*' => 'nullable|exists:facility,id',
         ]);
+
+        if ($request->has('extra_costs')) {
+            $syncData = [];
+            foreach ($request->extra_costs as $cost) {
+                $syncData[$cost['id']] = ['price' => $cost['price']];
+            }
+            $room->extraCosts()->sync($syncData);
+        }
+
+        if ($request->has('facilities')) {
+            $room->facilities()->sync($request->facilities);
+        }
 
         $room->update($validated);
         return response()->json(['message' => 'Kamer bijgewerkt', 'room' => $room->load('roomType')]);

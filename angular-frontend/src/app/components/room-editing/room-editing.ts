@@ -2,11 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { VerhuurderService } from '../../shared/verhuurder.service';
+import { QuillEditorComponent } from 'ngx-quill';
 
 @Component({
   selector: 'app-room-editing',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, QuillEditorComponent],
   template: `
     <div class="min-h-screen bg-base-een-100 pb-20 rounded-lg">
       <!-- Header Area -->
@@ -90,10 +91,121 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
           <p class="text-base-twee-500">Kamergegevens ophalen...</p>
         </div>
         } @else if (room) {
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- Kamer Details Form -->
-          <div class="lg:col-span-1 space-y-6">
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
+          <div class="flex flex-col gap-8 lg:flex-row lg:col-span-2">
+            <div class="w-full lg:w-30/100 space-y-6">
+              <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
+                <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-primary-600"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                    />
+                  </svg>
+                  Kamergegevens
+                </h2>
+                <div class="space-y-4">
+                  <div>
+                    <label
+                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
+                      >Naam (optioneel)</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="room.name"
+                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                      placeholder="Bijv. Luxe Studio"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
+                      >Kamernummer</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="room.roomnumber"
+                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                    />
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
+                        >Huurprijs (€)</label
+                      >
+                      <input
+                        type="number"
+                        [(ngModel)]="room.price"
+                        class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
+                        >Oppervlakte (m²)</label
+                      >
+                      <input
+                        type="number"
+                        [(ngModel)]="room.surface"
+                        class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
+                      >Kamertype</label
+                    >
+                    <select
+                      [(ngModel)]="room.roomtype_id"
+                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                    >
+                      @for (type of roomTypes; track type.id) {
+                      <option [value]="type.id" class="text-black">
+                        {{ type.type || type.name || 'Onbekend' }}
+                      </option>
+                      }
+                    </select>
+                  </div>
+
+                  <div class="pt-4 mt-6 border-t border-base-een-100">
+                    <button
+                      (click)="deleteRoom()"
+                      class="w-full py-3 text-red-500 font-semibold hover:bg-red-50 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-5 h-5"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                        />
+                      </svg>
+                      Kamer Verwijderen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white h-fit rounded-3xl p-6 shadow-sm border border-base-twee-100 w-full lg:w-70/100"
+            >
               <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -106,116 +218,17 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                    d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
                   />
                 </svg>
-                Kamergegevens
+                Beschrijving van het gebouw
               </h2>
-
-              <div class="space-y-4">
-                <div>
-                  <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                    >Naam (optioneel)</label
-                  >
-                  <input
-                    type="text"
-                    [(ngModel)]="room.name"
-                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 placeholder:text-base-twee-300 shadow-sm"
-                    placeholder="Bijv. Luxe Studio"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                    >Kamernummer</label
-                  >
-                  <input
-                    type="text"
-                    [(ngModel)]="room.roomnumber"
-                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 shadow-sm"
-                  />
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                      >Huurprijs (€)</label
-                    >
-                    <input
-                      type="number"
-                      [(ngModel)]="room.price"
-                      class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 shadow-sm"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                      >Oppervlakte (m²)</label
-                    >
-                    <input
-                      type="number"
-                      [(ngModel)]="room.surface"
-                      class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 shadow-sm"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                    >Kamertype</label
-                  >
-                  <select
-                    [(ngModel)]="room.roomtype_id"
-                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 bg-white shadow-sm"
-                  >
-                    @for (type of roomTypes; track type.id) {
-                    <option [value]="type.id" class="text-black">
-                      {{ type.type || type.name || 'Onbekend' }}
-                    </option>
-                    }
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                    >Beschrijving</label
-                  >
-                  <textarea
-                    [(ngModel)]="room.description"
-                    rows="4"
-                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 resize-none shadow-sm"
-                    placeholder="Vertel iets over de kamer..."
-                  ></textarea>
-                </div>
-
-                <div class="pt-4 mt-6 border-t border-base-een-100">
-                  <button
-                    (click)="deleteRoom()"
-                    class="w-full py-3 text-red-500 font-semibold hover:bg-red-50 rounded-xl transition-colors flex items-center justify-center gap-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-5 h-5"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                      />
-                    </svg>
-                    Kamer Verwijderen
-                  </button>
-                </div>
-              </div>
+              <quill-editor
+                [(ngModel)]="room.description"
+                class="block w-full h-fit bg-white rounded-2xl overflow-hidden border-2 border-base-een-200 focus-within:border-primary-500 transition-all font-sans"
+                [styles]="{ height: '100%' }"
+                placeholder="Geef hier een uitgebreide beschrijving van het gebouw, de ligging, en eventuele extra troeven..."
+              ></quill-editor>
             </div>
           </div>
 
