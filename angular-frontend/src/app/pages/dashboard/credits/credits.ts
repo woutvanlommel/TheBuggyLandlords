@@ -60,17 +60,16 @@ import { AuthService } from '../../../shared/auth.service';
 })
 export class Credits implements OnInit {
   balance: number = 0;
-  userRole: string | null = null;
+  isLandlord: boolean = false;
 
   constructor(private creditService: CreditService, private authService: AuthService) {}
 
   ngOnInit() {
     this.creditService.refreshBalance();
     this.creditService.balance$.subscribe(b => this.balance = b);
-    this.userRole = sessionStorage.getItem('user_role');
-  }
-
-  get isLandlord(): boolean {
-    return (this.userRole || '').toLowerCase() === 'verhuurder';
+    
+    // Normalize role check (handle case-insensitive)
+    const role = sessionStorage.getItem('user_role');
+    this.isLandlord = !!role && role.toLowerCase() === 'verhuurder';
   }
 }

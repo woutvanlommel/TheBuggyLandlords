@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CreditService } from '../../shared/credit.service';
@@ -123,12 +123,10 @@ interface BuildingGroup {
       </div>
 
       <!-- Spotlight Duration Modal -->
-      <div *ngIf="selectedProp" class="fixed inset-0 z-9999 flex items-center justify-center p-4" style="position: fixed;">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeModal()"></div>
+      <dialog #spotlightDialog class="bg-transparent p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm rounded-2xl shadow-2xl max-w-sm w-full relative m-auto focus:outline-none">
           
           <!-- Modal Content -->
-          <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 relative z-10 animate-in fade-in zoom-in duration-200 scale-100 max-h-[90vh] overflow-y-auto">
+          <div *ngIf="selectedProp" class="bg-white rounded-2xl shadow-2xl w-full p-6 relative overflow-y-auto">
               <h3 class="text-xl font-bold text-base-twee-900 mb-2">Promote Room {{selectedProp.title}}</h3>
               <p class="text-sm text-base-twee-600 mb-6 leading-relaxed">
                 Choose how long you want to highlight this room.
@@ -166,7 +164,7 @@ interface BuildingGroup {
                   </button>
               </div>
           </div>
-      </div>
+      </dialog>
     </div>
   `,
   styles: []
@@ -179,19 +177,27 @@ export class LandlordSpotlightComponent implements OnInit {
   // Modal State
   selectedProp: MyProperty | null = null;
   spotlightDays: number = 1;
+  
+  @ViewChild('spotlightDialog') spotlightDialog!: ElementRef<HTMLDialogElement>;
 
   constructor(
     private creditService: CreditService,
-    private verhuurderService: VerhuurderService
+    private verhuurderService: VerhuurderService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.creditService.balance$.subscribe(b => this.balance = b);
+    this.creditService.balance$.subscribe(b => {
+      this.balance = b;
+      this.cdr.markForCheck();
+    });
     this.loadProperties();
   }
 
   async loadProperties() {
     this.isLoading = true;
+    this.cdr.markForCheck(); // Update to show loading state immediately
+    
     try {
       const buildings = await this.verhuurderService.getMyBuildings();
       
@@ -216,6 +222,7 @@ export class LandlordSpotlightComponent implements OnInit {
       console.error(e);
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges(); // Force update when done
     }
   }
 
@@ -238,10 +245,13 @@ export class LandlordSpotlightComponent implements OnInit {
 
   openSpotlightModal(prop: MyProperty) {
     this.selectedProp = prop;
-    this.spotlightDays = 1; 
+    this.spotlightDays = 1;
+    this.cdr.detectChanges(); // Ensure *ngIf renders content before showing
+    this.spotlightDialog?.nativeElement.showModal();
   }
 
   closeModal() {
+    this.spotlightDialog?.nativeElement.close();
     this.selectedProp = null;
   }
 
@@ -266,9 +276,16 @@ export class LandlordSpotlightComponent implements OnInit {
   deactivateSpotlight(prop: MyProperty) {
     if(!confirm('Are you sure you want to remove the spotlight from this property?')) return;
     
+    // Optimistic Update: Remove immediately
+    const previousState = prop.isSpotlightActive;
+    prop.isSpotlightActive = false;
+    prop.expiresAt = null;
+
     this.creditService.toggleSpotlight(prop.id, false).subscribe(success => {
-       if (success) {
-         prop.isSpotlightActive = false;
+       if (!success) {
+         // Revert if API failed
+         prop.isSpotlightActive = previousState;
+         alert('Failed to deactivate spotlight. Please try again.');
        }
     });
   }
