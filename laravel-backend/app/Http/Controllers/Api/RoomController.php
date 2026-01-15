@@ -244,6 +244,24 @@ class RoomController extends Controller
             $roomArray['building']['longitude'] = $room->building->longitude;
             $roomArray['lat'] = $room->building->latitude;
             $roomArray['lng'] = $room->building->longitude;
+
+            // SANITIZE OWNER DATA IF NOT UNLOCKED AND NOT OWNER
+            $ownerId = $room->building->user_id;
+            $isMe = $user && $user->id === $ownerId;
+            
+            // Note: ContactCard checks (isUnlocked || isSpotlighted || isMe).
+            // We must mirror this logic to decide whether to hide data.
+            // NEW RULE: User MUST be logged in ($user != null) to see data,
+            // even if it is spotlighted. Spotlight just implies "free to view if logged in".
+            $canSeeData = $user && ($roomArray['is_unlocked'] || $room->is_highlighted || $isMe);
+
+            if (!$canSeeData && isset($roomArray['building']['owner'])) {
+                $roomArray['building']['owner']['name'] = 'Verhuurder'; // generic last name
+                $roomArray['building']['owner']['fname'] = 'Naam';      // generic first name
+                $roomArray['building']['owner']['email'] = 'hidden@example.com';
+                $roomArray['building']['owner']['phone'] = null;
+                $roomArray['building']['owner']['profile_image_url'] = null; 
+            }
         }
 
         if (isset($room->images) && $room->images->count() > 0) {

@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgClass, NgIf } from "@angular/common";
 import { Router } from '@angular/router';
 import { User } from '../../models/user';
@@ -102,6 +102,7 @@ export class ContactCard implements OnInit {
   @Input() roomId?: number;
   @Input() isSpotlighted: boolean = false;
   @Input() isUnlocked: boolean = false; // Now an Input from parent
+  @Output() unlocked = new EventEmitter<void>();
 
   isLoading: boolean = false;
   errorMessage: string = '';
@@ -123,14 +124,14 @@ export class ContactCard implements OnInit {
   }
 
   get canViewContact(): boolean {
-    return this.isUnlocked || this.isSpotlighted || (!!this.user && this.currentUserId === this.user.id);
+    // Must be logged in AND (unlocked OR spotlighted OR owner)
+    return this.isLoggedIn && (this.isUnlocked || this.isSpotlighted || (!!this.user && this.currentUserId === this.user.id));
   }
 
   handleAction() {
     if (!this.isLoggedIn) {
       // Redirect to login if not logged in
-      // Maybe pass a returnUrl so they come back here
-      this.router.navigate(['/']); 
+      this.router.navigate(['/login']); 
       return;
     }
     this.unlockContact();
@@ -150,6 +151,7 @@ export class ContactCard implements OnInit {
         this.isLoading = false;
         if (success) {
           this.isUnlocked = true;
+          this.unlocked.emit(); // Notify parent to refresh data
           this.cdr.detectChanges(); // Force UI update
         } else {
           this.errorMessage = 'Could not unlock contact details.';

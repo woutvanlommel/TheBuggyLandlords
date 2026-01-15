@@ -23,7 +23,8 @@ import { ContactCard } from '../../components/contact-card/contact-card';
           [user]="room.building?.owner"
           [roomId]="room.id"
           [isSpotlighted]="room.is_highlighted"
-          [isUnlocked]="room.is_unlocked">
+          [isUnlocked]="room.is_unlocked"
+          (unlocked)="refreshData()">
       </app-contact-card>
     </div>
     }
@@ -38,9 +39,13 @@ export class RoomDetail {
   hasError = false;
 
   ngOnInit() {
+    this.refreshData();
+  }
+
+  refreshData() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
-      this.isLoading = true;
+      if (!this.room) this.isLoading = true; // only show loading on first load
       this.hasError = false;
       this.roomService.getRoomById(id).subscribe({
         next: (data) => {
@@ -56,9 +61,12 @@ export class RoomDetail {
         },
         error: (err) => {
           console.error('Fout bij ophalen kamer:', err);
-          this.room = null;
-          this.isLoading = false;
-          this.hasError = true;
+          
+          if (!this.room) {
+             this.room = null;
+             this.isLoading = false;
+             this.hasError = true;
+          }
           try {
             this.cdr.detectChanges();
           } catch (e) {
