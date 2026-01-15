@@ -34,7 +34,9 @@
     "@ng-icons/heroicons": "^33.0.0",
     "@stripe/stripe-js": "^8.6.1",
     "leaflet": "^1.9.4",
+    "ngx-quill": "^30.0.1",
     "ngx-stripe": "^21.8.0",
+    "quill": "^2.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

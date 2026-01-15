@@ -47,6 +47,20 @@ class VerhuurderController extends Controller
     }
 
     /**
+     * Zoek suggesties voor een adres
+     */
+    public function suggestAddress(Request $request, GeocodingService $geocoder)
+    {
+        $query = $request->query('q');
+        if (!$query || strlen($query) < 3) {
+            return response()->json([]);
+        }
+
+        $suggestions = $geocoder->suggest($query);
+        return response()->json($suggestions);
+    }
+
+    /**
      * Voeg een nieuw gebouw toe
      */
     public function storeBuilding(Request $request, GeocodingService $geocoder)
@@ -65,33 +79,39 @@ class VerhuurderController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $coordinates = $geocoder->geocode(
+        $geoResult = $geocoder->geocode(
             $validated['street'],
             $validated['number'],
             $validated['city']
         );
 
-        if (!$coordinates) {
+        if (!$geoResult) {
             return response()->json([
                 'message' => 'Adres niet gevonden of ongeldig. Controleer de straat, nummer en stad (enkel België).'
             ], 422);
         }
 
+        // Gebruik de gecorrigeerde waarden van de geocoder
+        $correctedCity = $geoResult['city'] ?? $validated['city'];
+        $correctedZip = $geoResult['postalCode'] ?? $validated['postalCode'];
+        $correctedStreet = $geoResult['street'] ?? $validated['street'];
+        $correctedNumber = $geoResult['housenumber'] ?? $validated['number'];
+
         $place = Place::firstOrCreate(
-            ['zipcode' => $validated['postalCode'], 'place' => $validated['city']]
+            ['zipcode' => $correctedZip, 'place' => $correctedCity]
         );
 
         $street = Street::firstOrCreate(
-            ['street' => $validated['street']]
+            ['street' => $correctedStreet]
         );
 
         $building = Building::create([
             'user_id' => $user->id,
             'street_id' => $street->id,
             'place_id' => $place->id,
-            'housenumber' => $validated['number'],
-            'latitude' => $coordinates['latitude'],
-            'longitude' => $coordinates['longitude'],
+            'housenumber' => $correctedNumber,
+            'latitude' => $geoResult['latitude'],
+            'longitude' => $geoResult['longitude'],
             'description' => $validated['description'] ?? null
         ]);
         
@@ -133,17 +153,29 @@ class VerhuurderController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $coordinates = $geocoder->geocode($validated['street'], $validated['housenumber'], $validated['city']);
+        $geoResult = $geocoder->geocode($validated['street'], $validated['housenumber'], $validated['city']);
 
-        $place = Place::firstOrCreate(['zipcode' => $validated['postalCode'], 'place' => $validated['city']]);
-        $street = Street::firstOrCreate(['street' => $validated['street']]);
+        if (!$geoResult) {
+            return response()->json([
+                'message' => 'Adres niet gevonden of ongeldig. Controleer de straat, nummer en stad (enkel België).'
+            ], 422);
+        }
+
+        // Gebruik de gecorrigeerde waarden van de geocoder
+        $correctedCity = $geoResult['city'] ?? $validated['city'];
+        $correctedZip = $geoResult['postalCode'] ?? $validated['postalCode'];
+        $correctedStreet = $geoResult['street'] ?? $validated['street'];
+        $correctedNumber = $geoResult['housenumber'] ?? $validated['housenumber'];
+
+        $place = Place::firstOrCreate(['zipcode' => $correctedZip, 'place' => $correctedCity]);
+        $street = Street::firstOrCreate(['street' => $correctedStreet]);
 
         $building->update([
             'street_id' => $street->id,
             'place_id' => $place->id,
-            'housenumber' => $validated['housenumber'],
-            'latitude' => $coordinates ? $coordinates['latitude'] : $building->latitude,
-            'longitude' => $coordinates ? $coordinates['longitude'] : $building->longitude,
+            'housenumber' => $correctedNumber,
+            'latitude' => $geoResult['latitude'],
+            'longitude' => $geoResult['longitude'],
             'description' => $validated['description'] ?? $building->description
         ]);
 

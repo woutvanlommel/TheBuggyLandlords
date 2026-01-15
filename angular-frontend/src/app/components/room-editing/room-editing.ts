@@ -115,62 +115,62 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
               <div class="space-y-4">
                 <div>
                   <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1"
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
                     >Naam (optioneel)</label
                   >
                   <input
                     type="text"
                     [(ngModel)]="room.name"
-                    class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 placeholder:text-base-twee-300 shadow-sm"
                     placeholder="Bijv. Luxe Studio"
                   />
                 </div>
 
                 <div>
                   <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1"
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
                     >Kamernummer</label
                   >
                   <input
                     type="text"
                     [(ngModel)]="room.roomnumber"
-                    class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 shadow-sm"
                   />
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
                     <label
-                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1"
+                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
                       >Huurprijs (€)</label
                     >
                     <input
                       type="number"
                       [(ngModel)]="room.price"
-                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                      class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 shadow-sm"
                     />
                   </div>
                   <div>
                     <label
-                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1"
+                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
                       >Oppervlakte (m²)</label
                     >
                     <input
                       type="number"
                       [(ngModel)]="room.surface"
-                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                      class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 shadow-sm"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1"
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
                     >Kamertype</label
                   >
                   <select
                     [(ngModel)]="room.roomtype_id"
-                    class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all bg-white"
+                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 bg-white shadow-sm"
                   >
                     @for (type of roomTypes; track type.id) {
                     <option [value]="type.id" class="text-black">
@@ -182,13 +182,13 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
 
                 <div>
                   <label
-                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1"
+                    class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
                     >Beschrijving</label
                   >
                   <textarea
                     [(ngModel)]="room.description"
                     rows="4"
-                    class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all resize-none"
+                    class="w-full px-5 py-3.5 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none font-semibold text-base-twee-900 resize-none shadow-sm"
                     placeholder="Vertel iets over de kamer..."
                   ></textarea>
                 </div>

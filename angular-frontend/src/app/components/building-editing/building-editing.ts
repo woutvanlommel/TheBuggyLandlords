@@ -3,15 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { VerhuurderService } from '../../shared/verhuurder.service';
+import { QuillEditorComponent } from 'ngx-quill';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroKeyMicro } from '@ng-icons/heroicons/micro';
 
 @Component({
   selector: 'app-building-editing',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, QuillEditorComponent, NgIcon],
+  viewProviders: [provideIcons({ heroKeyMicro })],
   template: `
-    <div class="min-h-screen bg-base-een-100 pb-20">
+    <div class="min-h-screen bg-base-een-100 pb-20 rounded-lg">
       <!-- Header Area -->
-      <div class="bg-white border-b border-base-twee-200 sticky top-0 z-30 shadow-sm">
+      <div class="bg-white border-b border-base-twee-200 sticky top-0 z-30 shadow-sm rounded-t-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div class="flex items-center gap-4">
             <button
@@ -56,7 +60,7 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Building Details Form -->
-          <div class="lg:col-span-1 space-y-6">
+          <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-24 self-start">
             <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
               <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-2">
                 <svg
@@ -77,16 +81,49 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
               </h2>
 
               <div class="space-y-4" *ngIf="building">
-                <div>
+                <div class="relative">
                   <label
                     class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1"
                     >Straat</label
                   >
-                  <input
-                    type="text"
-                    [(ngModel)]="editBuilding.street"
-                    class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                  />
+                  <div class="relative">
+                    <input
+                      type="text"
+                      [(ngModel)]="editBuilding.street"
+                      (input)="onStreetInput()"
+                      class="w-full pl-4 pr-10 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                    />
+                    @if(suggestLoading) {
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div
+                        class="w-4 h-4 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"
+                      ></div>
+                    </div>
+                    }
+                  </div>
+
+                  <!-- Suggestions Dropdown -->
+                  @if(suggestions.length > 0) {
+                  <div
+                    class="absolute z-50 left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-base-twee-100 overflow-hidden max-h-40 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200"
+                  >
+                    @for (suggestion of suggestions; track $index) {
+                    <div
+                      (click)="selectSuggestion(suggestion)"
+                      class="px-4 py-2 hover:bg-primary-50 cursor-pointer transition-colors border-b border-base-een-50 last:border-0 text-sm group"
+                    >
+                      <p
+                        class="font-bold text-base-twee-900 group-hover:text-primary-700 transition-colors"
+                      >
+                        {{ suggestion.street }}
+                      </p>
+                      <p class="text-[10px] text-base-twee-500">
+                        {{ suggestion.postalCode }} {{ suggestion.city }}
+                      </p>
+                    </div>
+                    }
+                  </div>
+                  }
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -154,9 +191,34 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
 
           <!-- Rooms Management -->
           <div class="lg:col-span-2 space-y-6">
-            <div
-              class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100 min-h-[500px]"
-            >
+            <!-- Building Description -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
+              <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5 text-primary-600"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+                  />
+                </svg>
+                Beschrijving van het gebouw
+              </h2>
+              <quill-editor
+                [(ngModel)]="editBuilding.description"
+                class="block w-full bg-white rounded-2xl overflow-hidden border-2 border-base-een-200 focus-within:border-primary-500 transition-all font-sans"
+                [styles]="{ height: '350px' }"
+                placeholder="Geef hier een uitgebreide beschrijving van het gebouw, de ligging, en eventuele extra troeven..."
+              ></quill-editor>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100 h-fit">
               <div class="flex items-center justify-between mb-8">
                 <h2 class="text-xl font-bold text-base-twee-900 flex items-center gap-2">
                   <svg
@@ -255,11 +317,11 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
                       <div
                         class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-600 font-bold group-hover:bg-primary-600 group-hover:text-white transition-all"
                       >
-                        {{ room.roomnumber }}
+                        <ng-icon name="heroKeyMicro" class="w-6 h-6"></ng-icon>
                       </div>
                       <div>
                         <h4 class="font-bold text-base-twee-900">
-                          {{ room.name || room.roomtype?.type || 'Kamer' }}
+                          {{ room.name || room.roomtype?.type || 'Kamer' }} - {{ room.roomnumber }}
                         </h4>
                         <p
                           class="text-[10px] text-base-twee-400 font-bold uppercase tracking-widest"
@@ -337,10 +399,10 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
         <!-- Add/Edit Room Modal -->
         <div
           *ngIf="showRoomModal"
-          class="fixed inset-0 z-[100] bg-base-twee-900/60 backdrop-blur-md flex items-center justify-center p-4"
+          class="fixed inset-0 z-100 bg-base-twee-900/60 backdrop-blur-md flex items-center justify-center p-4 rounded-2xl"
         >
           <div
-            class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+            class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col my-auto"
             (click)="$event.stopPropagation()"
           >
             <div
@@ -468,8 +530,11 @@ export class BuildingEditing implements OnInit {
     housenumber: '',
     postalCode: '',
     city: '',
+    description: '',
   };
-
+  suggestions: any[] = [];
+  suggestLoading: boolean = false;
+  private suggestTimeout: any;
   loading: boolean = true;
   roomTypes: any[] = [
     { id: 1, type: 'Kamer' },
@@ -499,6 +564,36 @@ export class BuildingEditing implements OnInit {
     this.loadRoomTypes();
   }
 
+  onStreetInput() {
+    clearTimeout(this.suggestTimeout);
+
+    if (this.editBuilding.street.length < 1) {
+      this.suggestions = [];
+      this.suggestLoading = false;
+      return;
+    }
+
+    this.suggestLoading = true;
+    this.suggestTimeout = setTimeout(async () => {
+      try {
+        this.suggestions = await this.verhuurderService.suggestAddress(this.editBuilding.street);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      } finally {
+        this.suggestLoading = false;
+        this.cdr.detectChanges();
+      }
+    }, 100);
+  }
+
+  selectSuggestion(suggestion: any) {
+    this.editBuilding.street = suggestion.street || this.editBuilding.street;
+    this.editBuilding.city = suggestion.city || this.editBuilding.city;
+    this.editBuilding.postalCode = suggestion.postalCode || this.editBuilding.postalCode;
+    this.suggestions = [];
+    this.cdr.detectChanges();
+  }
+
   async loadData() {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
@@ -514,6 +609,7 @@ export class BuildingEditing implements OnInit {
           housenumber: this.building.housenumber || '',
           postalCode: this.building.place?.zipcode || '',
           city: this.building.place?.place || '',
+          description: this.building.description || '',
         };
       } else {
         alert('Gebouw niet gevonden.');
@@ -546,9 +642,10 @@ export class BuildingEditing implements OnInit {
       await this.verhuurderService.updateBuilding(this.building.id, this.editBuilding);
       alert('Gebouw succesvol bijgewerkt!');
       await this.loadData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving building:', error);
-      alert('Er is een fout opgetreden bij het opslaan.');
+      const message = error.error?.message || 'Er is een fout opgetreden bij het opslaan.';
+      alert(message);
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
