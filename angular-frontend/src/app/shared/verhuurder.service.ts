@@ -26,6 +26,18 @@ export class VerhuurderService {
     );
   }
 
+  // Zoek suggesties voor een adres
+  async suggestAddress(query: string): Promise<any[]> {
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    return firstValueFrom(
+      this.http.get<any[]>(`${this.baseApi}suggest-address?q=${query}`, { headers: headersObj })
+    );
+  }
+
   // Haal één specifiek gebouw op
   async getBuilding(id: number): Promise<any> {
     const headersObj: { [header: string]: string } = {};

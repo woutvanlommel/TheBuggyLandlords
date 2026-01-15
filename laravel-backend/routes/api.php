@@ -217,6 +217,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- SPECIFIEK VOOR VERHUURDERS ---
 
     Route::get('/my-buildings', [VerhuurderController::class, 'getMyBuildings']);
+    Route::get('/suggest-address', [VerhuurderController::class, 'suggestAddress']);
     Route::get('/buildings/{id}', [VerhuurderController::class, 'showBuilding']);
     Route::post('/add-building', [VerhuurderController::class, 'storeBuilding']);
     Route::put('/buildings/{id}', [VerhuurderController::class, 'updateBuilding']);

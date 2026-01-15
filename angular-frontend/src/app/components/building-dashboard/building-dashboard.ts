@@ -173,126 +173,166 @@ import { RouterLink } from '@angular/router';
     </div>
 
     @if (showAddBuildingModal) {
-    <!-- Full Screen Overlay -->
-    <div class="fixed inset-0 z-9999 bg-base-een-100 overflow-y-auto flex flex-col rounded-xl">
-      <!-- Header -->
+    <!-- Modal Container -->
+    <div
+      class="fixed inset-0 z-9999 flex items-center justify-center p-4 backdrop-blur-sm bg-base-twee-900/40"
+      (click)="closeModal()"
+    >
       <div
-        class="sticky top-0 z-10 bg-white border-b border-base-twee-200 px-6 py-4 flex items-center justify-between shadow-sm"
+        class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden transform transition-all"
+        (click)="$event.stopPropagation()"
       >
-        <div class="flex items-center gap-4">
-          <div
-            class="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center text-primary-600"
+        <!-- Header -->
+        <div
+          class="px-8 py-6 border-b border-base-twee-100 flex items-center justify-between bg-base-een-50/30"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-2xl bg-primary-100 flex items-center justify-center text-primary-600 shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-7 h-7"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-base-twee-900">Nieuw Gebouw</h3>
+              <p class="text-sm text-base-twee-500 font-medium">Beheer je vastgoed portfolio</p>
+            </div>
+          </div>
+          <button
+            (click)="closeModal()"
+            class="p-3 hover:bg-white rounded-full transition-all text-base-twee-400 hover:text-base-twee-900 hover:rotate-90"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="2"
               stroke="currentColor"
-              class="w-6 h-6"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
-          </div>
-          <h3 class="text-xl font-bold text-base-twee-900">Nieuw Gebouw Toevoegen</h3>
+          </button>
         </div>
-        <button
-          (click)="closeModal()"
-          class="p-2 hover:bg-base-een-200 rounded-full transition-colors text-base-twee-500 hover:text-base-twee-900"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-7 w-7"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
 
-      <!-- Form Content -->
-      <div class="flex-1 p-6 md:p-12 flex justify-center">
-        <div class="w-full max-w-2xl">
-          <div
-            class="bg-white rounded-[2.5rem] shadow-xl border border-base-twee-100 p-8 md:p-12 space-y-8"
-          >
-            <section class="space-y-6">
-              <div>
-                <label
-                  class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
-                  >Straatnaam</label
-                >
+        <!-- Form Content -->
+        <div class="p-8 md:p-10 space-y-8 overflow-y-auto max-h-[80vh]">
+          <section class="space-y-6">
+            <div class="relative">
+              <label
+                class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-2 px-1"
+                >Straatnaam</label
+              >
+              <div class="relative group">
                 <input
                   type="text"
                   [(ngModel)]="newBuilding.street"
-                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
+                  (input)="onStreetInput()"
+                  class="w-full pl-6 pr-12 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
                   placeholder="Bijv. Diestsestraat"
                 />
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
-                    >Huisnummer</label
-                  >
-                  <input
-                    type="text"
-                    [(ngModel)]="newBuilding.number"
-                    class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
-                    placeholder="123"
-                  />
-                </div>
-                <div>
-                  <label
-                    class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
-                    >Postcode</label
-                  >
-                  <input
-                    type="text"
-                    [(ngModel)]="newBuilding.postalCode"
-                    class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
-                    placeholder="3000"
-                  />
+                <!-- Suggestion Loading Spinner -->
+                <div *ngIf="suggestLoading" class="absolute right-4 top-1/2 -translate-y-1/2">
+                  <div
+                    class="w-5 h-5 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"
+                  ></div>
                 </div>
               </div>
 
+              <!-- Suggestions Dropdown -->
+              <div
+                *ngIf="suggestions.length > 0"
+                class="absolute z-50 left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-base-twee-100 overflow-hidden max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
+              >
+                <div
+                  *ngFor="let suggestion of suggestions"
+                  (click)="selectSuggestion(suggestion)"
+                  class="px-6 py-4 hover:bg-primary-50 cursor-pointer transition-colors border-b border-base-een-50 last:border-0 group"
+                >
+                  <p
+                    class="font-bold text-base-twee-900 group-hover:text-primary-700 transition-colors"
+                  >
+                    {{ suggestion.street }}
+                  </p>
+                  <p class="text-sm text-base-twee-500">
+                    {{ suggestion.postalCode }} {{ suggestion.city }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label
-                  class="block text-sm font-bold text-base-twee-600 uppercase tracking-widest mb-2"
-                  >Stad / Gemeente</label
+                  class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-2 px-1"
+                  >Huisnummer</label
                 >
                 <input
                   type="text"
-                  [(ngModel)]="newBuilding.city"
-                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-medium"
-                  placeholder="Leuven"
+                  [(ngModel)]="newBuilding.number"
+                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
+                  placeholder="123"
                 />
               </div>
-            </section>
-
-            <div class="pt-8 border-t border-base-een-100 flex flex-col sm:flex-row gap-4">
-              <button
-                (click)="closeModal()"
-                class="flex-1 px-8 py-4 rounded-2xl text-lg font-bold text-base-twee-600 hover:bg-base-een-100 transition-colors"
-              >
-                Annuleren
-              </button>
-              <button
-                (click)="submitNewBuilding()"
-                [disabled]="!newBuilding.street || !newBuilding.city"
-                class="flex-[2] px-8 py-4 rounded-2xl text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all transform active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
-              >
-                Gebouw Toevoegen
-              </button>
+              <div>
+                <label
+                  class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-2 px-1"
+                  >Postcode</label
+                >
+                <input
+                  type="text"
+                  [(ngModel)]="newBuilding.postalCode"
+                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
+                  placeholder="3000"
+                />
+              </div>
             </div>
+
+            <div>
+              <label
+                class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-2 px-1"
+                >Stad / Gemeente</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="newBuilding.city"
+                class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
+                placeholder="Leuven"
+              />
+            </div>
+          </section>
+
+          <!-- Action Buttons -->
+          <div class="pt-6 border-t border-base-een-100 flex flex-col sm:flex-row gap-4">
+            <button
+              (click)="closeModal()"
+              class="flex-1 px-8 py-4 rounded-2xl text-lg font-bold text-base-twee-600 hover:bg-base-een-100 transition-all active:scale-95"
+            >
+              Annuleren
+            </button>
+            <button
+              (click)="submitNewBuilding()"
+              [disabled]="!newBuilding.street || !newBuilding.city || loading"
+              class="flex-[2] px-8 py-4 rounded-2xl text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30 transition-all transform active:scale-95 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none flex items-center justify-center gap-2"
+            >
+              <span
+                *ngIf="loading"
+                class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              ></span>
+              {{ loading ? 'Bezig met opslaan...' : 'Gebouw Toevoegen' }}
+            </button>
           </div>
         </div>
       </div>
@@ -305,6 +345,10 @@ export class BuildingDashboard implements OnInit {
   buildings: any[] = [];
   loading: boolean = true;
   showAddBuildingModal: boolean = false;
+  suggestions: any[] = [];
+  suggestLoading: boolean = false;
+  private suggestTimeout: any;
+
   newBuilding: any = {
     street: '',
     number: '',
@@ -318,9 +362,40 @@ export class BuildingDashboard implements OnInit {
     this.loadBuildings();
   }
 
+  onStreetInput() {
+    clearTimeout(this.suggestTimeout);
+
+    if (this.newBuilding.street.length < 1) {
+      this.suggestions = [];
+      this.suggestLoading = false;
+      return;
+    }
+
+    this.suggestLoading = true;
+    this.suggestTimeout = setTimeout(async () => {
+      try {
+        this.suggestions = await this.verhuurderService.suggestAddress(this.newBuilding.street);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      } finally {
+        this.suggestLoading = false;
+        this.cdr.detectChanges();
+      }
+    }, 100);
+  }
+
+  selectSuggestion(suggestion: any) {
+    this.newBuilding.street = suggestion.street || this.newBuilding.street;
+    this.newBuilding.city = suggestion.city || this.newBuilding.city;
+    this.newBuilding.postalCode = suggestion.postalCode || this.newBuilding.postalCode;
+    this.suggestions = [];
+    this.cdr.detectChanges();
+  }
+
   closeModal() {
     this.showAddBuildingModal = false;
     this.newBuilding = { street: '', number: '', postalCode: '', city: '' };
+    this.suggestions = [];
   }
 
   async submitNewBuilding() {
@@ -333,9 +408,11 @@ export class BuildingDashboard implements OnInit {
       await this.loadBuildings();
 
       this.closeModal();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding building:', error);
-      alert('Kon gebouw niet toevoegen. Probeer het later opnieuw.');
+      const message =
+        error.error?.message || 'Kon gebouw niet toevoegen. Probeer het later opnieuw.';
+      alert(message);
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
