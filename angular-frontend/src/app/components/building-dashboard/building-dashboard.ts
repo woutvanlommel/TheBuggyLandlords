@@ -2,16 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerhuurderService } from '../../shared/verhuurder.service';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlusMicro } from '@ng-icons/heroicons/micro';
 import { RouterLink } from '@angular/router';
-import { QuillEditorComponent } from 'ngx-quill';
 
 @Component({
   selector: 'app-building-dashboard',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule, NgIcon, QuillEditorComponent],
-  viewProviders: [provideIcons({ heroPlusMicro })],
+  imports: [RouterLink, CommonModule, FormsModule],
   template: `
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>

@@ -4,11 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 import { QuillEditorComponent } from 'ngx-quill';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroKeyMicro } from '@ng-icons/heroicons/micro';
 
 @Component({
   selector: 'app-building-editing',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, QuillEditorComponent],
+  imports: [CommonModule, FormsModule, RouterModule, QuillEditorComponent, NgIcon],
+  viewProviders: [provideIcons({ heroKeyMicro })],
   template: `
     <div class="min-h-screen bg-base-een-100 pb-20 rounded-lg">
       <!-- Header Area -->
@@ -316,7 +319,7 @@ import { QuillEditorComponent } from 'ngx-quill';
                       <div
                         class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-600 font-bold group-hover:bg-primary-600 group-hover:text-white transition-all"
                       >
-                        {{ room.roomnumber }}
+                        <ng-icon name="heroKeyMicro" class="w-6 h-6"></ng-icon>
                       </div>
                       <div>
                         <h4 class="font-bold text-base-twee-900">
