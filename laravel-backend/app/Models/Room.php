@@ -20,6 +20,10 @@ class Room extends Model
         'roomnumber',
         'price',
         'building_id',
+        'roomtype_id',
+        'name',
+        'description',
+        'surface',
         'is_highlighted',
         'highlight_expires_at',
     ];
