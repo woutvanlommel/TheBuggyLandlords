@@ -12,6 +12,7 @@ use App\Models\Contract;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Api\RoomController;
+use App\Http\Controllers\Api\VerhuurderController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -214,86 +215,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- SPECIFIEK VOOR VERHUURDERS ---
 
-    /**
-     * MIJN GEBOUWEN
-     * Haal de gebouwen op die eigendom zijn van de ingelogde user
-     */
-    Route::get('/my-buildings', function (Request $request) {
-        $user = $request->user();
+    Route::get('/my-buildings', [VerhuurderController::class, 'getMyBuildings']);
+    Route::post('/add-building', [VerhuurderController::class, 'storeBuilding']);
+    Route::put('/buildings/{id}', [VerhuurderController::class, 'updateBuilding']);
+    Route::delete('/buildings/{id}', [VerhuurderController::class, 'deleteBuilding']);
+    
+    Route::get('/room-types', [VerhuurderController::class, 'roomTypes']);
+    Route::get('/rooms/{id}', [VerhuurderController::class, 'showRoom']);
+    Route::post('/rooms', [VerhuurderController::class, 'storeRoom']);
+    Route::put('/rooms/{id}', [VerhuurderController::class, 'updateRoom']);
+    Route::delete('/rooms/{id}', [VerhuurderController::class, 'deleteRoom']);
 
-        // Check of het wel een verhuurder is (rol 2)
-        if ($user->role_id !== 2) {
-            return response()->json(['message' => 'Alleen voor verhuurders'], 403);
-        }
-
-        // Haal gebouwen op met kamers
-        $buildings = $user->buildings()->with(['rooms.roomtype', 'rooms.contracts.user', 'street', 'place'])->get();
-
-        // Voor elke kamer, zoek het actieve contract (indien aanwezig)
-        $buildings->each(function($building) {
-            $building->rooms->each(function($room) {
-               $room->active_contract = $room->contracts->where('is_active', 1)->first();
-            });
-        });
-
-        return response()->json($buildings);
-    });
-
-    /**
-     * VOEG GEBOUW TOE
-     * Maakt straat/stad aan indien nodig (firstOrCreate)
-     * Valideert adres via GeocodingService (LocationIQ)
-     */
-    Route::post('/add-building', function (Request $request, \App\Services\GeocodingService $geocoder) {
-        $user = $request->user();
-
-        if ($user->role_id !== 2) { // Check of verhuurder
-             return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validated = $request->validate([
-            'street' => 'required|string',
-            'number' => 'required|string',
-            'postalCode' => 'required',
-            'city' => 'required|string',
-        ]);
-
-        // 0. Valideer adres en haal coordinaten op
-        $coordinates = $geocoder->geocode(
-            $validated['street'],
-            $validated['number'],
-            $validated['city']
-        );
-
-        if (!$coordinates) {
-            return response()->json([
-                'message' => 'Adres niet gevonden of ongeldig. Controleer de straat, nummer en stad (enkel België).'
-            ], 422);
-        }
-
-        // 1. Zoek of maak Place (Stad + Postcode)
-        // Let op: we zoeken op combinatie.
-        $place = \App\Models\Place::firstOrCreate(
-            ['zipcode' => $validated['postalCode'], 'place' => $validated['city']]
-        );
-
-        // 2. Zoek of maak Street (Enkel naam in deze DB structuur)
-        $street = \App\Models\Street::firstOrCreate(
-            ['street' => $validated['street']]
-        );
-
-        // 3. Maak het gebouw
-        $building = \App\Models\Building::create([
-            'user_id' => $user->id,
-            'street_id' => $street->id,
-            'place_id' => $place->id,
-            'housenumber' => $validated['number'],
-            'latitude' => $coordinates['latitude'],
-            'longitude' => $coordinates['longitude']
-        ]);
-        
-        return response()->json(['message' => 'Gebouw toegevoegd', 'building' => $building]);
-    });
+    Route::post('/rooms/upload-image', [VerhuurderController::class, 'uploadRoomImage']);
+    Route::delete('/documents/{id}', [VerhuurderController::class, 'deleteDocument']);
 
     Route::get('/messages', [App\Http\Controllers\Api\MessageController::class, 'index']);
     Route::post('/messages', [App\Http\Controllers\Api\MessageController::class, 'store']);

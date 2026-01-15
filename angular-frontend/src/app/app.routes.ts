@@ -5,6 +5,8 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { Profile } from './pages/dashboard/profile/profile';
 import { DashboardStats } from './pages/dashboard/dashboard-stats/dashboard-stats';
 import { Credits } from './pages/dashboard/credits/credits';
+import { BuildingEditing } from './components/building-editing/building-editing';
+import { RoomEditing } from './components/room-editing/room-editing';
 
 export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
@@ -62,7 +64,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [authGuard], // Beveiliging: stuurt je terug naar login als je geen token hebt
-    loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
+    component: Dashboard,
     title: 'Mijn Dashboard',
     // 2. Kinderen (Sub-routes): Erven automatisch de beveiliging van de ouder (dashboard)
     children: [
@@ -83,10 +85,17 @@ export const routes: Routes = [
         path: 'credits',
         component: Credits,
       },
+      {
+        path: 'building/:id',
+        component: BuildingEditing,
+      },
+      {
+        path: 'room/:id',
+        component: RoomEditing,
+      },
     ],
   },
 
   // FALLBACK (Onbekende URL -> terug naar start)
   { path: '**', redirectTo: 'kotcompass/zoekplatform' },
 ];
-

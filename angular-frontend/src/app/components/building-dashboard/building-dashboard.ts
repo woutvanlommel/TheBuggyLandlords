@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroPlusMicro } from '@ng-icons/heroicons/micro';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-building-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIcon],
+  imports: [RouterLink, CommonModule, FormsModule, NgIcon],
   viewProviders: [provideIcons({ heroPlusMicro })],
   template: `
     <div class="flex items-center justify-between gap-3 mb-4">
@@ -67,36 +68,37 @@ import { heroPlusMicro } from '@ng-icons/heroicons/micro';
                 {{ building.street?.street }} {{ building.housenumber }}
               </h4>
               <p class="text-xs text-base-twee-500">
-                {{ building.place?.place }} • {{ building.rooms?.length || 0 }} Kamers
+                {{ building.place?.place }} • {{ building.rooms?.length || 0 }} Kamers •
+                <span
+                  routerLink="/dashboard/building/{{ building.id }}"
+                  class="text-primary-300 hover:text-primary-500 hover:underline transition duration-200 ease"
+                  >Bewerk gebouw</span
+                >
               </p>
             </div>
           </div>
 
-          <div class="flex justify-end items-center gap-4">
-            @if(building.expanded) {
+          <!-- <div class="flex justify-end items-center gap-4"> -->
+          <!-- @if(building.expanded) {
             <div
               class="flex items-center justify-center p-2 rounded-md bg-primary hover:bg-primary-700 transition-colors duration-100 ease text-white"
               (click)="addRoom()"
             >
               <ng-icon name="heroPlusMicro" class="size-8"></ng-icon>
             </div>
-            }
-            <svg
-              [class.rotate-180]="building.expanded"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-5 text-base-twee-400 transform transition-transform duration-200"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-              />
-            </svg>
-          </div>
+            } -->
+          <svg
+            [class.rotate-180]="building.expanded"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-5 text-base-twee-400 transform transition-transform duration-200"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+          <!-- </div> -->
         </div>
 
         <!-- Accordion Content (Table) -->
