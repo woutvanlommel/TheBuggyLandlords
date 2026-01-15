@@ -5,6 +5,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { Profile } from './pages/dashboard/profile/profile';
 import { DashboardStats } from './pages/dashboard/dashboard-stats/dashboard-stats';
 import { Credits } from './pages/dashboard/credits/credits';
+import { CheckoutComponent } from './pages/dashboard/checkout/checkout';
 
 export const routes: Routes = [
   // PUBLIEKE ROUTES (Iedereen mag dit zien)
@@ -82,6 +83,10 @@ export const routes: Routes = [
       {
         path: 'credits',
         component: Credits,
+      },
+      {
+        path: 'checkout/:packageId',
+        component: CheckoutComponent,
       },
     ],
   },

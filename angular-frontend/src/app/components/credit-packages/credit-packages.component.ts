@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { CreditService, CreditPackage } from '../../shared/credit.service';
 
 @Component({
@@ -36,11 +37,9 @@ import { CreditService, CreditPackage } from '../../shared/credit.service';
         </ul>
 
         <button (click)="buy(pack)" 
-                [disabled]="loadingId === pack.id"
-                class="w-full mt-auto py-3 rounded-xl font-bold transition-all flex items-center justify-center"
+                class="w-full mt-auto py-3 rounded-xl font-bold transition-all flex items-center justify-center cursor-pointer"
                 [ngClass]="pack.id === 2 ? 'bg-primary text-white hover:bg-primary-600 shadow-md' : 'bg-base-een-200 text-base-twee-900 hover:bg-base-een-300 border border-base-twee-300'">
-            <span *ngIf="loadingId !== pack.id">Buy Now</span>
-            <span *ngIf="loadingId === pack.id">Processing...</span>
+            Buy Now
         </button>
       </div>
     </div>
@@ -49,9 +48,11 @@ import { CreditService, CreditPackage } from '../../shared/credit.service';
 })
 export class CreditPackagesComponent implements OnInit {
   packages: CreditPackage[] = [];
-  loadingId: number | null = null;
 
-  constructor(private creditService: CreditService) {}
+  constructor(
+    private creditService: CreditService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.creditService.getPackages().subscribe(res => {
@@ -60,12 +61,7 @@ export class CreditPackagesComponent implements OnInit {
   }
 
   buy(pack: CreditPackage) {
-    this.loadingId = pack.id;
-    this.creditService.buyPackage(pack.id).subscribe(success => {
-      this.loadingId = null;
-      if (success) {
-        alert('Package purchased successfully!'); // Replace with toast later
-      }
-    });
+    this.router.navigate(['/dashboard/checkout', pack.id]);
   }
 }
+

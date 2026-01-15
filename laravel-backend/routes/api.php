@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CreditController;
 
 /*
 |--------------------------------------------------------------------------
@@ -315,6 +316,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'credits'], function () {
         Route::get('/balance', [App\Http\Controllers\Api\CreditController::class, 'getBalance']);
         Route::get('/packages', [App\Http\Controllers\Api\CreditController::class, 'getPackages']);
+        Route::post('/payment-intent', [App\Http\Controllers\Api\CreditController::class, 'createPaymentIntent']);
+        Route::post('/verify-payment', [App\Http\Controllers\Api\CreditController::class, 'verifyPayment']);
         Route::post('/buy', [App\Http\Controllers\Api\CreditController::class, 'buyPackage']);
         Route::post('/spotlight', [App\Http\Controllers\Api\CreditController::class, 'toggleSpotlight']);
         Route::post('/activate-spotlight', [App\Http\Controllers\Api\CreditController::class, 'activateSpotlight']);
