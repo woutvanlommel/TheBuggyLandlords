@@ -25,7 +25,7 @@ import { RouterLink } from '@angular/router';
       </button>
     </div>
 
-    <div class="space-y-4">
+    <div class="space-y-4" [class]="showAddBuildingModal ? 'min-h-180' : 'min-h-[150px]'">
       <!-- Loading State -->
       @if (loading) {
       <div class="text-center py-4 text-base-twee-500">Gebouwen laden...</div>
@@ -175,11 +175,11 @@ import { RouterLink } from '@angular/router';
     @if (showAddBuildingModal) {
     <!-- Modal Container -->
     <div
-      class="fixed inset-0 z-9999 flex items-center justify-center p-4 backdrop-blur-sm bg-base-twee-900/40"
+      class="absolute w-full h-full top-0 left-0 inset-0 z-9999 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm bg-base-twee-900/40 rounded-2xl"
       (click)="closeModal()"
     >
       <div
-        class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden transform transition-all"
+        class="bg-white w-full h-fit rounded-xl shadow-2xl flex flex-col overflow-hidden transform transition-all"
         (click)="$event.stopPropagation()"
       >
         <!-- Header -->
@@ -228,7 +228,7 @@ import { RouterLink } from '@angular/router';
         </div>
 
         <!-- Form Content -->
-        <div class="p-8 md:p-10 space-y-8 overflow-y-auto max-h-[80vh]">
+        <div class="p-8 space-y-8 overflow-y-auto h-full w-full">
           <section class="space-y-6">
             <div class="relative">
               <label
@@ -240,37 +240,66 @@ import { RouterLink } from '@angular/router';
                   type="text"
                   [(ngModel)]="newBuilding.street"
                   (input)="onStreetInput()"
-                  class="w-full pl-6 pr-12 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
+                  class="w-full pl-6 pr-12 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300 shadow-sm"
                   placeholder="Bijv. Diestsestraat"
                 />
                 <!-- Suggestion Loading Spinner -->
-                <div *ngIf="suggestLoading" class="absolute right-4 top-1/2 -translate-y-1/2">
+                @if (suggestLoading) {
+                <div class="absolute right-4 top-1/2 -translate-y-1/2">
                   <div
                     class="w-5 h-5 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"
                   ></div>
                 </div>
+                }
               </div>
 
               <!-- Suggestions Dropdown -->
+              @if (suggestions.length > 0) {
               <div
-                *ngIf="suggestions.length > 0"
                 class="absolute z-50 left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-base-twee-100 overflow-hidden max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
               >
+                @for (suggestion of suggestions; track $index) {
                 <div
-                  *ngFor="let suggestion of suggestions"
                   (click)="selectSuggestion(suggestion)"
-                  class="px-6 py-4 hover:bg-primary-50 cursor-pointer transition-colors border-b border-base-een-50 last:border-0 group"
+                  class="px-6 py-4 hover:bg-primary-50 cursor-pointer transition-colors border-b border-base-een-50 last:border-0 group flex items-center gap-4"
                 >
-                  <p
-                    class="font-bold text-base-twee-900 group-hover:text-primary-700 transition-colors"
+                  <div
+                    class="w-10 h-10 rounded-xl bg-base-een-50 flex items-center justify-center text-base-twee-400 group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors"
                   >
-                    {{ suggestion.street }}
-                  </p>
-                  <p class="text-sm text-base-twee-500">
-                    {{ suggestion.postalCode }} {{ suggestion.city }}
-                  </p>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-5 h-5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p
+                      class="font-bold text-base-twee-900 group-hover:text-primary-700 transition-colors"
+                    >
+                      {{ suggestion.street }}
+                    </p>
+                    <p class="text-sm text-base-twee-500">
+                      {{ suggestion.postalCode }} {{ suggestion.city }}
+                    </p>
+                  </div>
                 </div>
+                }
               </div>
+              }
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,7 +311,7 @@ import { RouterLink } from '@angular/router';
                 <input
                   type="text"
                   [(ngModel)]="newBuilding.number"
-                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
+                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300 shadow-sm"
                   placeholder="123"
                 />
               </div>
@@ -294,7 +323,7 @@ import { RouterLink } from '@angular/router';
                 <input
                   type="text"
                   [(ngModel)]="newBuilding.postalCode"
-                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
+                  class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300 shadow-sm"
                   placeholder="3000"
                 />
               </div>
@@ -308,7 +337,7 @@ import { RouterLink } from '@angular/router';
               <input
                 type="text"
                 [(ngModel)]="newBuilding.city"
-                class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300"
+                class="w-full px-6 py-4 rounded-2xl border-2 border-base-een-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-lg font-semibold placeholder:text-base-twee-300 shadow-sm"
                 placeholder="Leuven"
               />
             </div>
@@ -325,13 +354,14 @@ import { RouterLink } from '@angular/router';
             <button
               (click)="submitNewBuilding()"
               [disabled]="!newBuilding.street || !newBuilding.city || loading"
-              class="flex-[2] px-8 py-4 rounded-2xl text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30 transition-all transform active:scale-95 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none flex items-center justify-center gap-2"
+              class="flex-[2] px-8 py-4 rounded-2xl text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30 transition-all transform active:scale-95 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none flex items-center justify-center gap-3"
             >
-              <span
-                *ngIf="loading"
+              @if (loading) {
+              <div
                 class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"
-              ></span>
-              {{ loading ? 'Bezig met opslaan...' : 'Gebouw Toevoegen' }}
+              ></div>
+              }
+              <span>{{ loading ? 'Bezig met opslaan...' : 'Gebouw Toevoegen' }}</span>
             </button>
           </div>
         </div>
