@@ -1,44 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { BuildingDashboard } from '../../../components/building-dashboard/building-dashboard';
+import { VerhuurderService } from '../../../shared/verhuurder.service';
+import { CreditService } from '../../../shared/credit.service';
 
 @Component({
   selector: 'app-dashboard-stats',
-  imports: [BuildingDashboard],
+  imports: [CommonModule, BuildingDashboard, RouterModule],
   standalone: true,
   template: ` <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
       <article
-        class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl"
+        class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl flex flex-col justify-between"
       >
-        <p class="text-xs font-semibold tracking-wide text-primary-600">Totaal Credits</p>
-        <div class="mt-1 mb-3 flex items-center justify-between">
-          <span class="text-2xl font-bold text-base-twee-900">--</span>
-          <span
-            class="px-3 py-1 text-xs font-semibold rounded-full bg-secondary-200/50 text-secondary-900"
-            >--%</span
-          >
+        <div>
+           <p class="text-xs font-semibold tracking-wide text-primary-600">Totaal Credits</p>
+           <div class="mt-2 flex items-baseline gap-2">
+             <span class="text-3xl font-bold text-base-twee-900">{{ totalCredits }}</span>
+             <span class="text-sm text-base-twee-500 font-medium">available</span>
+           </div>
         </div>
-        <div class="w-full h-2 rounded-full bg-base-een-300 overflow-hidden">
-          <span
-            class="block h-full rounded-full bg-linear-to-r from-primary-500 to-primary-600"
-            style="width:60%"
-          ></span>
+        
+        <div class="mt-4">
+           <a routerLink="../credits" class="inline-flex items-center text-xs font-bold text-primary-700 hover:text-primary-900 hover:underline transition-all cursor-pointer">
+              Top up balance &rarr;
+           </a>
         </div>
       </article>
 
       <article
+        *ngIf="isLandlord"
         class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl"
       >
         <p class="text-xs font-semibold tracking-wide text-primary-600">Actieve Spotlights</p>
         <div class="mt-1 mb-3 flex items-center justify-between">
-          <span class="text-2xl font-bold text-base-twee-900">--</span>
+          <span class="text-2xl font-bold text-base-twee-900">{{ activeSpotlights }}</span>
           <span
             class="px-3 py-1 text-xs font-semibold rounded-full bg-base-een-300/50 text-base-twee-900"
-            >--</span
+            >Properties</span
           >
         </div>
-        <div class="flex gap-1">
-          <div class="h-2 w-8 rounded-full bg-secondary-500"></div>
-          <div class="h-2 w-2 rounded-full bg-secondary-200"></div>
+        <!-- Progress Bar representing % of total properties spotlighted -->
+        <div class="w-full h-2 rounded-full bg-base-een-300 overflow-hidden">
+          <span
+            class="block h-full rounded-full bg-linear-to-r from-secondary-400 to-secondary-500 transition-all duration-500"
+            [style.width.%]="spotlightPercentage"
+          ></span>
         </div>
       </article>
 
@@ -152,4 +159,63 @@ import { BuildingDashboard } from '../../../components/building-dashboard/buildi
       </div>
     </section>`,
 })
-export class DashboardStats {}
+export class DashboardStats implements OnInit {
+  totalCredits: number = 0;
+  activeSpotlights: number = 0;
+  totalRooms: number = 0;
+  spotlightPercentage: number = 0;
+  isLandlord: boolean = false;
+
+  constructor(
+    private creditService: CreditService,
+    private verhuurderService: VerhuurderService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
+    // Check role immediately for UI visibility
+    const role = sessionStorage.getItem('user_role');
+    this.isLandlord = !!role && role.toLowerCase() === 'verhuurder';
+
+    this.creditService.refreshBalance();
+    this.creditService.balance$.subscribe((b) => {
+        this.totalCredits = b;
+        this.cdr.markForCheck();
+    });
+    
+    // Only load stats if landlord
+    if (this.isLandlord) {
+      this.loadStats();
+    }
+  }
+
+  async loadStats() {
+    try {
+      const buildings = await this.verhuurderService.getMyBuildings();
+      let activeCount = 0;
+      let roomCount = 0;
+      
+      buildings.forEach((b: any) => {
+        if (b.rooms) {
+          b.rooms.forEach((r: any) => {
+             roomCount++;
+             // Use the 'is_highlighted' flag directly as requested (1 = active)
+             if (r.is_highlighted) {
+                 activeCount++;
+             }
+          });
+        }
+      });
+      
+      this.activeSpotlights = activeCount;
+      this.totalRooms = roomCount;
+      // Calculate percentage for the bar (cap at 100%)
+      this.spotlightPercentage = roomCount > 0 ? Math.min((activeCount / roomCount) * 100, 100) : 0;
+      
+      this.cdr.detectChanges(); // Force update after stats calculation
+
+    } catch (e) {
+      console.error('Failed to load stats', e);
+    }
+  }
+}
