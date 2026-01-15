@@ -1,49 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { NgClass, NgIf } from "@angular/common";
-import { HttpClient } from '@angular/common/http';
+import { User } from '../../models/user';
+import { CreditService } from '../../shared/credit.service';
 
 @Component({
   selector: 'app-contact-card',
   imports: [NgClass, NgIf],
   template: `
-  <div class="card" [ngClass]="{'spotlight-active': contactData.isSpotLighted}" class="contactDetails">
-    <img [src]="contactData.avatarUrl" alt="profilePicture">
-    <h3>{{ contactData.name }}</h3>
-    <div *ngIf="contactData.isCreditInUse || contactData.isSpotLighted">
-      <p>{{ contactData.email }}</p>
-      <p>{{ contactData.telephone }}</p>
+  <div class="card contactDetails" [ngClass]="{'spotlight-active': isSpotlighted}">
+    <img [src]="user?.profile_image_url || 'https://ui-avatars.com/api/?name=' + (user?.name || 'User') + '&background=0D9488&color=fff&size=128'" alt="profilePicture">
+    <h3>{{ user?.fname }} {{ user?.name }}</h3>
+    <div *ngIf="isUnlocked || isSpotlighted">
+      <p>{{ user?.email }}</p>
+      <p>{{ user?.phone }}</p>
     </div>
 
-    <div *ngIf="!contactData.isCreditInUse && !contactData.isSpotLighted" class="locked-info">
+    <div *ngIf="!isUnlocked && !isSpotlighted" class="locked-info">
       <p>Use credits to see contact details</p>
+      <button (click)="unlockContact()" [disabled]="isLoading" class="unlock-btn">
+        {{ isLoading ? 'Unlocking...' : 'Unlock Contact' }}
+      </button>
+    </div>
+    <div *ngIf="errorMessage" class="error-message" style="color: red;">
+      {{ errorMessage }}
     </div>
   </div>`,
   styles: ``,
 })
 export class ContactCard {
-  name: string = 'Contact Card Component';
-  email: string = '';
-  telephone: string = '';
-  isCreditInUse: boolean = false;
-  isSpotLighted: boolean = false;
-  avatarUrl?: string = '';
+  @Input() user?: any;
+  @Input() roomId?: number;
+  @Input() isSpotlighted: boolean = false;
 
-  contactData: any;
+  isUnlocked: boolean = false;
+  isLoading: boolean = false;
+  errorMessage: string = '';
 
-  constructor(private http: HttpClient) {}
+  private creditService = inject(CreditService);
 
-  ngOnInit() {
-    this.fetchContactData();
-  }
-  fetchContactData() {
-    this.http.get('//verbinden on next commit').subscribe({
-      next: (data) => {
-        this.contactData = data;
+  unlockContact() {
+    if (!this.roomId) {
+      this.errorMessage = 'No room ID provided.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.creditService.unlockChat(this.roomId).subscribe({
+      next: (success) => {
+        this.isLoading = false;
+        if (success) {
+          this.isUnlocked = true;
+        } else {
+          this.errorMessage = 'Could not unlock contact details.';
+        }
       },
-      error: (error) => {
-        console.error('Error fetching contact data:', error);
-      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'An error occurred. Do you have enough credits?';
+      }
     });
   }
+
+
 
 }
