@@ -14,17 +14,20 @@ import { CreditService } from '../../../shared/credit.service';
         class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl flex flex-col justify-between"
       >
         <div>
-           <p class="text-xs font-semibold tracking-wide text-primary-600">Totaal Credits</p>
-           <div class="mt-2 flex items-baseline gap-2">
-             <span class="text-3xl font-bold text-base-twee-900">{{ totalCredits }}</span>
-             <span class="text-sm text-base-twee-500 font-medium">available</span>
-           </div>
+          <p class="text-xs font-semibold tracking-wide text-primary-600">Totaal Credits</p>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-bold text-base-twee-900">{{ totalCredits }}</span>
+            <span class="text-sm text-base-twee-500 font-medium">available</span>
+          </div>
         </div>
-        
+
         <div class="mt-4">
-           <a routerLink="../credits" class="inline-flex items-center text-xs font-bold text-primary-700 hover:text-primary-900 hover:underline transition-all cursor-pointer">
-              Top up balance &rarr;
-           </a>
+          <a
+            routerLink="../credits"
+            class="inline-flex items-center text-xs font-bold text-primary-700 hover:text-primary-900 hover:underline transition-all cursor-pointer"
+          >
+            Top up balance &rarr;
+          </a>
         </div>
       </article>
 
@@ -179,10 +182,10 @@ export class DashboardStats implements OnInit {
 
     this.creditService.refreshBalance();
     this.creditService.balance$.subscribe((b) => {
-        this.totalCredits = b;
-        this.cdr.markForCheck();
+      this.totalCredits = b;
+      this.cdr.markForCheck();
     });
-    
+
     // Only load stats if landlord
     if (this.isLandlord) {
       this.loadStats();
@@ -194,26 +197,25 @@ export class DashboardStats implements OnInit {
       const buildings = await this.verhuurderService.getMyBuildings();
       let activeCount = 0;
       let roomCount = 0;
-      
+
       buildings.forEach((b: any) => {
         if (b.rooms) {
           b.rooms.forEach((r: any) => {
-             roomCount++;
-             // Use the 'is_highlighted' flag directly as requested (1 = active)
-             if (r.is_highlighted) {
-                 activeCount++;
-             }
+            roomCount++;
+            // Use the 'is_highlighted' flag directly as requested (1 = active)
+            if (r.is_highlighted) {
+              activeCount++;
+            }
           });
         }
       });
-      
+
       this.activeSpotlights = activeCount;
       this.totalRooms = roomCount;
       // Calculate percentage for the bar (cap at 100%)
       this.spotlightPercentage = roomCount > 0 ? Math.min((activeCount / roomCount) * 100, 100) : 0;
-      
-      this.cdr.detectChanges(); // Force update after stats calculation
 
+      this.cdr.detectChanges(); // Force update after stats calculation
     } catch (e) {
       console.error('Failed to load stats', e);
     }
