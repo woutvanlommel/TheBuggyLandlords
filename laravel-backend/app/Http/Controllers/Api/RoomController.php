@@ -224,7 +224,7 @@ class RoomController extends Controller
             'building.street',
             'building.place',
             'building.owner',
-            'images',
+            'documents', // Verander 'images' naar 'documents' om alle afbeeldingen (7 én 9) mee te sturen
             'roomtype',
             'extraCosts'
         ])->findOrFail($id);
