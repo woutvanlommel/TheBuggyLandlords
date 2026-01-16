@@ -85,14 +85,14 @@ class ImportDataSeeder extends Seeder
             (39, 'Wouters', 'Arne', '$2y$10$dummyhash', '0490998877', 'admin.arne@app.be', 335, 3, NOW(), NOW()),
             (40, 'De Smet', 'Charlotte', '$2y$10$dummyhash', '0490998878', 'admin.charlotte@app.be', 345, 3, NOW(), NOW()),
             (41, 'Micciche', 'Alessio', '$2y$12$hX9vntjAtmV71O0Z0qId/u.vd.Vzt09a/cPhKj9wFEMaFiXVS9tUK', '0487192277', 'alessiomicciche@outlook.com', 10, 3, NOW(), NOW()),
-            (42, 'test', 'verhuurder', '$2y$12$RnsHvS0Mnbiyrx23IWgGUuWYC4lpvOMbmlsoamBzWE6qH5AuI/bJy', '123456789', 'test@verhuurder.com', 20, 2, NOW(), NOW()),
-            (43, 'test', 'huurder', '$2y$12$RnsHvS0Mnbiyrx23IWgGUuWYC4lpvOMbmlsoamBzWE6qH5AuI/bJy', '0412345678', 'test@huurder.com', 5, 1, NOW(), NOW()),
-            (44, 'test', 'admin', '$2y$12$RnsHvS0Mnbiyrx23IWgGUuWYC4lpvOMbmlsoamBzWE6qH5AuI/bJy', '0412345678', 'test@admin.com', 20000, 3, NOW(), NOW());
+            (42, 'test', 'verhuurder', '$2y$12$hX9vntjAtmV71O0Z0qId/u.vd.Vzt09a/cPhKj9wFEMaFiXVS9tUK', '123456789', 'test@verhuurder.com', 20, 2, NOW(), NOW()),
+            (43, 'test', 'huurder', '$2y$12$hX9vntjAtmV71O0Z0qId/u.vd.Vzt09a/cPhKj9wFEMaFiXVS9tUK', '0412345678', 'test@huurder.com', 5, 1, NOW(), NOW()),
+            (44, 'test', 'admin', '$2y$12$hX9vntjAtmV71O0Z0qId/u.vd.Vzt09a/cPhKj9wFEMaFiXVS9tUK', '0412345678', 'test@admin.com', 20000, 3, NOW(), NOW());
 
 
            -- 5. Gebouwen (Met user_id/eigenaar)
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`, `user_id`) VALUES
-            (1, 1, '12', 1, 31), (2, 2, '5A', 1, 32), (3, 6, '110', 4, 33), (4, 7, '23', 4, 34), (5, 11, '4B', 7, 35),
+            (1, 1, '12', 1, 31), (2, 2, '5', 1, 32), (3, 6, '110', 4, 33), (4, 7, '23', 4, 34), (5, 11, '4B', 7, 35),
             (6, 16, '88', 10, 36), (7, 1, '14bis', 1, 37), (8, 6, '9', 4, 38), (9, 3, '45', 1, 31), (10, 4, '101', 1, 32),
             (11, 5, '2', 1, 33), (12, 8, '33', 4, 34), (13, 9, '12A', 4, 35), (14, 10, '7', 4, 36), (15, 12, '55', 7, 37),
             (16, 13, '89', 7, 38), (17, 14, '21', 7, 31), (18, 15, '6', 7, 32), (19, 17, '10', 10, 33), (20, 18, '44', 10, 34),
@@ -126,6 +126,14 @@ class ImportDataSeeder extends Seeder
             (2, 'Kamer'),
             (3, 'Appartement'),
             (4, 'Duplex');
+
+            INSERT INTO `extracost` (`id`, `name`, `is_recurring`) VALUES
+            (1, 'Wifi', 1),
+            (2, 'Gas/Water/Elektro', 1),
+            (3, 'Waarborg', 0),
+            (4, 'Poetsdienst', 1);
+
+            
 
             INSERT INTO `contract` (`id`, `user_id`, `room_id`, `start_date`, `end_date`, `is_active`, `created_at`, `updated_at`) VALUES
             (1, 1, 1, '2025-09-01', NULL, 1, NOW(), NOW()), (2, 2, 2, '2025-09-01', NULL, 1, NOW(), NOW()), (3, 3, 3, '2025-09-01', NULL, 1, NOW(), NOW()),

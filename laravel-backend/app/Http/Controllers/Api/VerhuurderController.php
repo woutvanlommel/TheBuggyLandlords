@@ -212,7 +212,7 @@ class VerhuurderController extends Controller
         $user = $request->user();
 
         try {
-            $room = Room::with(['roomType', 'images', 'building', 'extraCosts', 'facilities'])
+            $room = Room::with(['roomType', 'images', 'building', 'extraCosts', 'facilities', 'contracts.user'])
                         ->findOrFail($id);
 
             // Veiligheidscheck op building
@@ -269,7 +269,7 @@ class VerhuurderController extends Controller
             'surface' => 'nullable|numeric',
             'extra_costs' => 'nullable|array',
             'extra_costs.*.id' => 'nullable|exists:extracost,id',
-            'extra_costs.*p.price' => 'nullable|numeric',
+            'extra_costs.*.price' => 'nullable|numeric',
             'facilities' => 'nullable|array',
             'facilities.*' => 'nullable|exists:facility,id',
         ]);

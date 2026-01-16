@@ -3,20 +3,23 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 import { QuillEditorComponent } from 'ngx-quill';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-room-editing',
   standalone: true,
-  imports: [FormsModule, RouterModule, QuillEditorComponent],
+  imports: [FormsModule, RouterModule, QuillEditorComponent, DatePipe],
   template: `
     <div class="min-h-screen bg-base-een-100 pb-20 rounded-lg">
       <!-- Header Area -->
-      <div class="bg-white border-b border-base-twee-200 sticky top-0 z-30 shadow-sm rounded-t-lg">
+      <div
+        class="bg-white border-b border-base-twee-200 sticky top-0 z-30 shadow-sm rounded-t-lg font-poppins"
+      >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div class="flex items-center gap-4">
             <button
               [routerLink]="['/dashboard/building', room?.building_id]"
-              class="p-2 hover:bg-base-een-100 rounded-full transition-colors text-base-twee-600 hover:text-base-twee-900"
+              class="p-2 hover:bg-base-een-100 rounded-full transition-colors text-base-twee-600"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -26,316 +29,519 @@ import { QuillEditorComponent } from 'ngx-quill';
                 stroke="currentColor"
                 class="w-6 h-6"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                />
+                <path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
             </button>
-            <div>
-              <h1 class="text-xl font-bold text-base-twee-900">Kamer Bewerken</h1>
-              @if (room) {
-              <p class="text-xs text-base-twee-500">
-                {{
-                  room.roomType?.name ||
-                    room.roomType?.type ||
-                    room.room_type?.type ||
-                    room.roomtype?.type
-                }}
-                - {{ room.roomnumber }}
-              </p>
-              }
-            </div>
+            <h1 class="text-xl font-bold text-base-twee-900">Kamer Bewerken</h1>
           </div>
-          <div class="flex items-center gap-3">
-            <button
-              (click)="saveRoom()"
-              [disabled]="loading || saving"
-              class="px-6 py-2 bg-primary-600 text-white rounded-xl font-semibold shadow hover:bg-primary-700 transition-all disabled:opacity-50 flex items-center gap-2"
-            >
-              @if (saving) {
-              <svg
-                class="animate-spin h-4 w-4 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              }
-              {{ saving ? 'Bezig...' : 'Opslaan' }}
-            </button>
-          </div>
+          <button
+            (click)="saveRoom()"
+            [disabled]="loading || saving"
+            class="px-8 py-2.5 bg-primary-600 text-white rounded-xl font-bold shadow-lg hover:bg-primary-700 transition-all disabled:opacity-50 active:scale-95"
+          >
+            {{ saving ? 'Bezig...' : 'Opslaan' }}
+          </button>
         </div>
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         @if (loading) {
-        <div class="flex flex-col items-center justify-center py-20">
-          <div
-            class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent mb-4"
-          ></div>
-          <p class="text-base-twee-500">Kamergegevens ophalen...</p>
+        <div class="flex flex-col items-center justify-center py-40 gap-4">
+          <span
+            class="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"
+          ></span>
+          <p class="text-base-twee-400 font-bold uppercase text-[10px] tracking-widest">
+            Gegevens ophalen...
+          </p>
         </div>
         } @else if (room) {
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Kamer Details Form -->
-          <div class="flex flex-col gap-8 lg:flex-row lg:col-span-2">
-            <div class="w-full lg:w-30/100 space-y-6">
-              <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
-                <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5 text-primary-600"
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <!-- LEFT COLUMN (Sidebar) -->
+          <div class="lg:col-span-4 space-y-8">
+            <!-- Basic Details -->
+            <div
+              class="bg-white rounded-[32px] p-8 shadow-sm border border-base-twee-100 font-poppins relative overflow-hidden"
+            >
+              <div class="absolute top-0 left-0 w-2 h-full bg-primary-500"></div>
+              <h2 class="text-lg font-bold text-base-twee-900 mb-8 flex items-center gap-3">
+                <span class="p-2 bg-primary-50 rounded-lg text-primary-600 font-black text-xs"
+                  >01</span
+                >
+                Basisgegevens
+              </h2>
+
+              <div class="space-y-5">
+                <div>
+                  <label class="block text-[10px] font-black text-base-twee-400 uppercase mb-2 ml-1"
+                    >Naam / Label</label
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                    />
-                  </svg>
-                  Kamergegevens
-                </h2>
-                <div class="space-y-4">
+                  <input
+                    type="text"
+                    [(ngModel)]="room.name"
+                    class="w-full px-5 py-4 rounded-2xl border border-base-twee-100 bg-base-een-50 outline-none focus:border-primary-400 transition-all font-medium text-base-twee-700"
+                    placeholder="E.g. Studio XL 101"
+                  />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
                   <div>
                     <label
-                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                      >Naam (optioneel)</label
-                    >
-                    <input
-                      type="text"
-                      [(ngModel)]="room.name"
-                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                      placeholder="Bijv. Luxe Studio"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                      >Kamernummer</label
+                      class="block text-[10px] font-black text-base-twee-400 uppercase mb-2 ml-1"
+                      >Kmr Nr.</label
                     >
                     <input
                       type="text"
                       [(ngModel)]="room.roomnumber"
-                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                      class="w-full px-5 py-4 rounded-2xl border border-base-twee-100 bg-base-een-50 outline-none focus:border-primary-400 transition-all font-medium text-base-twee-700"
                     />
-                  </div>
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                        >Huurprijs (€)</label
-                      >
-                      <input
-                        type="number"
-                        [(ngModel)]="room.price"
-                        class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                        >Oppervlakte (m²)</label
-                      >
-                      <input
-                        type="number"
-                        [(ngModel)]="room.surface"
-                        class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                      />
-                    </div>
                   </div>
                   <div>
                     <label
-                      class="block text-xs font-bold text-base-twee-500 uppercase tracking-wider mb-1 px-1"
-                      >Kamertype</label
+                      class="block text-[10px] font-black text-base-twee-400 uppercase mb-2 ml-1"
+                      >Oppervlakte (m²)</label
                     >
-                    <select
-                      [(ngModel)]="room.roomtype_id"
-                      class="w-full px-4 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                    >
-                      @for (type of roomTypes; track type.id) {
-                      <option [value]="type.id" class="text-black">
-                        {{ type.type || type.name || 'Onbekend' }}
-                      </option>
-                      }
-                    </select>
+                    <input
+                      type="number"
+                      [(ngModel)]="room.surface"
+                      class="w-full px-5 py-4 rounded-2xl border border-base-twee-100 bg-base-een-50 outline-none focus:border-primary-400 transition-all font-medium text-base-twee-700"
+                    />
                   </div>
+                </div>
 
-                  <div class="pt-4 mt-6 border-t border-base-een-100">
-                    <button
-                      (click)="deleteRoom()"
-                      class="w-full py-3 text-red-500 font-semibold hover:bg-red-50 rounded-xl transition-colors flex items-center justify-center gap-2"
+                <div>
+                  <label class="block text-[10px] font-black text-base-twee-400 uppercase mb-2 ml-1"
+                    >Type Accommodatie</label
+                  >
+                  <select
+                    [(ngModel)]="room.roomtype_id"
+                    class="w-full px-5 py-4 rounded-2xl border border-base-twee-100 bg-base-een-50 outline-none focus:border-primary-400 transition-all font-medium text-base-twee-700 appearance-none pointer-events-auto"
+                  >
+                    @for (type of roomTypes; track type.id) {
+                    <option [value]="type.id">{{ type.type }}</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-dashed border-base-twee-100">
+                  <label class="block text-[10px] font-black text-base-twee-600 uppercase mb-2 ml-1"
+                    >Basishuur Prijs</label
+                  >
+                  <div class="relative group">
+                    <span
+                      class="absolute left-5 top-1/2 -translate-y-1/2 font-black text-xl text-primary-300"
+                      >€</span
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="w-5 h-5"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                        />
-                      </svg>
-                      Kamer Verwijderen
-                    </button>
+                    <input
+                      type="number"
+                      [(ngModel)]="room.price"
+                      class="w-full pl-12 pr-6 py-5 rounded-3xl border-2 border-primary-100 bg-primary-50/20 font-black text-3xl text-primary-600 outline-none focus:border-primary-500 transition-all"
+                    />
                   </div>
                 </div>
               </div>
             </div>
+
+            <!-- Tenant Management -->
             <div
-              class="bg-white h-fit rounded-3xl p-6 shadow-sm border border-base-twee-100 w-full lg:w-70/100"
+              class="bg-white rounded-[32px] p-8 shadow-sm border border-base-twee-100 font-poppins relative overflow-hidden"
             >
-              <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-5 h-5 text-primary-600"
+              <div class="absolute top-0 left-0 w-2 h-full bg-base-twee-200"></div>
+              <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-3">
+                <span class="p-2 bg-base-een-100 rounded-lg text-base-twee-400 font-black text-xs"
+                  >02</span
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
-                  />
-                </svg>
-                Beschrijving van het gebouw
-              </h2>
-              <quill-editor
-                [(ngModel)]="room.description"
-                class="block w-full h-fit bg-white rounded-2xl overflow-hidden border-2 border-base-een-200 focus-within:border-primary-500 transition-all font-sans"
-                [styles]="{ height: '100%' }"
-                placeholder="Geef hier een uitgebreide beschrijving van het gebouw, de ligging, en eventuele extra troeven..."
-              ></quill-editor>
-            </div>
-          </div>
-
-          <!-- Media Section -->
-          <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
-              <h2 class="text-xl font-bold text-base-twee-900 mb-8 flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-6 h-6 text-primary-600"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                  />
-                </svg>
-                Hoofdfoto
+                Huurder Status
               </h2>
 
-              <div class="max-w-2xl">
-                <div
-                  class="relative aspect-video bg-base-een-100 rounded-3xl border border-base-twee-100 overflow-hidden group"
-                >
-                  @if (room.images && room.images.length > 0) {
-                  <img [src]="room.images[0].file_path" class="w-full h-full object-cover" />
-                  } @else {
+              @if (activeTenant) {
+              <div class="group relative bg-base-een-50 rounded-3xl p-6 border border-base-een-200">
+                <div class="flex items-center gap-4 mb-4">
                   <div
-                    class="w-full h-full flex flex-col items-center justify-center text-base-twee-400"
+                    class="h-12 w-12 rounded-full bg-white border-2 border-green-100 flex items-center justify-center text-green-500 font-bold"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-12 h-12 mb-2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                      />
-                    </svg>
-                    <p class="font-medium">Nog geen foto geüpload</p>
+                    {{ activeTenant.user.fname?.[0] }}{{ activeTenant.user.name?.[0] }}
                   </div>
-                  }
-
-                  <div
-                    class="absolute inset-0 bg-base-twee-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center backdrop-blur-sm"
-                  >
-                    <button
-                      (click)="mainImageInput.click()"
-                      class="px-6 py-3 bg-white text-base-twee-900 font-bold rounded-2xl flex items-center gap-2 shadow-xl hover:scale-105 transition-transform"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        class="w-5 h-5"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M12 4.5v15m7.5-7.5h-15"
-                        />
-                      </svg>
-                      Foto Wijzigen
-                    </button>
+                  <div>
+                    <h3 class="font-bold text-base-twee-900 leading-tight">
+                      {{ activeTenant.user.fname }} {{ activeTenant.user.name }}
+                    </h3>
+                    <p class="text-[10px] font-bold text-green-500 uppercase tracking-tight">
+                      Contract Actief
+                    </p>
                   </div>
                 </div>
-                <input
-                  #mainImageInput
-                  type="file"
-                  (change)="onMainImageUpload($event)"
-                  hidden
-                  accept="image/*"
-                />
-
+                <div class="space-y-2 mb-6">
+                  <div class="flex justify-between text-[10px] text-base-twee-500 font-medium">
+                    <span>E-mail</span>
+                    <span class="text-base-twee-700">{{ activeTenant.user.email }}</span>
+                  </div>
+                  <div class="flex justify-between text-[10px] text-base-twee-500 font-medium">
+                    <span>Startdatum</span>
+                    <span class="text-base-twee-700">{{
+                      activeTenant.start_date | date : 'dd MMM yyyy'
+                    }}</span>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-3 bg-white border border-base-twee-100 rounded-xl text-[10px] font-bold text-base-twee-600 hover:bg-base-twee-900 hover:text-white transition-all shadow-sm"
+                >
+                  Dossier Bekijken
+                </button>
+              </div>
+              } @else {
+              <div class="text-center py-6 px-4">
                 <div
-                  class="mt-4 flex items-start gap-3 p-4 bg-primary-50 rounded-2xl border border-primary-100"
+                  class="h-20 w-20 bg-base-een-100 rounded-full mx-auto mb-6 flex items-center justify-center"
                 >
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-10 h-10 text-base-twee-300"
                     fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
                     stroke="currentColor"
-                    class="w-5 h-5 text-primary-600 mt-0.5"
+                    viewBox="0 0 24 24"
                   >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                      stroke-width="1.5"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
-                  <p class="text-xs text-primary-800 leading-relaxed">
-                    <strong>Tip:</strong> Gebruik een duidelijke, horizontale foto van de kamer.
-                    Deze foto wordt getoond als eerste afbeelding in de zoekresultaten op het
-                    platform.
-                  </p>
+                </div>
+                <p class="text-base-twee-400 text-xs font-medium mb-6">
+                  Momenteel geen actieve huurder gekoppeld aan deze kamer.
+                </p>
+                <button
+                  class="w-full py-4 bg-primary-50 rounded-2xl text-primary-600 text-xs font-black uppercase tracking-widest hover:bg-primary-600 hover:text-white transition-all"
+                >
+                  Huurder Koppelen
+                </button>
+              </div>
+              }
+            </div>
+
+            <!-- Extra Costs Breakdown -->
+            <div
+              class="bg-white rounded-[32px] p-8 shadow-sm border border-base-twee-100 font-poppins relative overflow-hidden"
+            >
+              <div class="absolute top-0 left-0 w-2 h-full bg-base-twee-400"></div>
+              <h2 class="text-lg font-bold text-base-twee-900 mb-8 flex items-center gap-3">
+                <span class="p-2 bg-base-een-100 rounded-lg text-base-twee-400 font-black text-xs"
+                  >03</span
+                >
+                Kosten & Lasten
+              </h2>
+
+              <div class="space-y-6">
+                @for (cost of allExtraCosts; track cost.id) {
+                <div
+                  class="flex items-center justify-between p-4 bg-base-een-50 rounded-2xl border border-base-een-200 transition-all hover:bg-white hover:shadow-md group"
+                >
+                  <div class="flex flex-col">
+                    <span class="text-xs text-base-twee-700 font-black">{{ cost.type }}</span>
+                    <span
+                      class="text-[9px] font-bold uppercase tracking-tight"
+                      [class]="cost.is_recurring ? 'text-primary-500' : 'text-base-twee-300'"
+                    >
+                      {{ cost.is_recurring ? 'Maandelijks' : 'Eenmalig' }}
+                    </span>
+                  </div>
+                  <div class="relative w-28 drop-shadow-sm">
+                    <span
+                      class="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] text-base-twee-400 font-black"
+                      >€</span
+                    >
+                    <input
+                      type="number"
+                      [ngModel]="getExtraCostsValue(cost.id)"
+                      (ngModelChange)="setExtraCostsValue(cost.id, $event)"
+                      class="w-full pl-8 pr-4 py-3 text-right text-sm font-black text-base-twee-900 bg-white border border-base-twee-100 rounded-xl outline-none group-hover:border-primary-400 transition-all"
+                    />
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN (Main Content) -->
+          <div class="lg:col-span-8 space-y-8">
+            <!-- Riche Text Description -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-base-twee-100">
+              <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-black text-base-twee-900 tracking-tight">
+                  Kamerbeschrijving
+                </h2>
+              </div>
+              <div class=" border-2 border-base-een-100 overflow-hidden">
+                <quill-editor
+                  [(ngModel)]="room.description"
+                  [modules]="{
+                    toolbar: [
+                      ['bold', 'italic', 'underline'],
+                      [{ list: 'ordered' }, { list: 'bullet' }],
+                      ['clean']
+                    ]
+                  }"
+                  class="block w-full h-full text-base-twee-600"
+                  placeholder="Vertel toekomstige huurders over het licht, de meubels, de ligging..."
+                ></quill-editor>
+              </div>
+            </div>
+
+            <!-- Facilities Grid -->
+            <div class="bg-white rounded-[40px] p-10 shadow-sm border border-base-twee-100">
+              <div class="mb-10">
+                <h2 class="text-2xl font-black text-base-twee-900 tracking-tight mb-2">
+                  Aanwezige Faciliteiten
+                </h2>
+                <p class="text-sm text-base-twee-400 font-medium">
+                  Klik op een faciliteit om deze aan of uit te zetten voor deze kamer.
+                </p>
+              </div>
+              <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                @for (fac of allFacilities; track fac.id) {
+                <button
+                  (click)="toggleFacility(fac.id)"
+                  [class]="
+                    isFacilitySelected(fac.id)
+                      ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-200 -translate-y-1'
+                      : 'bg-white border-base-twee-100 text-base-twee-400 hover:border-primary-400 hover:text-primary-600'
+                  "
+                  class="flex flex-col items-center justify-center p-6 border-2 rounded-[32px] transition-all duration-300"
+                >
+                  <span class="text-[10px] font-black uppercase tracking-widest text-center">{{
+                    fac.facility
+                  }}</span>
+                </button>
+                }
+              </div>
+            </div>
+
+            <!-- Media Section -->
+            <div class="bg-white rounded-[40px] p-10 shadow-sm border border-base-twee-100">
+              <h2 class="text-2xl font-black text-base-twee-900 tracking-tight mb-12">
+                Media & Documenten
+              </h2>
+
+              <div class="space-y-16">
+                <!-- COVER PHOTO -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
+                  <div class="md:col-span-1">
+                    <h3
+                      class="font-black text-base-twee-900 text-sm mb-2 uppercase tracking-widest"
+                    >
+                      Hoofdafbeelding
+                    </h3>
+                    <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
+                      Dit is de foto die mensen zien in de zoekresultaten. Zorg voor een heldere,
+                      opgeruimde kamer.
+                    </p>
+                  </div>
+                  <div class="md:col-span-2">
+                    <div
+                      (click)="mainImageInput.click()"
+                      class="relative aspect-[16/9] rounded-[32px] border-4 border-dashed border-base-een-200 overflow-hidden cursor-pointer group hover:border-primary-400 transition-all bg-base-een-50"
+                    >
+                      @if (mainImage) {
+                      <img
+                        [src]="mainImage.file_path"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div
+                        class="absolute inset-0 bg-primary-600/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all"
+                      >
+                        <span class="text-white font-black uppercase text-[10px] tracking-widest"
+                          >Wijzigen</span
+                        >
+                      </div>
+                      } @else {
+                      <div
+                        class="w-full h-full flex flex-col items-center justify-center text-base-twee-300 gap-4"
+                      >
+                        <svg
+                          class="w-12 h-12"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <span class="font-black text-[10px] uppercase tracking-widest"
+                          >Upload Cover</span
+                        >
+                      </div>
+                      }
+                    </div>
+                    <input
+                      #mainImageInput
+                      type="file"
+                      (change)="onMainImageUpload($event)"
+                      hidden
+                      accept="image/*"
+                    />
+                  </div>
+                </div>
+
+                <!-- GALLERY -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                  <div class="md:col-span-1">
+                    <h3
+                      class="font-black text-base-twee-900 text-sm mb-2 uppercase tracking-widest"
+                    >
+                      Foto Gallerij
+                    </h3>
+                    <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
+                      Voeg detailfoto's toe: de badkamer, het uitzicht, opbergruimte of de keuken.
+                    </p>
+                  </div>
+                  <div class="md:col-span-2">
+                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-4">
+                      @for (img of galleryImages; track img.id) {
+                      <div
+                        class="relative aspect-square rounded-[24px] overflow-hidden group border border-base-twee-100 shadow-sm"
+                      >
+                        <img
+                          [src]="img.file_path"
+                          class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
+                        />
+                        <button
+                          (click)="deleteFile(img.id)"
+                          class="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-lg active:scale-90"
+                        >
+                          <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      }
+                      <button
+                        (click)="galInput.click()"
+                        class="aspect-square rounded-[24px] border-4 border-dashed border-base-een-200 flex flex-col items-center justify-center gap-2 text-base-twee-300 hover:border-primary-400 hover:text-primary-500 transition-all bg-base-een-50"
+                      >
+                        <span class="text-2xl font-black">+</span>
+                        <span class="text-[9px] font-black uppercase tracking-tight">Foto</span>
+                      </button>
+                    </div>
+                    <input
+                      #galInput
+                      type="file"
+                      (change)="onGalleryUpload($event)"
+                      hidden
+                      multiple
+                      accept="image/*"
+                    />
+                  </div>
+                </div>
+
+                <!-- DOCUMENTS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                  <div class="md:col-span-1">
+                    <h3
+                      class="font-black text-base-twee-900 text-sm mb-2 uppercase tracking-widest"
+                    >
+                      Systeembestanden
+                    </h3>
+                    <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
+                      Beheer hier de juridische documenten zoals contracten en reglementen.
+                    </p>
+                  </div>
+                  <div class="md:col-span-2">
+                    <div class="bg-base-een-50 p-6 rounded-[32px] border border-base-een-200">
+                      <div class="flex gap-4 mb-6">
+                        <select
+                          [(ngModel)]="selectedDocTypeId"
+                          class="flex-1 px-5 py-4 rounded-2xl bg-white border border-base-twee-100 text-xs font-bold text-base-twee-700 outline-none focus:border-primary-400 shadow-sm appearance-none"
+                        >
+                          @for (docType of allowedDocTypes; track docType.id) {
+                          <option [value]="docType.id">{{ docType.name }}</option>
+                          }
+                        </select>
+                        <button
+                          (click)="docInput.click()"
+                          class="px-8 bg-primary-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:shadow-primary-100 transition-all active:scale-95"
+                        >
+                          Upload
+                        </button>
+                        <input #docInput type="file" (change)="onDocumentUpload($event)" hidden />
+                      </div>
+
+                      <div class="space-y-3">
+                        @for (doc of roomDocuments; track doc.id) {
+                        <div
+                          class="flex items-center justify-between p-4 bg-white rounded-2xl border border-base-twee-50 shadow-sm group"
+                        >
+                          <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="p-2 bg-primary-50 text-primary-600 rounded-lg">
+                              <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                />
+                              </svg>
+                            </div>
+                            <div class="flex flex-col">
+                              <span
+                                class="text-[10px] font-black text-base-twee-900 truncate max-w-[200px]"
+                                >{{ doc.name }}</span
+                              >
+                              <span
+                                class="text-[8px] font-bold text-base-twee-400 uppercase tracking-tighter"
+                              >
+                                {{ getDocTypeName(doc.document_type_id) }}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            (click)="deleteFile(doc.id)"
+                            class="p-2 text-base-twee-300 hover:text-red-500 transition-colors"
+                          >
+                            <svg
+                              class="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        } @if (roomDocuments.length === 0) {
+                        <div
+                          class="text-center py-6 text-[10px] font-black text-base-twee-300 uppercase tracking-widest border-2 border-dashed border-base-twee-100 rounded-2xl"
+                        >
+                          Nog geen documenten
+                        </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -345,7 +551,7 @@ import { QuillEditorComponent } from 'ngx-quill';
       </div>
     </div>
   `,
-  styles: ``,
+  styles: [],
 })
 export class RoomEditing implements OnInit {
   room: any = null;
@@ -354,6 +560,14 @@ export class RoomEditing implements OnInit {
   allFacilities: any[] = [];
   loading = false;
   saving = false;
+
+  allowedDocTypes = [
+    { id: 1, name: 'Huurcontract' },
+    { id: 3, name: 'Huishoudelijk Reglement' },
+    { id: 4, name: 'Brandverzekering' },
+    { id: 5, name: 'EPC Attest' },
+  ];
+  selectedDocTypeId: number = 1;
 
   constructor(
     private route: ActivatedRoute,
@@ -366,144 +580,143 @@ export class RoomEditing implements OnInit {
     const id = this.route.snapshot.params['id'];
     this.loading = true;
     try {
-      // Haal gegevens parallel op voor betere snelheid
-      console.log('Fetching room types and room data for ID:', id);
-      const [types, roomData, costs, facilities] = await Promise.all([
+      const [types, room, costs, facs] = await Promise.all([
         this.verhuurderService.getRoomTypes(),
         this.verhuurderService.getRoom(id),
         this.verhuurderService.getExtraCosts(),
         this.verhuurderService.getFacilities(),
       ]);
-
       this.roomTypes = types;
-      this.room = roomData;
+      this.room = room;
       this.allExtraCosts = costs;
-      this.allFacilities = facilities;
+      this.allFacilities = facs;
 
-      if (!this.room.extra.costs) this.room.extra_costs = [];
+      if (!this.room.extra_costs) this.room.extra_costs = [];
       if (!this.room.facilities) this.room.facilities = [];
-
-      console.log('All fetched data:', {
-        room: this.room,
-        types: this.roomTypes,
-        costs: this.allExtraCosts,
-        facilities: this.allFacilities,
-      });
     } catch (error) {
-      console.error('Fout bij het laden van kamer:', error);
-      alert('Kon kamergegevens niet laden.');
+      console.error(error);
+      alert('Laden mislukt.');
     } finally {
       this.loading = false;
-      // Gebruik timeout om zeker te zijn dat change detection draait
-      setTimeout(() => {
-        this.cdr.detectChanges();
-      }, 0);
+      this.cdr.detectChanges();
     }
+  }
+
+  // Getter for active tenant
+  get activeTenant() {
+    return this.room?.contracts?.find((c: any) => c.is_active === 1) || null;
+  }
+
+  getExtraCostsValue(id: number) {
+    const cost = this.room?.extra_costs?.find((c: any) => c.id === id);
+    return cost ? cost.pivot?.price || cost.price || 0 : 0;
+  }
+
+  setExtraCostsValue(id: number, value: any) {
+    if (!this.room.extra_costs) this.room.extra_costs = [];
+    const price = Number(value);
+    let cost = this.room.extra_costs.find((c: any) => c.id === id);
+    if (cost) {
+      if (!cost.pivot) cost.pivot = {};
+      cost.pivot.price = price;
+      cost.price = price;
+    } else {
+      this.room.extra_costs.push({ id, price, pivot: { price } });
+    }
+  }
+
+  isFacilitySelected(id: number) {
+    return this.room?.facilities?.some((f: any) => f.id === id);
+  }
+
+  toggleFacility(id: number) {
+    if (!this.room.facilities) this.room.facilities = [];
+    const index = this.room.facilities.findIndex((f: any) => f.id === id);
+    if (index > -1) {
+      this.room.facilities.splice(index, 1);
+    } else {
+      this.room.facilities.push({ id });
+    }
+    this.cdr.detectChanges();
+  }
+
+  get mainImage() {
+    return this.room?.images?.find((i: any) => i.document_type_id === 7);
+  }
+  get galleryImages() {
+    return this.room?.images?.filter((i: any) => i.document_type_id === 9) || [];
+  }
+  get roomDocuments() {
+    const ids = this.allowedDocTypes.map((t) => t.id);
+    return this.room?.images?.filter((i: any) => ids.includes(i.document_type_id)) || [];
+  }
+
+  getDocTypeName(id: number) {
+    return this.allowedDocTypes.find((t) => t.id === id)?.name || 'Bestand';
   }
 
   async saveRoom() {
     this.saving = true;
     try {
       await this.verhuurderService.updateRoom(this.room.id, {
-        name: this.room.name,
-        roomnumber: this.room.roomnumber,
-        price: this.room.price,
-        surface: this.room.surface,
-        description: this.room.description,
-        roomtype_id: this.room.roomtype_id,
+        ...this.room,
         extra_costs: this.room.extra_costs.map((c: any) => ({
           id: c.id,
           price: c.pivot?.price || c.price || 0,
         })),
-        facilities: this.room.facilities.map((f: any) => ({ id: f.id })),
-        images: this.room.images.map((i: any) => ({})),
+        facilities: this.room.facilities.map((f: any) => f.id),
       });
       alert('Kamer succesvol bijgewerkt!');
-      // Gegevens herladen
       this.room = await this.verhuurderService.getRoom(this.room.id);
-    } catch (error) {
-      console.error('Fout bij opslaan:', error);
-      alert('Fout bij opslaan van wijzigingen.');
+    } catch (e) {
+      console.error(e);
+      alert('Fout bij opslaan.');
     } finally {
       this.saving = false;
       this.cdr.detectChanges();
     }
   }
 
-  // Check of een faciliteit geselecteerd is
-  isFacilitySelected(facilityId: number): boolean {
-    return this.room?.facilities?.some((f: any) => f.id === facilityId);
-  }
-
-  // Voeg een faciliteit toe of verwijder deze
-  toggleFacility(facilityId: number) {
-    if (!this.room.facilities) this.room.facilities = [];
-
-    const index = this.room.facilities.findIndex((f: any) => f.id === facilityId);
-    if (index > -1) {
-      this.room.facilities.splice(index, 1);
-    } else {
-      this.room.facilities.push({ id: facilityId });
-    }
-    this.cdr.detectChanges();
-  }
-
-  // Haal de waarde van een extra kost op uit de room data
-  getExtraCostsValue(costId: number): number {
-    const cost = this.room?.extra_costs?.find((c: any) => c.id === costId);
-    return cost ? cost.pivot?.price || cost.price || 0 : 0;
-  }
-
-  // Update de waarde van een extra kost
-  setExtraCostsValue(costId: number, value: any) {
-    if (!this.room.extra_costs) this.room.extra_costs = [];
-
-    const price = Number(value);
-    let cost = this.room.extra_costs.find((c: any) => c.id === costId);
-
-    if (cost) {
-      if (!cost.pivot) cost.pivot = {};
-      cost.pivot.price = price;
-      cost.price = price; // Voor de zekerheid op beide plekken
-    } else {
-      this.room.extra_costs.push({ id: costId, pivot: { price: price }, price: price });
-    }
-
-    this.cdr.detectChanges();
-  }
-
-  async onMainImageUpload(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-      // Type 7 = Hoofdafbeelding
+  async onMainImageUpload(ev: any) {
+    const file = ev.target.files[0];
+    if (file) {
       await this.verhuurderService.uploadRoomImage(this.room.id, file, 7);
       this.room = await this.verhuurderService.getRoom(this.room.id);
-      alert('Hoofdfoto geüpload!');
-    } catch (error) {
-      console.error('Upload fout:', error);
-      alert('Kon afbeelding niet uploaden.');
-    } finally {
-      this.cdr.detectChanges();
     }
+    this.cdr.detectChanges();
   }
 
-  async deleteRoom() {
-    if (
-      !confirm(
-        'ZEER BELANGRIJK: Weet je zeker dat je deze kamer wilt verwijderen? Dit kan niet ongedaan worden gemaakt.'
-      )
-    )
-      return;
-
-    try {
-      await this.verhuurderService.deleteRoom(this.room.id);
-      alert('Kamer is verwijderd.');
-      this.router.navigate(['/dashboard']);
-    } catch (error) {
-      console.error('Fout bij verwijderen kamer:', error);
-      alert('Kon kamer niet verwijderen.');
+  async onGalleryUpload(ev: any) {
+    const files = ev.target.files;
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        await this.verhuurderService.uploadRoomImage(this.room.id, files[i], 9);
+      }
+      this.room = await this.verhuurderService.getRoom(this.room.id);
     }
+    this.cdr.detectChanges();
+  }
+
+  async onDocumentUpload(ev: any) {
+    const files = ev.target.files;
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        await this.verhuurderService.uploadRoomImage(
+          this.room.id,
+          files[i],
+          Number(this.selectedDocTypeId)
+        );
+      }
+      this.room = await this.verhuurderService.getRoom(this.room.id);
+    }
+    this.cdr.detectChanges();
+  }
+
+  async deleteFile(id: number) {
+    if (confirm('U staat op het punt dit bestand permanent te verwijderen. Doorgaan?')) {
+      await this.verhuurderService.deleteImage(id);
+      this.room = await this.verhuurderService.getRoom(this.room.id);
+    }
+    this.cdr.detectChanges();
   }
 }
