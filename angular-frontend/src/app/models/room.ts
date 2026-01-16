@@ -10,6 +10,12 @@ export interface Room {
   contract_id?: number;
   building?: Building;
   images?: Document[];
+
+  roomtype_id?: number; // toegevoegd: verwijzing naar het type van de kamer
   roomtype?: string; // toegevoegd: type van de kamer (Studio, Kamer, ...)
-  // Voeg hier eventueel meer relaties toe
+  description?: string; // toegevoegd: beschrijving van de kamer
+  surface?: number; // toegevoegd: oppervlakte van de kamer in m²
+
+  extra_costs?: any[];
+  facilities?: any[];
 }

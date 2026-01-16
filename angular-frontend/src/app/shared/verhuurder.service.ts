@@ -148,6 +148,28 @@ export class VerhuurderService {
     return types;
   }
 
+  async getExtraCosts(): Promise<any[]> {
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    return firstValueFrom(
+      this.http.get<any[]>(this.baseApi + 'extra-costs', { headers: headersObj })
+    );
+  }
+
+  async getFacilities(): Promise<any[]> {
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    return firstValueFrom(
+      this.http.get<any[]>(this.baseApi + 'facilities', { headers: headersObj })
+    );
+  }
+
   // Upload een afbeelding voor een kamer
   async uploadRoomImage(roomId: number, file: File, typeId: number): Promise<any> {
     const formData = new FormData();

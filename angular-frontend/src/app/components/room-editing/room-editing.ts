@@ -350,6 +350,8 @@ import { QuillEditorComponent } from 'ngx-quill';
 export class RoomEditing implements OnInit {
   room: any = null;
   roomTypes: any[] = [];
+  allExtraCosts: any[] = [];
+  allFacilities: any[] = [];
   loading = false;
   saving = false;
 
@@ -366,16 +368,27 @@ export class RoomEditing implements OnInit {
     try {
       // Haal gegevens parallel op voor betere snelheid
       console.log('Fetching room types and room data for ID:', id);
-      const [types, roomData] = await Promise.all([
+      const [types, roomData, costs, facilities] = await Promise.all([
         this.verhuurderService.getRoomTypes(),
         this.verhuurderService.getRoom(id),
+        this.verhuurderService.getExtraCosts(),
+        this.verhuurderService.getFacilities(),
       ]);
 
       this.roomTypes = types;
       this.room = roomData;
+      this.allExtraCosts = costs;
+      this.allFacilities = facilities;
 
-      console.log('Room Types loaded:', this.roomTypes);
-      console.log('Room Data loaded:', this.room);
+      if (!this.room.extra.costs) this.room.extra_costs = [];
+      if (!this.room.facilities) this.room.facilities = [];
+
+      console.log('All fetched data:', {
+        room: this.room,
+        types: this.roomTypes,
+        costs: this.allExtraCosts,
+        facilities: this.allFacilities,
+      });
     } catch (error) {
       console.error('Fout bij het laden van kamer:', error);
       alert('Kon kamergegevens niet laden.');
@@ -398,6 +411,12 @@ export class RoomEditing implements OnInit {
         surface: this.room.surface,
         description: this.room.description,
         roomtype_id: this.room.roomtype_id,
+        extra_costs: this.room.extra_costs.map((c: any) => ({
+          id: c.id,
+          price: c.pivot?.price || c.price || 0,
+        })),
+        facilities: this.room.facilities.map((f: any) => ({ id: f.id })),
+        images: this.room.images.map((i: any) => ({})),
       });
       alert('Kamer succesvol bijgewerkt!');
       // Gegevens herladen
@@ -409,6 +428,48 @@ export class RoomEditing implements OnInit {
       this.saving = false;
       this.cdr.detectChanges();
     }
+  }
+
+  // Check of een faciliteit geselecteerd is
+  isFacilitySelected(facilityId: number): boolean {
+    return this.room?.facilities?.some((f: any) => f.id === facilityId);
+  }
+
+  // Voeg een faciliteit toe of verwijder deze
+  toggleFacility(facilityId: number) {
+    if (!this.room.facilities) this.room.facilities = [];
+
+    const index = this.room.facilities.findIndex((f: any) => f.id === facilityId);
+    if (index > -1) {
+      this.room.facilities.splice(index, 1);
+    } else {
+      this.room.facilities.push({ id: facilityId });
+    }
+    this.cdr.detectChanges();
+  }
+
+  // Haal de waarde van een extra kost op uit de room data
+  getExtraCostsValue(costId: number): number {
+    const cost = this.room?.extra_costs?.find((c: any) => c.id === costId);
+    return cost ? cost.pivot?.price || cost.price || 0 : 0;
+  }
+
+  // Update de waarde van een extra kost
+  setExtraCostsValue(costId: number, value: any) {
+    if (!this.room.extra_costs) this.room.extra_costs = [];
+
+    const price = Number(value);
+    let cost = this.room.extra_costs.find((c: any) => c.id === costId);
+
+    if (cost) {
+      if (!cost.pivot) cost.pivot = {};
+      cost.pivot.price = price;
+      cost.price = price; // Voor de zekerheid op beide plekken
+    } else {
+      this.room.extra_costs.push({ id: costId, pivot: { price: price }, price: price });
+    }
+
+    this.cdr.detectChanges();
   }
 
   async onMainImageUpload(event: any) {

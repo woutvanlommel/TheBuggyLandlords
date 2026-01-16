@@ -379,4 +379,14 @@ class VerhuurderController extends Controller
         $room->delete();
         return response()->json(['message' => 'Kamer verwijderd']);
     }
+
+    public function getExtraCosts()
+    {
+        return response()->json(ExtraCost::all());
+    }
+
+    public function getFacilities()
+    {
+        return response()->json(Facility::all());
+    }
 }
