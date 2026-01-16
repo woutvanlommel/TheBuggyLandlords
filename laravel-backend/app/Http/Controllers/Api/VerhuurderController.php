@@ -212,13 +212,16 @@ class VerhuurderController extends Controller
         $user = $request->user();
 
         try {
-            $room = Room::with(['roomType', 'images', 'building', 'extraCosts', 'facilities', 'contracts.user'])
+            $room = Room::with(['roomType', 'documents', 'building', 'extraCosts', 'facilities', 'contracts.user'])
                         ->findOrFail($id);
 
             // Veiligheidscheck op building
             if (!$room->building || $room->building->user_id !== $user->id) {
                 return response()->json(['message' => 'Unauthorized or Building not found'], 403);
             }
+
+            // Expliciet actieve contract toevoegen aan de response
+            $room->active_contract = $room->contracts->where('is_active', 1)->first();
 
             return response()->json($room);
         } catch (\Exception $e) {
@@ -388,5 +391,85 @@ class VerhuurderController extends Controller
     public function getFacilities()
     {
         return response()->json(Facility::all());
+    }
+
+    /**
+     * Zoek huurders op basis van naam of e-mail
+     */
+    public function searchUsers(Request $request)
+    {
+        $query = $request->query('q');
+        if (!$query || strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $users = User::where('role_id', 1) // Enkel huurders
+            ->where(function($q) use ($query) {
+                $q->where('fname', 'LIKE', "%$query%")
+                  ->orWhere('name', 'LIKE', "%$query%")
+                  ->orWhere('email', 'LIKE', "%$query%");
+            })
+            ->limit(10)
+            ->get(['id', 'fname', 'name', 'email']);
+
+        return response()->json($users);
+    }
+
+    /**
+     * Koppel een huurder aan een kamer via een nieuw contract
+     */
+    public function linkTenant(Request $request)
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'room_id' => 'required|exists:room,id',
+            'user_id' => 'required|exists:users,id',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date',
+        ]);
+
+        $room = Room::findOrFail($validated['room_id']);
+        
+        if (!$room->building || $room->building->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Deactiveer oude contracten voor deze kamer
+        \App\Models\Contract::where('room_id', $room->id)
+            ->where('is_active', 1)
+            ->update(['is_active' => 0]);
+
+        // Maak nieuw contract
+        $contract = \App\Models\Contract::create([
+            'room_id' => $room->id,
+            'user_id' => $validated['user_id'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'] ?? null,
+            'is_active' => 1
+        ]);
+
+        return response()->json(['message' => 'Huurder succesvol gekoppeld', 'contract' => $contract]);
+    }
+
+    /**
+     * Ontkoppel een huurder van een kamer (deactiveer contract)
+     */
+    public function unlinkTenant(Request $request, $roomId)
+    {
+        $user = $request->user();
+        $room = Room::findOrFail($roomId);
+
+        if (!$room->building || $room->building->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        \App\Models\Contract::where('room_id', $room->id)
+            ->where('is_active', 1)
+            ->update([
+                'is_active' => 0,
+                'end_date' => now() // Optioneel: zet de einddatum op vandaag
+            ]);
+
+        return response()->json(['message' => 'Huurder succesvol ontkoppeld']);
     }
 }

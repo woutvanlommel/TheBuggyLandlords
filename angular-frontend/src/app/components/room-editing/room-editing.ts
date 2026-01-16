@@ -145,7 +145,7 @@ import { DatePipe } from '@angular/common';
             <div
               class="bg-white rounded-[32px] p-8 shadow-sm border border-base-twee-100 font-poppins relative overflow-hidden"
             >
-              <div class="absolute top-0 left-0 w-2 h-full bg-base-twee-200"></div>
+              <div class="absolute top-0 left-0 w-2 h-full bg-primary"></div>
               <h2 class="text-lg font-bold text-base-twee-900 mb-6 flex items-center gap-3">
                 <span class="p-2 bg-base-een-100 rounded-lg text-base-twee-400 font-black text-xs"
                   >02</span
@@ -159,11 +159,11 @@ import { DatePipe } from '@angular/common';
                   <div
                     class="h-12 w-12 rounded-full bg-white border-2 border-green-100 flex items-center justify-center text-green-500 font-bold"
                   >
-                    {{ activeTenant.user.fname?.[0] }}{{ activeTenant.user.name?.[0] }}
+                    {{ activeTenant.user?.fname?.[0] }}{{ activeTenant.user?.name?.[0] }}
                   </div>
                   <div>
                     <h3 class="font-bold text-base-twee-900 leading-tight">
-                      {{ activeTenant.user.fname }} {{ activeTenant.user.name }}
+                      {{ activeTenant.user?.fname }} {{ activeTenant.user?.name }}
                     </h3>
                     <p class="text-[10px] font-bold text-green-500 uppercase tracking-tight">
                       Contract Actief
@@ -173,7 +173,19 @@ import { DatePipe } from '@angular/common';
                 <div class="space-y-2 mb-6">
                   <div class="flex justify-between text-[10px] text-base-twee-500 font-medium">
                     <span>E-mail</span>
-                    <span class="text-base-twee-700">{{ activeTenant.user.email }}</span>
+                    <a [href]="'mailto:' + activeTenant.user?.email"
+                      ><span class="text-primary-300 hover:underline">{{
+                        activeTenant.user?.email
+                      }}</span></a
+                    >
+                  </div>
+                  <div class="flex justify-between text-[10px] text-base-twee-500 font-medium">
+                    <span>Gsm nummer</span>
+                    <a [href]="'tel:' + activeTenant.user?.phone"
+                      ><span class="text-primary-300 hover:underline">{{
+                        activeTenant.user?.phone
+                      }}</span></a
+                    >
                   </div>
                   <div class="flex justify-between text-[10px] text-base-twee-500 font-medium">
                     <span>Startdatum</span>
@@ -181,40 +193,148 @@ import { DatePipe } from '@angular/common';
                       activeTenant.start_date | date : 'dd MMM yyyy'
                     }}</span>
                   </div>
+                  @if (activeTenant.end_date) {
+                  <div class="flex justify-between text-[10px] text-base-twee-500 font-medium">
+                    <span>Einddatum</span>
+                    <span class="text-base-twee-700">{{
+                      activeTenant.end_date | date : 'dd MMM yyyy'
+                    }}</span>
+                  </div>
+                  }
                 </div>
-                <button
-                  class="w-full py-3 bg-white border border-base-twee-100 rounded-xl text-[10px] font-bold text-base-twee-600 hover:bg-base-twee-900 hover:text-white transition-all shadow-sm"
-                >
-                  Dossier Bekijken
-                </button>
+                <div class="flex gap-2">
+                  <!-- <button
+                    class="flex-1 py-3 bg-white border border-base-twee-100 rounded-xl text-[10px] font-bold text-base-twee-600 hover:bg-base-twee-900 hover:text-white transition-all shadow-sm"
+                  >
+                    Dossier
+                  </button> -->
+                  <button
+                    (click)="unlinkTenant()"
+                    class="px-4 py-3 bg-white border border-red-100 rounded-xl text-[10px]  w-full font-bold text-red-400 hover:bg-red-500 hover:text-white cursor-pointer transition-all shadow-sm"
+                  >
+                    Ontkoppel
+                  </button>
+                </div>
               </div>
               } @else {
-              <div class="text-center py-6 px-4">
-                <div
-                  class="h-20 w-20 bg-base-een-100 rounded-full mx-auto mb-6 flex items-center justify-center"
-                >
-                  <svg
-                    class="w-10 h-10 text-base-twee-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
+              <div class="space-y-4">
+                @if (!selectedUser) {
+                <div class="relative">
+                  <input
+                    type="text"
+                    [(ngModel)]="searchQuery"
+                    (input)="searchTenant()"
+                    placeholder="Zoek op naam of e-mail..."
+                    class="w-full px-5 py-3 rounded-2xl border border-base-twee-100 bg-base-een-50 outline-none focus:border-primary-400 text-xs font-medium"
+                  />
+                  @if (searching) {
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2">
+                    <span
+                      class="animate-spin h-4 w-4 border-2 border-primary-500 border-t-transparent rounded-full block"
+                    ></span>
+                  </div>
+                  }
                 </div>
-                <p class="text-base-twee-400 text-xs font-medium mb-6">
-                  Momenteel geen actieve huurder gekoppeld aan deze kamer.
-                </p>
-                <button
-                  class="w-full py-4 bg-primary-50 rounded-2xl text-primary-600 text-xs font-black uppercase tracking-widest hover:bg-primary-600 hover:text-white transition-all"
+
+                @if (userSuggestions.length > 0) {
+                <div
+                  class="bg-white border border-base-twee-100 rounded-2xl shadow-xl overflow-hidden max-h-48 overflow-y-auto"
                 >
-                  Huurder Koppelen
-                </button>
+                  @for (u of userSuggestions; track u.id) {
+                  <button
+                    (click)="selectTenant(u)"
+                    class="w-full px-4 py-3 text-left hover:bg-base-een-50 flex flex-col gap-0.5 border-b border-base-een-100 last:border-0"
+                  >
+                    <span class="text-xs font-bold text-base-twee-900"
+                      >{{ u.fname }} {{ u.name }}</span
+                    >
+                    <span class="text-[10px] text-base-twee-400">{{ u.email }}</span>
+                  </button>
+                  }
+                </div>
+                } @else if (searchQuery.length > 1 && !searching) {
+                <p class="text-[10px] text-center text-base-twee-400 font-medium italic">
+                  Geen huurders gevonden
+                </p>
+                } } @else {
+                <!-- Selected User Confirmation -->
+                <div class="bg-primary-50 rounded-3xl p-5 border border-primary-100">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div
+                      class="h-10 w-10 rounded-full bg-white flex items-center justify-center text-primary-600 font-bold border border-primary-200"
+                    >
+                      {{ selectedUser.fname?.[0] }}{{ selectedUser.name?.[0] }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-bold text-base-twee-900 truncate">
+                        {{ selectedUser.fname }} {{ selectedUser.name }}
+                      </p>
+                      <p class="text-[10px] text-base-twee-500 truncate">
+                        {{ selectedUser.email }}
+                      </p>
+                      <p class="text-[10px] text-base-twee-500 truncate">
+                        {{ selectedUser.phone }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <label
+                      class="block text-[9px] font-black text-base-twee-400 uppercase mb-1 ml-1"
+                      >Startdatum Contract</label
+                    >
+                    <input
+                      type="date"
+                      [(ngModel)]="linkingDate"
+                      class="w-full px-4 py-2.5 rounded-xl border border-primary-200 bg-white outline-none focus:border-primary-500 text-xs font-bold text-primary-700"
+                    />
+                  </div>
+
+                  <div class="mb-6">
+                    <label
+                      class="block text-[9px] font-black text-base-twee-400 uppercase mb-2 ml-1"
+                      >Duur Contract (maanden)</label
+                    >
+                    <div class="grid grid-cols-3 gap-2">
+                      @for (months of [9, 10, 11]; track months) {
+                      <button
+                        (click)="selectedDuration = months"
+                        [class]="
+                          selectedDuration === months
+                            ? 'bg-primary-600 border-primary-600 text-white shadow-md'
+                            : 'bg-white border-base-twee-100 text-base-twee-600 hover:border-primary-300'
+                        "
+                        class="py-2.5 border rounded-xl text-[10px] font-black transition-all"
+                      >
+                        {{ months }}m
+                      </button>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <button
+                      (click)="confirmLinkTenant()"
+                      [disabled]="linking"
+                      class="flex-1 py-3 bg-primary-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-700 transition-all disabled:opacity-50"
+                    >
+                      {{ linking ? 'Bezig...' : 'Bevestigen' }}
+                    </button>
+                    <button
+                      (click)="cancelSelection()"
+                      class="px-4 py-3 bg-white border border-base-twee-100 rounded-xl text-[10px] font-bold text-base-twee-400 hover:text-red-500 transition-all"
+                    >
+                      Annuleer
+                    </button>
+                  </div>
+                </div>
+                }
+
+                <div class="text-center pt-2">
+                  <p class="text-[9px] text-base-twee-300 font-bold uppercase tracking-widest">
+                    Huurder moet een account hebben
+                  </p>
+                </div>
               </div>
               }
             </div>
@@ -223,7 +343,7 @@ import { DatePipe } from '@angular/common';
             <div
               class="bg-white rounded-[32px] p-8 shadow-sm border border-base-twee-100 font-poppins relative overflow-hidden"
             >
-              <div class="absolute top-0 left-0 w-2 h-full bg-base-twee-400"></div>
+              <div class="absolute top-0 left-0 w-2 h-full bg-primary"></div>
               <h2 class="text-lg font-bold text-base-twee-900 mb-8 flex items-center gap-3">
                 <span class="p-2 bg-base-een-100 rounded-lg text-base-twee-400 font-black text-xs"
                   >03</span
@@ -231,34 +351,74 @@ import { DatePipe } from '@angular/common';
                 Kosten & Lasten
               </h2>
 
-              <div class="space-y-6">
-                @for (cost of allExtraCosts; track cost.id) {
-                <div
-                  class="flex items-center justify-between p-4 bg-base-een-50 rounded-2xl border border-base-een-200 transition-all hover:bg-white hover:shadow-md group"
-                >
-                  <div class="flex flex-col">
-                    <span class="text-xs text-base-twee-700 font-black">{{ cost.type }}</span>
-                    <span
-                      class="text-[9px] font-bold uppercase tracking-tight"
-                      [class]="cost.is_recurring ? 'text-primary-500' : 'text-base-twee-300'"
+              <div class="space-y-10">
+                <!-- Eenmalige Kosten -->
+                <div class="space-y-4">
+                  <h3 class="text-[9px] font-black text-accent uppercase tracking-widest ml-2">
+                    Eenmalige Kosten
+                  </h3>
+                  <div class="space-y-3">
+                    @for (cost of oneTimeCosts; track cost.id) {
+                    <div
+                      class="flex items-center justify-between p-4 bg-base-een-50 rounded-2xl border border-base-een-200 transition-all hover:bg-white hover:shadow-md group"
                     >
-                      {{ cost.is_recurring ? 'Maandelijks' : 'Eenmalig' }}
-                    </span>
-                  </div>
-                  <div class="relative w-28 drop-shadow-sm">
-                    <span
-                      class="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] text-base-twee-400 font-black"
-                      >€</span
-                    >
-                    <input
-                      type="number"
-                      [ngModel]="getExtraCostsValue(cost.id)"
-                      (ngModelChange)="setExtraCostsValue(cost.id, $event)"
-                      class="w-full pl-8 pr-4 py-3 text-right text-sm font-black text-base-twee-900 bg-white border border-base-twee-100 rounded-xl outline-none group-hover:border-primary-400 transition-all"
-                    />
+                      <div class="flex flex-col">
+                        <span class="text-xs text-base-twee-700 font-black">{{ cost.name }}</span>
+                        <span class="text-[8px] font-bold uppercase tracking-tight text-accent">
+                          Eenmalig
+                        </span>
+                      </div>
+                      <div class="relative w-28 drop-shadow-sm">
+                        <span
+                          class="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] text-base-twee-400 font-black"
+                          >€</span
+                        >
+                        <input
+                          type="number"
+                          [ngModel]="getExtraCostsValue(cost.id)"
+                          (ngModelChange)="setExtraCostsValue(cost.id, $event)"
+                          class="w-full pl-8 pr-4 py-3 text-right text-sm font-black text-base-twee-900 bg-white border border-base-twee-100 rounded-xl outline-none group-hover:border-primary-400 transition-all"
+                        />
+                      </div>
+                    </div>
+                    }
                   </div>
                 </div>
-                }
+
+                <!-- Maandelijkse Kosten -->
+                <div class="space-y-4">
+                  <h3 class="text-[9px] font-black text-primary-500 uppercase tracking-widest ml-2">
+                    Maandelijkse Kosten
+                  </h3>
+                  <div class="space-y-3">
+                    @for (cost of monthlyCosts; track cost.id) {
+                    <div
+                      class="flex items-center justify-between p-4 bg-primary-50/30 rounded-2xl border border-primary-100/50 transition-all hover:bg-white hover:shadow-md group"
+                    >
+                      <div class="flex flex-col">
+                        <span class="text-xs text-base-twee-700 font-black">{{ cost.name }}</span>
+                        <span
+                          class="text-[8px] font-bold uppercase tracking-tight text-primary-500"
+                        >
+                          Maandelijks
+                        </span>
+                      </div>
+                      <div class="relative w-28 drop-shadow-sm">
+                        <span
+                          class="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] text-base-twee-400 font-black"
+                          >€</span
+                        >
+                        <input
+                          type="number"
+                          [ngModel]="getExtraCostsValue(cost.id)"
+                          (ngModelChange)="setExtraCostsValue(cost.id, $event)"
+                          class="w-full pl-8 pr-4 py-3 text-right text-sm font-black text-base-twee-900 bg-white border border-base-twee-100 rounded-xl outline-none group-hover:border-primary-400 transition-all"
+                        />
+                      </div>
+                    </div>
+                    }
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -561,6 +721,15 @@ export class RoomEditing implements OnInit {
   loading = false;
   saving = false;
 
+  // Tenant Search
+  searchQuery: string = '';
+  userSuggestions: any[] = [];
+  selectedUser: any = null;
+  linkingDate: string = new Date().toISOString().split('T')[0];
+  selectedDuration: number = 10; // Standaard 10 maanden
+  searching: boolean = false;
+  linking: boolean = false;
+
   allowedDocTypes = [
     { id: 1, name: 'Huurcontract' },
     { id: 3, name: 'Huishoudelijk Reglement' },
@@ -604,7 +773,90 @@ export class RoomEditing implements OnInit {
 
   // Getter for active tenant
   get activeTenant() {
-    return this.room?.contracts?.find((c: any) => c.is_active === 1) || null;
+    return (
+      this.room?.active_contract ||
+      this.room?.contracts?.find((c: any) => c.is_active == 1 || c.is_active == true) ||
+      null
+    );
+  }
+
+  // Tenant Search & Linking
+  async searchTenant() {
+    if (this.searchQuery.length < 2) {
+      this.userSuggestions = [];
+      return;
+    }
+    this.searching = true;
+    try {
+      this.userSuggestions = await this.verhuurderService.searchUsers(this.searchQuery);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      this.searching = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  selectTenant(user: any) {
+    this.selectedUser = user;
+    this.userSuggestions = [];
+    this.searchQuery = '';
+    this.cdr.detectChanges();
+  }
+
+  cancelSelection() {
+    this.selectedUser = null;
+    this.cdr.detectChanges();
+  }
+
+  async confirmLinkTenant() {
+    if (!this.selectedUser || !this.room) return;
+    this.linking = true;
+    try {
+      // Bereken einddatum
+      const startDate = new Date(this.linkingDate);
+      const endDate = new Date(startDate);
+      endDate.setMonth(startDate.getMonth() + Number(this.selectedDuration));
+      const endDateStr = endDate.toISOString().split('T')[0];
+
+      await this.verhuurderService.linkTenant(
+        this.room.id,
+        this.selectedUser.id,
+        this.linkingDate,
+        endDateStr
+      );
+      this.room = await this.verhuurderService.getRoom(this.room.id);
+      this.selectedUser = null;
+      alert('Huurder succesvol gekoppeld!');
+    } catch (e) {
+      console.error(e);
+      alert('Linken mislukt.');
+    } finally {
+      this.linking = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async unlinkTenant() {
+    if (!this.room || !confirm('Weet u zeker dat u deze huurder wilt ontkoppelen?')) return;
+    try {
+      await this.verhuurderService.unlinkTenant(this.room.id);
+      this.room = await this.verhuurderService.getRoom(this.room.id);
+      alert('Huurder ontkoppeld.');
+    } catch (e) {
+      console.error(e);
+      alert('Ontkoppelen mislukt.');
+    } finally {
+      this.cdr.detectChanges();
+    }
+  }
+
+  get oneTimeCosts() {
+    return this.allExtraCosts.filter((c: any) => !c.is_recurring);
+  }
+
+  get monthlyCosts() {
+    return this.allExtraCosts.filter((c: any) => c.is_recurring);
   }
 
   getExtraCostsValue(id: number) {
@@ -641,14 +893,14 @@ export class RoomEditing implements OnInit {
   }
 
   get mainImage() {
-    return this.room?.images?.find((i: any) => i.document_type_id === 7);
+    return this.room?.documents?.find((i: any) => i.document_type_id === 7);
   }
   get galleryImages() {
-    return this.room?.images?.filter((i: any) => i.document_type_id === 9) || [];
+    return this.room?.documents?.filter((i: any) => i.document_type_id === 9) || [];
   }
   get roomDocuments() {
     const ids = this.allowedDocTypes.map((t) => t.id);
-    return this.room?.images?.filter((i: any) => ids.includes(i.document_type_id)) || [];
+    return this.room?.documents?.filter((i: any) => ids.includes(i.document_type_id)) || [];
   }
 
   getDocTypeName(id: number) {

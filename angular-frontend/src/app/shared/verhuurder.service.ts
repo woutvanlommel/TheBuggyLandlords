@@ -170,6 +170,51 @@ export class VerhuurderService {
     );
   }
 
+  // Zoek huurders
+  async searchUsers(query: string): Promise<any[]> {
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    return firstValueFrom(
+      this.http.get<any[]>(`${this.baseApi}search-users?q=${query}`, { headers: headersObj })
+    );
+  }
+
+  // Koppel huurder
+  async linkTenant(
+    roomId: number,
+    userId: number,
+    startDate: string,
+    endDate?: string
+  ): Promise<any> {
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    return firstValueFrom(
+      this.http.post(
+        `${this.baseApi}rooms/link-tenant`,
+        { room_id: roomId, user_id: userId, start_date: startDate, end_date: endDate },
+        { headers: headersObj }
+      )
+    );
+  }
+
+  // Ontkoppel huurder
+  async unlinkTenant(roomId: number): Promise<any> {
+    const headersObj: { [header: string]: string } = {};
+    this.authService.getAuthHeaders().forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
+    return firstValueFrom(
+      this.http.post(`${this.baseApi}rooms/${roomId}/unlink-tenant`, {}, { headers: headersObj })
+    );
+  }
+
   // Upload een afbeelding voor een kamer
   async uploadRoomImage(roomId: number, file: File, typeId: number): Promise<any> {
     const formData = new FormData();
