@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 import { RouterLink } from '@angular/router';
+import {RoomService} from '../../shared/room.service';
+import {AuthService} from '../../shared/auth.service';
 
 @Component({
   selector: 'app-building-dashboard',
@@ -381,6 +383,8 @@ export class BuildingDashboard implements OnInit {
   suggestLoading: boolean = false;
   private suggestTimeout: any;
 
+  isLandlord: boolean = false;
+
   newBuilding: any = {
     street: '',
     number: '',
@@ -388,9 +392,13 @@ export class BuildingDashboard implements OnInit {
     city: '',
   };
 
-  constructor(private verhuurderService: VerhuurderService, private cdr: ChangeDetectorRef) {}
+  constructor(private verhuurderService: VerhuurderService, private cdr: ChangeDetectorRef, private roomService: RoomService, private authService: AuthService) {}
 
   ngOnInit() {
+
+    const user = this.authService.getUser();
+    this.isLandlord = user && (user.role_id === 2 || user.role === 'landlord');
+
     this.loadBuildings();
   }
 
@@ -461,29 +469,62 @@ export class BuildingDashboard implements OnInit {
     alert('Functie om kamers toe te voegen is nog niet geïmplementeerd.');
   }
 
-  async loadBuildings() {
+async loadBuildings() {
     try {
       this.loading = true;
-      // In a real app we would use the actual API response
-      // For now we assume query works, or we mock if it fails/returns empty while developing
-      const data = await this.verhuurderService.getMyBuildings();
+      let data;
 
+      // 2. Logic Split: Verhuurder vs Student
+      if (this.isLandlord) {
+        // VERHUURDER: Haalt eigen gebouwen op
+        data = await this.verhuurderService.getMyBuildings();
+      } else {
+        // STUDENT: Haalt favorieten op via RoomService
+        // We gebruiken .subscribe() omdat Angular services vaak Observables zijn.
+        // Als jouw RoomService Promise returned, kun je gewoon 'await' gebruiken.
+        this.roomService.getFavorites().subscribe({
+            next: (favs: any) => {
+                // We zorgen dat 'expanded' property bestaat voor de UI
+                const favoritesArray = Array.isArray(favs) ? favs : (favs as any).data || [];
+                this.buildings = favoritesArray.map((b: any) => ({ ...b, expanded: false }));
+                this.loading = false;
+                this.cdr.detectChanges();
+            },
+            error: (err: any) => {
+                console.error("Fout bij laden favorieten:", err);
+                this.loading = false;
+            }
+        });
+        return; // Stop hier, want de subscribe handelt de rest af
+      }
+
+      // Verhuurder logica vervolg (Promise based)
       const buildingsArray = Array.isArray(data) ? data : (data as any).data || [];
-
-      // Add 'expanded' property to each building for UI state
       this.buildings = buildingsArray.map((b: any) => ({ ...b, expanded: false }));
       console.log('Loaded buildings:', this.buildings);
+
     } catch (error) {
       console.error('Error loading buildings:', error);
-      // Fallback/Mock data for demonstration if API fails or backend not ready
       this.buildings = [];
     } finally {
-      this.loading = false;
-      this.cdr.detectChanges();
+      if(this.isLandlord) {
+          this.loading = false;
+          this.cdr.detectChanges();
+      }
     }
   }
 
   toggleBuilding(building: any) {
-    building.expanded = !building.expanded;
+    if(this.isLandlord) {
+        building.expanded = !building.expanded;
+    } else {
+        // Student klikt op rij -> Navigeer naar detailpagina (pas ID route aan indien nodig)
+        console.log("Navigeer naar detail voor:", building.id);
+        // this.router.navigate(['/room', building.id]);
+    }
+  }
+
+  handleRowClick(building: any) {
+      this.toggleBuilding(building);
   }
 }
