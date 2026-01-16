@@ -22,7 +22,7 @@ import { RouterLink } from '@angular/router';
       </button>
     </div>
 
-    <div class="space-y-4" [class]="showAddBuildingModal ? 'min-h-180' : 'min-h-[150px]'">
+    <div class="space-y-4" [class]="showAddBuildingModal ? 'min-h-180' : 'min-h-150px'">
       <!-- Loading State -->
       @if (loading) {
       <div class="flex flex-col gap-2 justify-center items-center">
@@ -356,7 +356,7 @@ import { RouterLink } from '@angular/router';
             <button
               (click)="submitNewBuilding()"
               [disabled]="!newBuilding.street || !newBuilding.city || loading"
-              class="flex-[2] px-8 py-4 rounded-2xl text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30 transition-all transform active:scale-95 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none flex items-center justify-center gap-3"
+              class="flex-2 px-8 py-4 rounded-2xl text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30 transition-all transform active:scale-95 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none flex items-center justify-center gap-3"
             >
               @if (loading) {
               <div

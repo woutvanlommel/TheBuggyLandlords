@@ -2,7 +2,7 @@ import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../../shared/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ButtonHome } from '../../button-home/button-home';
+import { ButtonHome } from '../../components/app-city-tiles/button-home/button-home';
 
 @Component({
   selector: 'app-login',

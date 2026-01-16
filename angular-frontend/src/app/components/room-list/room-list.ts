@@ -52,7 +52,7 @@ import { RoomCard } from '../room-card/room-card';
         } @else {
         <button
           (click)="goToPage(page)"
-          class="h-10 min-w-[40px] px-2 flex items-center justify-center rounded-lg text-sm font-bold transition-all border"
+          class="h-10 min-w-40px px-2 flex items-center justify-center rounded-lg text-sm font-bold transition-all border"
           [class.bg-accent-500]="currentPage() === page"
           [class.text-white]="currentPage() === page"
           [class.border-accent-500]="currentPage() === page"
