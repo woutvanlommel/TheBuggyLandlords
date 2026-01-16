@@ -23,18 +23,18 @@ import { ButtonHome } from '../../components/app-city-tiles/button-home/button-h
         <div class="absolute inset-0 bg-linear-to-t from-primary-900 via-primary-900/40 to-transparent"></div>
 
         <!-- Content -->
-        <div class="relative z-10 w-full flex flex-col justify-between p-12">
+        <div class="relative z-10 w-full flex flex-col justify-between p-12 h-screen">
             <div>
               <img src="/assets/logo/400pxX100pxLogoLiggendVolledigOranje.png" alt="KotCompass" class="h-16 w-auto mb-6">
             </div>
             
             <div class="mb-12">
-              <h2 class="text-4xl font-bold text-white mb-4 leading-tight">
-                Vind jouw ideale <br>
-                studentenkamer <span class="text-accent">vandaag.</span>
+              <h2 class="text-4xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+                Jouw studententijd <br>
+                begint <span class="text-accent">hier.</span>
               </h2>
-              <p class="text-primary-100 text-lg max-w-md">
-                Beheer je zoektocht, bewaar je favorieten en contacteer verhuurders rechtstreeks via ons platform.
+              <p class="text-primary-100 text-lg max-w-sm leading-relaxed font-light">
+                Log in om je favoriete koten op te slaan, en beheer als verhuurder makkelijk je panden en contracten.
               </p>
             </div>
 
