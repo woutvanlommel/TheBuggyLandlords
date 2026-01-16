@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Room;
 use App\Models\Street;
 use App\Models\Place;
+use App\Models\Building;
 use Illuminate\Http\Request;
 
 class RoomController extends Controller
@@ -284,5 +285,32 @@ class RoomController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function searchCities(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query) return response()->json([]);
+
+        $places = Place::where('place', 'LIKE', "%{$query}%")
+            ->limit(8)
+            ->get();
+            
+        $results = [];
+        foreach($places as $place) {
+             // Find a building to get coords
+             $building = Building::where('place_id', $place->id)->whereNotNull('latitude')->first();
+             
+             if ($building) {
+                 $results[] = [
+                     'name' => $place->place,
+                     'lat' => $building->latitude,
+                     'lng' => $building->longitude,
+                     'zip' => $place->zipcode
+                 ];
+             }
+        }
+        
+        return response()->json($results);
     }
 }

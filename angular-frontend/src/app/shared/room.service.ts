@@ -58,6 +58,11 @@ export class RoomService {
     return this.http.get<any>(this.baseApi + 'public/rooms', { headers: headers, params: params });
   }
 
+  searchCities(query: string): Observable<any[]> {
+    let params = new HttpParams().set('query', query);
+    return this.http.get<any[]>(this.baseApi + 'public/search-cities', { params });
+  }
+
   // Gebruikt door ZOEK pagina (Update de state voor de map)
   getRoomsByBBox(
     minLat: number,

@@ -31,7 +31,7 @@ import { AppCityTiles } from '../app-city-tiles/app-city-tiles';
               Ontdek duizenden studentenkamers in heel België
             </h2>
             
-            <div class="w-full max-w-2xl transform transition-all hover:scale-[1.01]">
+            <div class="w-full max-w-2xl transform transition-all hover:scale-[1.01] relative z-50">
               <app-app-home-search></app-app-home-search>
             </div>
 
