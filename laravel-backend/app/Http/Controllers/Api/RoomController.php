@@ -225,7 +225,8 @@ class RoomController extends Controller
             'building.place',
             'building.owner',
             'images',
-            'roomtype'
+            'roomtype',
+            'extraCosts'
         ])->findOrFail($id);
 
         $roomArray = $room->toArray();

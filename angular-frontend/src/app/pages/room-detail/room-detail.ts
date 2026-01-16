@@ -30,7 +30,7 @@ import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-ad
         [surface]="room.surface || 0"
         [bedrooms]="1"
         [priceType]="'per maand'"
-        [price]="room.price">
+        [price]="totalPrice">
       </app-price-adres-kotpage>
 
       <!-- Contact Card: owner is the landlord -->
@@ -53,6 +53,22 @@ export class RoomDetail {
   room: any = null;
   isLoading = true;
   hasError = false;
+
+  get totalPrice(): number {
+    if (!this.room) return 0;
+    let total = Number(this.room.price) || 0;
+    
+    // Check extra_costs (mapped from extraCosts relation)
+    if (this.room.extra_costs && Array.isArray(this.room.extra_costs)) {
+      this.room.extra_costs.forEach((cost: any) => {
+        // Check pivot data
+        if (cost.pivot && cost.pivot.price) {
+          total += Number(cost.pivot.price);
+        }
+      });
+    }
+    return total;
+  }
 
   ngOnInit() {
     this.refreshData();
