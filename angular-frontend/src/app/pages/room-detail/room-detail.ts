@@ -4,11 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RoomCard } from '../../components/room-card/room-card';
 import { ContactCard } from '../../components/contact-card/contact-card';
+import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-adres-kotpage';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, RoomCard, ContactCard],
+  imports: [CommonModule, RoomCard, ContactCard, PriceAdresKotpage],
   template: `
     @if (isLoading) {
     <div><p>Laden...</p></div>
@@ -16,11 +17,25 @@ import { ContactCard } from '../../components/contact-card/contact-card';
     <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
     <div class="mx-auto w-30/100 my-4 flex flex-col gap-6">
+      
+      <!-- Price & Address Component -->
+      <app-price-adres-kotpage
+        [name]="room.roomtype || 'Kamer'"
+        [postalCode]="room.building?.place?.zipcode"
+        [city]="room.building?.place?.place"
+        [type]="room.roomtype || 'Onbekend'"
+        [surface]="room.surface || 0"
+        [bedrooms]="1"
+        [priceType]="'per maand'"
+        [price]="room.price">
+      </app-price-adres-kotpage>
+
       <app-room-card [room]="room"></app-room-card>
       
       <!-- Contact Card: owner is the landlord -->
       <app-contact-card 
           [user]="room.building?.owner"
+
           [roomId]="room.id"
           [isSpotlighted]="room.is_highlighted"
           [isUnlocked]="room.is_unlocked"
