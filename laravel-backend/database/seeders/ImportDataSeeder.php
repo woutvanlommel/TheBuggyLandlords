@@ -36,7 +36,7 @@ class ImportDataSeeder extends Seeder
 
             -- 3. Types en Faciliteiten
             INSERT INTO `complainttype` (`id`, `type`) VALUES (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
-            INSERT INTO `documenttype` (id, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding'), (8, 'Profielfoto');
+            INSERT INTO `documenttype` (id, `type`) VALUES (1, 'Huurcontract'), (2, 'Plaatsbeschrijving'), (3, 'Huishoudelijk Reglement'), (4, 'Brandverzekering'), (5, 'EPC Attest'), (6, 'Klacht'), (7, 'Kamerafbeelding'), (8, 'Profielfoto'), (9, 'Kamergallerij');
             INSERT INTO `facility` (`id`, `facility`) VALUES (1, 'Snel Internet'), (2, 'Eigen badkamer'), (3, 'Gemeenschappelijke keuken'), (4, 'Eigen keuken'), (5, 'Fietsenstalling'), (6, 'Bemeubeld'), (7, 'Tuin/Koer'), (8, 'Wasmachine aanwezig'), (9, 'Dichtbij station'), (10, 'Huisdieren toegelaten');
             INSERT INTO `condition` (`id`, `name`, `description`) VALUES (1, 'Kamer Yentl', 'Alles is inorde.'), (2, 'Kamer Alessio', 'Wc bril hangt scheef.'), (3, 'Kamer Wout', 'Isolatie raamwanden ontbreekt.');
 
