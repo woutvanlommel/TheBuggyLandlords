@@ -39,10 +39,23 @@ return new class extends Migration
             $table->foreign('condition_id')->references('id')->on('condition')->onDelete('cascade');
             $table->foreign('document_id')->references('id')->on('document')->onDelete('cascade');
         });
+
+        //4. Extra costs link to room
+        Schema::create('extracost_room', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('extracost_id');
+            $table->unsignedBigInteger('room_id');
+            $table->bigInteger('price');
+
+            $table->foreign('extracost_id')->references('id')->on('extracost')->onDelete('cascade');
+            $table->foreign('room_id')->references('id')->on('room')->onDelete('cascade');
+        });
+
     }
 
     public function down()
     {
+        Schema::dropIfExists('extracost_room');
         Schema::dropIfExists('condition_document');
         Schema::dropIfExists('complaint_document');
         Schema::dropIfExists('facility_room');

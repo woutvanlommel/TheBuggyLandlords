@@ -77,4 +77,15 @@ class Room extends Model
     {
         return $this->belongsToMany(User::class, 'favorites', 'room_id', 'user_id');
     }
+
+    public function extraCosts() 
+    {
+        return $this->belongsToMany(ExtraCost::class, 'extracost_room', 'room_id', 'extracost_id')
+                    ->withPivot('price');
+    }
+
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class, 'facility_room', 'room_id', 'facility_id');
+    }
 }

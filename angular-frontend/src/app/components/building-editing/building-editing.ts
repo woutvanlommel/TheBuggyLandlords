@@ -212,7 +212,14 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
               </h2>
               <quill-editor
                 [(ngModel)]="editBuilding.description"
-                class="block w-full bg-white rounded-2xl overflow-hidden border-2 border-base-een-200 focus-within:border-primary-500 transition-all font-sans"
+                [modules]="{
+                  toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['clean']
+                  ]
+                }"
+                class="block w-full bg-white overflow-hidden border-2 border-base-een-200 focus-within:border-primary-500 transition-all font-sans"
                 [styles]="{ height: '350px' }"
                 placeholder="Geef hier een uitgebreide beschrijving van het gebouw, de ligging, en eventuele extra troeven..."
               ></quill-editor>
@@ -321,7 +328,8 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
                       </div>
                       <div>
                         <h4 class="font-bold text-base-twee-900">
-                          {{ room.name || room.roomtype?.type || 'Kamer' }} - {{ room.roomnumber }}
+                          {{ getRoomTypeName(room.roomtype_id) }} -
+                          {{ room.roomnumber }}
                         </h4>
                         <p
                           class="text-[10px] text-base-twee-400 font-bold uppercase tracking-widest"
@@ -536,18 +544,14 @@ export class BuildingEditing implements OnInit {
   suggestLoading: boolean = false;
   private suggestTimeout: any;
   loading: boolean = true;
-  roomTypes: any[] = [
-    { id: 1, type: 'Kamer' },
-    { id: 2, type: 'Studio' },
-    { id: 3, type: 'Appartement' },
-  ];
+  roomTypes: any[] = [];
 
   showRoomModal: boolean = false;
   editingRoomId: number | null = null;
   currentRoom: any = {
     name: '',
     roomnumber: '',
-    roomtype_id: 1,
+    roomtype_id: null,
     price: 0,
     surface: 0,
   };
@@ -559,9 +563,33 @@ export class BuildingEditing implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
-    this.loadData();
-    this.loadRoomTypes();
+  async ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.loading = true;
+    try {
+      const [types, buildingData] = await Promise.all([
+        this.verhuurderService.getRoomTypes(),
+        id ? this.verhuurderService.getBuilding(+id) : Promise.resolve(null),
+      ]);
+
+      this.roomTypes = types;
+      this.building = buildingData;
+
+      if (this.building) {
+        this.editBuilding = {
+          street: this.building.street?.street || '',
+          housenumber: this.building.housenumber || '',
+          postalCode: this.building.place?.zipcode || '',
+          city: this.building.place?.place || '',
+          description: this.building.description || '',
+        };
+      }
+    } catch (error) {
+      console.error('Error loading building data:', error);
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
   }
 
   onStreetInput() {
@@ -597,41 +625,12 @@ export class BuildingEditing implements OnInit {
   async loadData() {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
-
     try {
-      this.loading = true;
-      // Gebruik de specifieke endpoint voor betere performance
       this.building = await this.verhuurderService.getBuilding(+id);
-
-      if (this.building) {
-        this.editBuilding = {
-          street: this.building.street?.street || '',
-          housenumber: this.building.housenumber || '',
-          postalCode: this.building.place?.zipcode || '',
-          city: this.building.place?.place || '',
-          description: this.building.description || '',
-        };
-      } else {
-        alert('Gebouw niet gevonden.');
-        this.router.navigate(['/dashboard/stats']);
-      }
     } catch (error) {
-      console.error('Error loading building:', error);
-      alert('Er is een fout opgetreden bij het laden van het gebouw.');
+      console.error('Error refreshing building data:', error);
     } finally {
-      this.loading = false;
       this.cdr.detectChanges();
-    }
-  }
-
-  async loadRoomTypes() {
-    try {
-      const types = await this.verhuurderService.getRoomTypes();
-      if (types && types.length > 0) {
-        this.roomTypes = types;
-      }
-    } catch (error) {
-      console.warn('Could not load room types, using defaults.');
     }
   }
 
@@ -715,6 +714,11 @@ export class BuildingEditing implements OnInit {
       this.loading = false;
       this.cdr.detectChanges();
     }
+  }
+
+  getRoomTypeName(id: number) {
+    const type = this.roomTypes.find((t) => t.id == id);
+    return type ? type.type : 'Kamer';
   }
 
   async deleteRoom(id: number) {

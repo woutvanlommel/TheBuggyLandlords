@@ -60,6 +60,14 @@ return new class extends Migration
             $table->text('description');
         });
 
+        //8. Extra costs
+        Schema::create('extracost', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->boolean('is_recurring')->default(false);
+        });
+
+
         Schema::table('users', function (Blueprint $table) {
             $table->foreign('role_id')->references('id')->on('role');
         });
@@ -70,7 +78,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['role_id']);
         });
-
+        Schema::dropIfExists('extracost');
         Schema::dropIfExists('condition');
         Schema::dropIfExists('facility');
         Schema::dropIfExists('documenttype');
