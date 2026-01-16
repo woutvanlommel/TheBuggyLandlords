@@ -22,7 +22,7 @@ export class RoomService {
   public availableTypes$ = this.availableTypesSubject.asObservable();
 
   // Map Center control
-  private mapCenterSubject = new Subject<{lat: number, lng: number, zoom: number}>();
+  private mapCenterSubject = new BehaviorSubject<{lat: number, lng: number, zoom: number} | null>(null);
   public mapCenter$ = this.mapCenterSubject.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -56,6 +56,11 @@ export class RoomService {
     }
 
     return this.http.get<any>(this.baseApi + 'public/rooms', { headers: headers, params: params });
+  }
+
+  searchCities(query: string): Observable<any[]> {
+    let params = new HttpParams().set('query', query);
+    return this.http.get<any[]>(this.baseApi + 'public/search-cities', { params });
   }
 
   // Gebruikt door ZOEK pagina (Update de state voor de map)

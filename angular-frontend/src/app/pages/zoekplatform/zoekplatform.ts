@@ -6,7 +6,8 @@ import { HeroZoekplatform } from '../../components/hero-zoekplatform/hero-zoekpl
 @Component({
   selector: 'app-zoekplatform',
   imports: [RoomList, HeroZoekplatform],
-  template: ` <app-hero-zoekplatform></app-hero-zoekplatform>
+  template: ` 
+    <app-hero-zoekplatform></app-hero-zoekplatform>
     <app-room-list></app-room-list>`,
 })
 export class Zoekplatform {}

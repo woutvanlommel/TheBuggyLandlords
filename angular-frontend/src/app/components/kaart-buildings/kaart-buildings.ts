@@ -138,17 +138,18 @@ export class KaartBuildings implements OnInit, OnDestroy {
     this.roomService.refreshTrigger$.pipe(takeUntil(this.destroy$)).subscribe(() => {
         if(this.map) this.fetchRooms(); 
     });
-
-    this.roomService.mapCenter$.pipe(takeUntil(this.destroy$)).subscribe(center => {
-        if (this.map) {
-            this.map.setView([center.lat, center.lng], center.zoom);
-        }
-    });
   }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.initMap();
+        
+      // Subscribe to map center updates AFTER map init
+      this.roomService.mapCenter$.pipe(takeUntil(this.destroy$)).subscribe(center => {
+        if (center && this.map) {
+            this.map.setView([center.lat, center.lng], center.zoom);
+        }
+      });
     }
   }
 
