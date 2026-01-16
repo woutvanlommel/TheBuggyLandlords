@@ -569,9 +569,18 @@ import { DatePipe } from '@angular/common';
                     >
                       Foto Gallerij
                     </h3>
-                    <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
-                      Voeg detailfoto's toe: de badkamer, het uitzicht, opbergruimte of de keuken.
-                    </p>
+                    <div class="flex flex-col gap-2 items-start justify-start">
+                      <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
+                        Voeg detailfoto's toe: de badkamer, het uitzicht, opbergruimte of de keuken.
+                      </p>
+                      <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
+                        Houdt er rekening mee dat hoe meer foto's, hoe beter de kans op een
+                        succesvolle verhuur.
+                      </p>
+                      <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
+                        <span class="italic">Maximaal 20MB aan foto's per upload.</span>
+                      </p>
+                    </div>
                   </div>
                   <div class="md:col-span-2">
                     <div class="grid grid-cols-3 sm:grid-cols-4 gap-4">
@@ -628,8 +637,11 @@ import { DatePipe } from '@angular/common';
                     <h3
                       class="font-black text-base-twee-900 text-sm mb-2 uppercase tracking-widest"
                     >
-                      Systeembestanden
+                      Belangrijke documenten
                     </h3>
+                    <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
+                      Enkel PDF-bestanden worden ondersteund.
+                    </p>
                     <p class="text-xs text-base-twee-400 font-medium leading-relaxed">
                       Beheer hier de juridische documenten zoals contracten en reglementen.
                     </p>
@@ -651,7 +663,13 @@ import { DatePipe } from '@angular/common';
                         >
                           Upload
                         </button>
-                        <input #docInput type="file" (change)="onDocumentUpload($event)" hidden />
+                        <input
+                          #docInput
+                          type="file"
+                          (change)="onDocumentUpload($event)"
+                          hidden
+                          accept=".pdf"
+                        />
                       </div>
 
                       <div class="space-y-3">
@@ -659,7 +677,11 @@ import { DatePipe } from '@angular/common';
                         <div
                           class="flex items-center justify-between p-4 bg-white rounded-2xl border border-base-twee-50 shadow-sm group"
                         >
-                          <div class="flex items-center gap-3 overflow-hidden">
+                          <a
+                            [href]="doc.url"
+                            target="_blank"
+                            class="flex items-center gap-3 overflow-hidden flex-1 hover:opacity-70 transition-opacity"
+                          >
                             <div class="p-2 bg-primary-50 text-primary-600 rounded-lg">
                               <svg
                                 class="w-4 h-4"
@@ -686,7 +708,7 @@ import { DatePipe } from '@angular/common';
                                 {{ getDocTypeName(doc.document_type_id) }}
                               </span>
                             </div>
-                          </div>
+                          </a>
                           <button
                             (click)="deleteFile(doc.id)"
                             class="p-2 text-base-twee-300 hover:text-red-500 transition-colors"
