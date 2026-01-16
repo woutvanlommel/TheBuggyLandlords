@@ -504,9 +504,23 @@ import { DatePipe } from '@angular/common';
                     >
                       @if (mainImage) {
                       <img
-                        [src]="mainImage.file_path"
+                        [src]="mainImage.url"
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
+                      <!-- Voeg hier een absolute delete knop aan toe -->
+                      <button
+                        (click)="deleteFile(mainImage.id); $event.stopPropagation()"
+                        class="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-full z-10 hover:bg-red-600 shadow-lg"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
                       <div
                         class="absolute inset-0 bg-primary-600/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all"
                       >
@@ -566,7 +580,7 @@ import { DatePipe } from '@angular/common';
                         class="relative aspect-square rounded-[24px] overflow-hidden group border border-base-twee-100 shadow-sm"
                       >
                         <img
-                          [src]="img.file_path"
+                          [src]="img.url"
                           class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
                         />
                         <button
@@ -892,6 +906,61 @@ export class RoomEditing implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Helper om afbeeldingen te verkleinen
+  private async compressImage(file: File): Promise<File> {
+    // Sla documenten (PDF etc) over, enkel afbeeldingen comprimeren
+    if (!file.type.startsWith('image/')) return file;
+
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Maximaal 1600px breedte of hoogte
+          const MAX_SIZE = 1600;
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            'image/jpeg',
+            0.8 // Kwaliteit: 80%
+          );
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   get mainImage() {
     return this.room?.documents?.find((i: any) => i.document_type_id === 7);
   }
@@ -932,7 +1001,8 @@ export class RoomEditing implements OnInit {
   async onMainImageUpload(ev: any) {
     const file = ev.target.files[0];
     if (file) {
-      await this.verhuurderService.uploadRoomImage(this.room.id, file, 7);
+      const compressedFile = await this.compressImage(file);
+      await this.verhuurderService.uploadRoomImage(this.room.id, compressedFile, 7);
       this.room = await this.verhuurderService.getRoom(this.room.id);
     }
     this.cdr.detectChanges();
@@ -942,7 +1012,8 @@ export class RoomEditing implements OnInit {
     const files = ev.target.files;
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
-        await this.verhuurderService.uploadRoomImage(this.room.id, files[i], 9);
+        const compressedFile = await this.compressImage(files[i]);
+        await this.verhuurderService.uploadRoomImage(this.room.id, compressedFile, 9);
       }
       this.room = await this.verhuurderService.getRoom(this.room.id);
     }
@@ -953,9 +1024,10 @@ export class RoomEditing implements OnInit {
     const files = ev.target.files;
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
+        const fileToUpload = await this.compressImage(files[i]);
         await this.verhuurderService.uploadRoomImage(
           this.room.id,
-          files[i],
+          fileToUpload,
           Number(this.selectedDocTypeId)
         );
       }

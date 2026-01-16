@@ -21,19 +21,21 @@ class Document extends Model
         'room_id', // Nieuw
     ];
 
+    protected $appends = ['url'];
+
     protected function url(): Attribute
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
-                $path = $attributes['file_path'];
+                $path = $attributes['file_path'] ?? '';
                 
-                // Als het al een URL is, geef direct terug
-                if (str_starts_with($path, 'https')) {
+                if (str_starts_with($path, 'http')) {
                     return $path;
                 }
 
-                // Anders, maak er een volledige URL van naar jouw storage
-                return asset('storage/' . $path);
+                // Zorg dat we niet dubbel /storage/ krijgen
+                $cleanPath = ltrim(str_replace('/storage/', '', $path), '/');
+                return asset('storage/' . $cleanPath);
             }
         );
     }

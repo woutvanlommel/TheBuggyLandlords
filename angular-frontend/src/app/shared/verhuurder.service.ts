@@ -224,7 +224,9 @@ export class VerhuurderService {
 
     const headersObj: { [header: string]: string } = {};
     this.authService.getAuthHeaders().forEach((value, key) => {
-      headersObj[key] = value;
+      if (key.toLowerCase() !== 'content-type') {
+        headersObj[key] = value;
+      }
     });
 
     return firstValueFrom(

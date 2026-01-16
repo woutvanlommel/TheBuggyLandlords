@@ -300,7 +300,7 @@ class VerhuurderController extends Controller
     {
         $user = $request->user();
         $request->validate([
-            'image' => 'required|image|max:5120', // 5MB limit
+            'image' => 'required|image|max:20480', // Verhoogd naar 20MB
             'room_id' => 'required|exists:room,id',
             'document_type_id' => 'required|exists:documenttype,id',
         ]);
