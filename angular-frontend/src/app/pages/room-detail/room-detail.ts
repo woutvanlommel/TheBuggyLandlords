@@ -9,18 +9,21 @@ import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-ad
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, RoomCard, ContactCard, PriceAdresKotpage],
+  imports: [CommonModule, ContactCard, PriceAdresKotpage],
   template: `
     @if (isLoading) {
     <div><p>Laden...</p></div>
     } @else if (hasError) {
     <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
-    <div class="mx-auto w-30/100 my-4 flex flex-col gap-6">
+    <div class="w-full max-w-7xl px-6 mx-auto my-4 flex flex-col gap-6 items-center">
       
       <!-- Price & Address Component -->
       <app-price-adres-kotpage
+        class="w-full"
         [name]="room.roomtype || 'Kamer'"
+        [street]="room.building?.street?.street"
+        [houseNumber]="room.building?.housenumber"
         [postalCode]="room.building?.place?.zipcode"
         [city]="room.building?.place?.place"
         [type]="room.roomtype || 'Onbekend'"
@@ -30,8 +33,6 @@ import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-ad
         [price]="room.price">
       </app-price-adres-kotpage>
 
-      <app-room-card [room]="room"></app-room-card>
-      
       <!-- Contact Card: owner is the landlord -->
       <app-contact-card 
           [user]="room.building?.owner"

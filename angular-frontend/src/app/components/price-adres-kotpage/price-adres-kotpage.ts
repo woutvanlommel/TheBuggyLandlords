@@ -7,33 +7,33 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div class="flex justify-between items-start w-full">
-      <!-- Linker Sectie (Info) -->
+      <!-- Left (info) -->
       <div class="flex flex-col">
-        <!-- Titel (name) -->
+        <!-- Title (name) -->
         <h1 class="text-3xl font-bold text-primary-900 mb-1">
           {{ name }}
         </h1>
 
-        <!-- Subtitel (postalCode + city) -->
+        <!-- Subtitle (postalCode + city) -->
         <div class="text-xl text-secondary mb-2">
-          {{ postalCode }} {{ city }}
+          {{ street }} {{ houseNumber }}, {{ postalCode }} {{ city }}
         </div>
 
-        <!-- Meta-info regel -->
+        <!-- Meta-info line -->
         <div class="flex items-center text-base-twee-700 text-sm gap-2">
           <span>{{ type }}</span>
           <span>/</span>
           <span>{{ surface }}m²</span>
           <span>/</span>
-          <span>{{ bedrooms }} slp</span>
+          <span>{{ bedrooms }} slaapkamers</span>
           <span>/</span>
           <span>{{ priceType }}</span>
         </div>
       </div>
 
-      <!-- Rechter Sectie (Prijs) -->
+      <!-- Right (price) -->
       <div class="flex flex-col items-end">
-        <!-- Prijs -->
+        <!-- price -->
         <div class="text-3xl font-bold text-base-twee-900">
           € {{ price }}
         </div>
@@ -48,6 +48,8 @@ import { CommonModule } from '@angular/common';
 })
 export class PriceAdresKotpage {
   @Input() name: string = '';
+  @Input() street: string = '';
+  @Input() houseNumber: string = '';
   @Input() postalCode: string = '';
   @Input() city: string = '';
   @Input() type: string = '';
