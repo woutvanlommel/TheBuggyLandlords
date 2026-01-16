@@ -22,7 +22,7 @@ export class RoomService {
   public availableTypes$ = this.availableTypesSubject.asObservable();
 
   // Map Center control
-  private mapCenterSubject = new Subject<{lat: number, lng: number, zoom: number}>();
+  private mapCenterSubject = new BehaviorSubject<{lat: number, lng: number, zoom: number} | null>(null);
   public mapCenter$ = this.mapCenterSubject.asObservable();
 
   constructor(private http: HttpClient) {}

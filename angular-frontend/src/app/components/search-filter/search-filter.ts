@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RoomService } from '../../shared/room.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError, takeUntil } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-search-filter',
@@ -138,7 +139,10 @@ export class SearchFilter implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  constructor(private roomService: RoomService) {
+  constructor(
+    private roomService: RoomService,
+    private route: ActivatedRoute
+  ) {
     this.searchSubject.pipe(
       takeUntil(this.destroy$), // Clean up
       debounceTime(300),
@@ -156,6 +160,28 @@ export class SearchFilter implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      let shouldTriggerSearch = false;
+
+      // somebody search with text (Home Search)
+      if (params['q']) {
+        this.query = params['q'];
+        shouldTriggerSearch = true;
+      }
+
+      // Scenario B: Someone clicked on a City Tile
+      if (params['city']) {
+        this.selectedCity = params['city'];
+        shouldTriggerSearch = true;
+      }
+
+      // If there was data from the URL, trigger the search directly
+      if (shouldTriggerSearch) {
+        // Wait a bit so the view is updated (optional, sometimes needed for map init)
+        setTimeout(() => this.onFilterClick(), 100);
+      }
+    });
     // Listen for available types based on location
     this.roomService.availableTypes$.pipe(takeUntil(this.destroy$)).subscribe(types => {
       if (types && types.length > 0) {
