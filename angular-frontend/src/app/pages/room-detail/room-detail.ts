@@ -17,7 +17,7 @@ import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
     } @else if (hasError) {
       <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
-      <div class="w-full max-w-7xl px-6 mx-auto my-4 flex flex-col gap-6 items-center">
+      <div class="w-full max-w-300 px-6 mx-auto my-4 flex flex-col gap-6 items-center">
         <!-- Price & Address Component -->
         <app-price-adres-kotpage
           class="w-full"
@@ -34,9 +34,7 @@ import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
         </app-price-adres-kotpage>
 
         <!--Room images-->
-        <div class="w-full h-96 flex justify-center">
-          <app-images-kotpage [images]="room.documents || []"></app-images-kotpage>
-        </div>
+        <app-images-kotpage [images]="room.documents || []"></app-images-kotpage>
 
         <!-- Contact Card: owner is the landlord -->
         <app-contact-card
