@@ -397,7 +397,8 @@ export class BuildingDashboard implements OnInit {
   ngOnInit() {
 
     const user = this.authService.getUser();
-    this.isLandlord = user && (user.role_id === 2 || user.role === 'landlord');
+    // Als user bestaat ? check de rol : anders false
+this.isLandlord = user ? (user.role_id === 2 || user.role === 'landlord') : false;
 
     this.loadBuildings();
   }
