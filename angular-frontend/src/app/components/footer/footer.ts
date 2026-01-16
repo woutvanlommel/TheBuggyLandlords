@@ -41,7 +41,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- KOTCOMPASS  -->
           <a
             routerLink="/kotcompass"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-xl font-bold text-gray-900 transition-all duration-300 group hover:-translate-y-1 mb-2"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-3 text-xl font-bold text-gray-900 transition-all duration-300 group hover:-translate-y-1 mb-2"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -67,7 +67,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- Dashboard -->
           <a
             routerLink="/dashboard"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-3 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -93,7 +93,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- Profile -->
           <a
             routerLink="/profile"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-3 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -119,7 +119,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- Credits -->
           <a
             routerLink="/credits"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-3 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -145,7 +145,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- FAQ -->
           <a
             routerLink="/kotcompass/faq"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-3 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
