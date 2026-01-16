@@ -4,6 +4,9 @@ export default {
   content: ['./src/**/*.{html,ts}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Area Normal"', 'ui-sans-serif', 'system-ui', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+      },
       colors: {
         // Accent: Pumpkin Spice (#FF6700)
         // Gebruik: Call-to-actions (knoppen), highlights, meldingen
