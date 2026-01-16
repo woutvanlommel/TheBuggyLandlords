@@ -11,14 +11,14 @@ class Document extends Model
     use HasFactory;
 
     protected $table = 'document';
-    
+
     protected $fillable = [
         'name',
         'file_path',
         'document_type_id',
         'user_id',
         'contract_id',
-        'room_id', // Nieuw
+        'room_id',
     ];
 
     protected function url(): Attribute
@@ -26,7 +26,7 @@ class Document extends Model
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
                 $path = $attributes['file_path'];
-                
+
                 // Als het al een URL is, geef direct terug
                 if (str_starts_with($path, 'https')) {
                     return $path;

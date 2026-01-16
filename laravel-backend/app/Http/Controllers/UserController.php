@@ -113,7 +113,7 @@ public function updateAvatar(Request $request)
         [
             // LET OP: Deze kolom moet LONGTEXT zijn in je database!
             // Waarschijnlijk heet hij 'path', 'url' of 'content' in jouw tabel.
-            'path' => $base64Data,
+            'file_path' => $base64Data,
             'name' => $file->getClientOriginalName(),
             'is_active' => true // Als je dit veld hebt
         ]
