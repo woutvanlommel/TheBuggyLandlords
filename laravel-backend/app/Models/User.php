@@ -15,6 +15,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
+    protected $with = ['profilePicture'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -40,26 +42,29 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $appends = ['profile_image_url']; // <--- This adds the field to JSON
-
-    public function getProfileImageUrlAttribute()
+    public function profilePicture()
     {
-        // 2. QUERY THE DOCUMENT TABLE
-        // We look for a document belonging to this user (id 41)
-        // We check for 'avatars' in the path to be sure we get the right image
-        $doc = Document::where('user_id', $this->id)
-                       ->where('file_path', 'LIKE', '%avatars%')
-                       ->latest() // Get the newest one if there are multiple
-                       ->first();
-
-        if ($doc) {
-            // 3. RETURN THE FULL URL
-            // The DB already has "/storage/avatars/..." so we just add the domain
-            return url($doc->file_path);
-        }
-
-        return null; // Fallback to the initials if no file found
+        // Zoek het document dat bij deze user hoort EN type 8 is
+        return $this->hasOne(Document::class)->where('document_type_id', 8);
     }
+
+    // protected $appends = ['profile_image_url'];
+
+    // public function getProfileImageUrlAttribute()
+    // {
+
+    //     $doc = Document::where('user_id', $this->id)
+    //                    ->where('file_path', 'LIKE', '%avatars%')
+    //                    ->latest()
+    //                    ->first();
+
+    //     if ($doc) {
+
+    //         return url($doc->file_path);
+    //     }
+
+    //     return null;
+    // }
 
     /**
      * Get the attributes that should be cast.

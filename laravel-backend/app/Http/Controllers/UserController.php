@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Services\DocumentService;
+use App\Models\Document;
 
 class UserController extends Controller
 {
@@ -82,20 +83,44 @@ class UserController extends Controller
         return response()->json(['message' => 'Wachtwoord succesvol gewijzigd!']);
     }
 
-    public function updateAvatar(Request $request, DocumentService $documentService)
-    {
-        $request->validate([
-            'avatar' => 'required|image|max:4096', // Max 2MB
-        ]);
 
-        $url = $documentService->uploadForUser(
-        $request->user(),
-        $request->file('avatar'),
-        8, // Assuming document_type_id for avatar/profile picture is 8
-        'avatars'
+
+public function updateAvatar(Request $request)
+{
+    $request->validate([
+        'avatar' => 'required|image|max:4096', // Max 4MB
+    ]);
+
+    $user = $request->user();
+    $file = $request->file('avatar');
+
+    // 1. Zet het bestand om naar een Base64 String ✨
+    $contents = file_get_contents($file->getRealPath());
+    $base64 = base64_encode($contents);
+    $mime = $file->getMimeType();
+
+    // Dit is de "Magic String" die de afbeelding bevat
+    $base64Data = 'data:' . $mime . ';base64,' . $base64;
+
+    // 2. Sla op in de 'document' tabel
+    // We gebruiken updateOrCreate zodat de gebruiker max 1 profielfoto (type 8) heeft.
+    // Oude foto's worden overschreven.
+    $document = Document::updateOrCreate(
+        [
+            'user_id' => $user->id,
+            'document_type_id' => 8 // ID voor Profielfoto (zoals in je screenshot)
+        ],
+        [
+            // LET OP: Deze kolom moet LONGTEXT zijn in je database!
+            // Waarschijnlijk heet hij 'path', 'url' of 'content' in jouw tabel.
+            'file_path' => $base64Data,
+            'name' => $file->getClientOriginalName(),
+            'is_active' => true // Als je dit veld hebt
+        ]
     );
 
-        return response()->json(['url' => $url]);
-    }
+    // Stuur de Base64 string direct terug naar de frontend zodat hij meteen zichtbaar is
+    return response()->json(['url' => $base64Data]);
+}
 }
 

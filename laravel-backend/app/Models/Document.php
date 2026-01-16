@@ -11,14 +11,14 @@ class Document extends Model
     use HasFactory;
 
     protected $table = 'document';
-    
+
     protected $fillable = [
         'name',
         'file_path',
         'document_type_id',
         'user_id',
         'contract_id',
-        'room_id', // Nieuw
+        'room_id',
     ];
 
     protected $appends = ['url'];

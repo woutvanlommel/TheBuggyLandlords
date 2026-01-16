@@ -137,8 +137,10 @@ export class Profile implements OnInit {
         if (this.user) {
           // If the URL is relative (/storage/...), prepend the domain
           // If your backend already sends the full http link, remove the prefix part
-          this.user.avatar_url = response.url;
+          this.user.profile_picture = {file_path: ''};
         }
+        this.user.profile_picture.file_path = response.url;
+        this.user = { ...this.user }; // Trigger change detection
 
         this.isLoading = false;
         this.cd.detectChanges();
