@@ -88,7 +88,7 @@ class ImportDataSeeder extends Seeder
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`, `user_id`) VALUES
             -- LEUVEN (5 Gebouwen: 3x User 42, 2x User 31)
             (1, 1, '10', 1, 42),  -- Naamsestraat: Studentenhuis (4 koten) - Eigenaar 42
-            (2, 2, '5', 1, 42),   -- Oude Markt: Apart Gebouw (1 studio) - Eigenaar 42
+            (2, 2, '4', 1, 42),   -- Oude Markt: Apart Gebouw (1 studio) - Eigenaar 42
             (3, 3, '88', 1, 31),  -- Bondg.laan: Klein complex (3 koten) - Eigenaar 31
             (4, 4, '12', 1, 31),  -- Tiensestraat: Apart Gebouw (1 kot) - Eigenaar 31
             (5, 5, '3A', 1, 42),  -- Brusselsestr: Apart Gebouw (1 studio) - Eigenaar 42
