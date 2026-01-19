@@ -5,44 +5,47 @@ import { CommonModule } from '@angular/common';
 import { RoomCard } from '../../components/room-card/room-card';
 import { ContactCard } from '../../components/contact-card/contact-card';
 import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-adres-kotpage';
+import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, ContactCard, PriceAdresKotpage],
+  imports: [CommonModule, ContactCard, PriceAdresKotpage, ImagesKotpage],
   template: `
     @if (isLoading) {
-    <div><p>Laden...</p></div>
+      <div><p>Laden...</p></div>
     } @else if (hasError) {
-    <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
+      <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
-    <div class="w-full max-w-7xl px-6 mx-auto my-4 flex flex-col gap-6 items-center">
-      
-      <!-- Price & Address Component -->
-      <app-price-adres-kotpage
-        class="w-full"
-        [name]="room.roomtype || 'Kamer'"
-        [street]="room.building?.street?.street"
-        [houseNumber]="room.building?.housenumber"
-        [postalCode]="room.building?.place?.zipcode"
-        [city]="room.building?.place?.place"
-        [type]="room.roomtype || 'Onbekend'"
-        [surface]="room.surface || 0"
-        [bedrooms]="1"
-        [priceType]="'per maand'"
-        [price]="totalPrice">
-      </app-price-adres-kotpage>
+      <div class="w-full max-w-300 px-6 mx-auto my-4 flex flex-col gap-6 items-center">
+        <!-- Price & Address Component -->
+        <app-price-adres-kotpage
+          class="w-full"
+          [name]="room.roomtype || 'Kamer'"
+          [street]="room.building?.street?.street"
+          [houseNumber]="room.building?.housenumber"
+          [postalCode]="room.building?.place?.zipcode"
+          [city]="room.building?.place?.place"
+          [type]="room.roomtype || 'Onbekend'"
+          [surface]="room.surface || 0"
+          [priceType]="'per maand'"
+          [price]="totalPrice"
+        >
+        </app-price-adres-kotpage>
 
-      <!-- Contact Card: owner is the landlord -->
-      <app-contact-card 
+        <!--Room images-->
+        <app-images-kotpage [images]="room.documents || []"></app-images-kotpage>
+
+        <!-- Contact Card: owner is the landlord -->
+        <app-contact-card
           [user]="room.building?.owner"
-
           [roomId]="room.id"
           [isSpotlighted]="room.is_highlighted"
           [isUnlocked]="room.is_unlocked"
-          (unlocked)="refreshData()">
-      </app-contact-card>
-    </div>
+          (unlocked)="refreshData()"
+        >
+        </app-contact-card>
+      </div>
     }
   `,
 })
@@ -57,7 +60,7 @@ export class RoomDetail {
   get totalPrice(): number {
     if (!this.room) return 0;
     let total = Number(this.room.price) || 0;
-    
+
     // Check extra_costs (mapped from extraCosts relation)
     if (this.room.extra_costs && Array.isArray(this.room.extra_costs)) {
       this.room.extra_costs.forEach((cost: any) => {
@@ -93,11 +96,11 @@ export class RoomDetail {
         },
         error: (err) => {
           console.error('Fout bij ophalen kamer:', err);
-          
+
           if (!this.room) {
-             this.room = null;
-             this.isLoading = false;
-             this.hasError = true;
+            this.room = null;
+            this.isLoading = false;
+            this.hasError = true;
           }
           try {
             this.cdr.detectChanges();

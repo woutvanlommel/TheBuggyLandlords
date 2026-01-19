@@ -19,20 +19,14 @@ class ImportDataSeeder extends Seeder
 
             -- 2. Straten en Plaatsen
             INSERT INTO `street` (`id`, `street`) VALUES
-            (1, 'Naamsestraat'), (2, 'Oude Markt'), (3, 'Bondgenotenlaan'), (4, 'Tiensestraat'), (5, 'Andreas Vesaliusstraat'),
-            (6, 'Overpoortstraat'), (7, 'Sint-Pietersnieuwstraat'), (8, 'Korianderstraat'), (9, 'Bagattenstraat'), (10, 'Rozier'),
-            (11, 'Ossenmarkt'), (12, 'Paardenmarkt'), (13, 'Italiëlei'), (14, 'Prinsstraat'), (15, 'Rodestraat'),
-            (16, 'Kempische Steenweg'), (17, 'Elfde-Liniestraat'), (18, 'Martelarenlaan'), (19, 'Grote Markt'), (20, 'Nieuwstraat'),
-            (21, 'Koningin Astridlaan'), (22, 'Veldstraat'), (23, 'Hoogstraat'), (24, 'Kerkstraat'), (25, 'Stationsstraat'),
-            (26, 'Dorpsstraat'), (27, 'Molenstraat'), (28, 'Kloosterstraat'), (29, 'Lange Leemstraat'), (30, 'Zuidstraat');
+            (1, 'Naamsestraat'), (2, 'Oude Markt'), (3, 'Bondgenotenlaan'), (4, 'Tiensestraat'), (5, 'Brusselsestraat'), -- Leuven
+            (11, 'Nationalestraat'), (12, 'Meir'), (13, 'Italiëlei'), (14, 'Prinsstraat'), (15, 'Kloosterstraat'), -- Antwerpen
+            (21, 'Kempische Steenweg'), (22, 'Elfde-Liniestraat'), (23, 'Koning Albertstraat'), (24, 'Demerstraat'), (25, 'Grote Markt'); -- Hasselt
 
             INSERT INTO `place` (`id`, `place`, `zipcode`) VALUES
-            (1, 'Leuven', 3000), (2, 'Heverlee', 3001), (3, 'Kessel-Lo', 3010), (4, 'Gent', 9000), (5, 'Mariakerke', 9030),
-            (6, 'Ledeberg', 9050), (7, 'Antwerpen', 2000), (8, 'Berchem', 2600), (9, 'Wilrijk', 2610), (10, 'Hasselt', 3500),
-            (11, 'Diepenbeek', 3590), (12, 'Brussel', 1000), (13, 'Elsene', 1050), (14, 'Etterbeek', 1040), (15, 'Mechelen', 2800),
-            (16, 'Brugge', 8000), (17, 'Kortrijk', 8500), (18, 'Maastricht', 6211), (19, 'Lille', 59000), (20, 'Aachen', 52062),
-            (21, 'Oostende', 8400), (22, 'Genk', 3600), (23, 'Roeselare', 8800), (24, 'Aalst', 9300), (25, 'Sint-Niklaas', 9100),
-            (26, 'Turnhout', 2300), (27, 'Luik', 4000), (28, 'Namen', 5000), (29, 'Bergen', 7000), (30, 'Charleroi', 6000);
+            (1, 'Leuven', 3000), 
+            (7, 'Antwerpen', 2000), 
+            (10, 'Hasselt', 3500);
 
             -- 3. Types en Faciliteiten
             INSERT INTO `complainttype` (`id`, `type`) VALUES (1, 'Technisch defect'), (2, 'Geluidsoverlast'), (3, 'Internet'), (4, 'Administratie'), (5, 'Hygiëne');
@@ -90,36 +84,48 @@ class ImportDataSeeder extends Seeder
             (44, 'test', 'admin', '$2y$12$hX9vntjAtmV71O0Z0qId/u.vd.Vzt09a/cPhKj9wFEMaFiXVS9tUK', '0412345678', 'test@admin.com', 20000, 3, NOW(), NOW());
 
 
-           -- 5. Gebouwen (Met user_id/eigenaar)
+            -- 3. GEBOUWEN (Totaal 13 gebouwen voor 30 koten)
             INSERT INTO `building` (`id`, `street_id`, `housenumber`, `place_id`, `user_id`) VALUES
-            (1, 1, '12', 1, 31), (2, 2, '5', 1, 32), (3, 6, '110', 4, 33), (4, 7, '23', 4, 34), (5, 11, '4B', 7, 35),
-            (6, 16, '88', 10, 36), (7, 1, '14bis', 1, 37), (8, 6, '9', 4, 38), (9, 3, '45', 1, 31), (10, 4, '101', 1, 32),
-            (11, 5, '2', 1, 33), (12, 8, '33', 4, 34), (13, 9, '12A', 4, 35), (14, 10, '7', 4, 36), (15, 12, '55', 7, 37),
-            (16, 13, '89', 7, 38), (17, 14, '21', 7, 31), (18, 15, '6', 7, 32), (19, 17, '10', 10, 33), (20, 18, '44', 10, 34),
-            (21, 19, '1', 10, 35), (22, 20, '100', 12, 36), (23, 21, '32', 15, 37), (24, 22, '14', 5, 38), (25, 23, '99', 16, 31),
-            (26, 24, '12', 17, 32), (27, 25, '77', 22, 33), (28, 26, '3', 24, 34), (29, 27, '5B', 25, 35), (30, 28, '8', 26, 36), 
-            (31, 29, '15', 1, 37),
-            -- Nieuwe buildings voor User 42:
-            (32, 16, '64', 10, 42), (33, 16, '48', 10, 42), (34, 16, '49', 10, 42), (35, 16, '6', 10, 42), (36, 16, '118', 10, 42);
+            -- LEUVEN (5 Gebouwen: 3x User 42, 2x User 31)
+            (1, 1, '10', 1, 42),  -- Naamsestraat: Studentenhuis (4 koten) - Eigenaar 42
+            (2, 2, '5', 1, 42),   -- Oude Markt: Apart Gebouw (1 studio) - Eigenaar 42
+            (3, 3, '88', 1, 31),  -- Bondg.laan: Klein complex (3 koten) - Eigenaar 31
+            (4, 4, '12', 1, 31),  -- Tiensestraat: Apart Gebouw (1 kot) - Eigenaar 31
+            (5, 5, '3A', 1, 42),  -- Brusselsestr: Apart Gebouw (1 studio) - Eigenaar 42
+            
+            -- ANTWERPEN (4 Gebouwen: 2x User 42, 2x User 31)
+            (6, 11, '50', 7, 42), -- Nationalestr: Loft Gebouw (1 groot app) - Eigenaar 42
+            (7, 12, '1', 7, 31),  -- Meir: Groot Studentenhuis (5 koten) - Eigenaar 31
+            (8, 13, '22', 7, 42), -- Italiëlei: Huis (3 koten) - Eigenaar 42
+            (9, 14, '9', 7, 42),  -- Prinsstraat: Apart Gebouw (1 kot) - Eigenaar 42
 
-            -- 6. Kamers (Gebruik nu user_id ipv account_id)
+            -- HASSELT (4 Gebouwen: 2x User 42, 2x User 31)
+            (10, 21, '100', 10, 31), -- Kempische Stw: Apart Huisje (1 kot) - Eigenaar 31
+            (11, 22, '12A', 10, 42), -- Elfde-Liniestr: Apart Kot (1 kot) - Eigenaar 42
+            (12, 23, '44', 10, 31),  -- Koning Albert: Residentie (4 koten) - Eigenaar 31
+            (13, 24, '8', 10, 42);   -- Demerstraat: Gerenoveerd Huis (4 koten) - Eigenaar 42
+
+
+            -- 4. KOTEN (30 stuks)
             INSERT INTO `room` (`id`, `roomnumber`, `price`, `building_id`, `is_highlighted`, `roomtype_id`) VALUES
-            (1, '0.01', 450, 1, 1, 1), (2, '1.01', 480, 1, 0, 2), (3, '1.02', 460, 1, 0, 2), (4, '2.01', 500, 1, 0, 2), (5, 'A', 600, 2, 1, 1),
-            (6, 'B', 550, 2, 0, 2), (7, '10', 400, 3, 0, 2), (8, '11', 410, 3, 0, 2), (9, '12', 390, 3, 0, 2), (10, 'Glv', 520, 4, 1, 1),
-            (11, '1L', 480, 4, 0, 2), (12, '1R', 480, 4, 0, 2), (13, 'Studio 1', 650, 5, 1, 1), (14, 'Studio 2', 670, 5, 0, 1), (15, 'K1', 350, 6, 0, 2),
-            (16, 'K2', 360, 6, 0, 2), (17, 'K3', 350, 6, 0, 2), (18, 'K4', 370, 6, 0, 2), (19, '3.01', 510, 7, 0, 2), (20, '3.02', 510, 7, 0, 2),
-            (21, '01', 440, 8, 0, 2), (22, '02', 440, 8, 0, 2), (23, 'Penthouse', 800, 9, 1, 3), (24, 'A1', 490, 10, 0, 2), (25, 'A2', 495, 10, 0, 2),
-            (26, 'B1', 505, 10, 0, 2), (27, '1.1', 425, 11, 0, 2), (28, '1.2', 425, 11, 0, 2), (29, 'Gelijkvloers', 580, 12, 0, 2), (30, 'Dakapp', 700, 13, 1, 4),
-            -- Nieuwe kamers voor Building 32 (3 kamers)
-            (31, '1.01', 450, 32, 1, 2), (32, '1.02', 460, 32, 0, 2), (33, '1.03', 440, 32, 0, 2),
-            -- Nieuwe kamers voor Building 33 (4 kamers)
-            (34, 'K1', 380, 33, 0, 2), (35, 'K2', 390, 33, 0, 2), (36, 'K3', 390, 33, 0, 2), (37, 'K4', 400, 33, 0, 2),
-            -- Nieuwe kamers voor Building 34 (3 kamers)
-            (38, 'A', 500, 34, 1, 1), (39, 'B', 490, 34, 0, 2), (40, 'C', 490, 34, 0, 2),
-            -- Nieuwe kamers voor Building 35 (4 kamers - Studio's)
-            (41, 'Studio 1', 600, 35, 1, 3), (42, 'Studio 2', 620, 35, 0, 3), (43, 'Studio 3', 610, 35, 0, 3), (44, 'Studio 4', 600, 35, 0, 3),
-            -- Nieuwe kamers voor Building 36 (3 kamers)
-            (45, 'GLV', 450, 36, 0, 2), (46, '1.01', 460, 36, 0, 2), (47, '2.01', 470, 36, 0, 2);
+            -- LEUVEN (10 units)
+            (1, '0.01', 520, 1, 1, 2), (2, '1.01', 490, 1, 0, 2), (3, '1.02', 490, 1, 0, 2), (4, '2.01', 510, 1, 0, 2), -- Gebouw 1 (User 42)
+            (5, 'Studio', 650, 2, 1, 1), -- Gebouw 2 (User 42) -> ALLEENSTAAND
+            (6, 'K1', 400, 3, 0, 2), (7, 'K2', 410, 3, 0, 2), (8, 'K3', 420, 3, 0, 2), -- Gebouw 3 (User 31)
+            (9, 'GLV', 450, 4, 0, 2), -- Gebouw 4 (User 31) -> ALLEENSTAAND
+            (10, 'Penthouse', 700, 5, 1, 1), -- Gebouw 5 (User 42) -> ALLEENSTAAND
+            
+            -- ANTWERPEN (10 units)
+            (11, 'Loft 1', 850, 6, 1, 3), -- Gebouw 6 (User 42) -> ALLEENSTAAND APP
+            (12, '101', 380, 7, 0, 2), (13, '102', 390, 7, 0, 2), (14, '201', 400, 7, 0, 2), (15, '202', 410, 7, 0, 2), (16, '301', 420, 7, 0, 2), -- Gebouw 7 (User 31)
+            (17, 'A', 500, 8, 0, 2), (18, 'B', 500, 8, 0, 2), (19, 'C', 520, 8, 0, 2), -- Gebouw 8 (User 42)
+            (20, 'Gelijkvloers', 550, 9, 0, 1), -- Gebouw 9 (User 42) -> ALLEENSTAAND
+            
+            -- HASSELT (10 units)
+            (21, 'Huisje', 480, 10, 1, 2), -- Gebouw 10 (User 31) -> ALLEENSTAAND
+            (22, 'Unit 1', 460, 11, 0, 2), -- Gebouw 11 (User 42) -> ALLEENSTAAND
+            (23, 'K1', 350, 12, 0, 2), (24, 'K2', 360, 12, 0, 2), (25, 'K3', 360, 12, 0, 2), (26, 'K4', 375, 12, 0, 2), -- Gebouw 12 (User 31)
+            (27, 'A', 490, 13, 0, 2), (28, 'B', 495, 13, 0, 2), (29, 'C', 510, 13, 0, 2), (30, 'D', 520, 13, 0, 2); -- Gebouw 13 (User 42)
 
             INSERT INTO `roomtype` (`id`, `type`) VALUES
             (1, 'Studio'),
@@ -134,7 +140,6 @@ class ImportDataSeeder extends Seeder
             (4, 'Poetsdienst', 1);
 
             
-
             INSERT INTO `contract` (`id`, `user_id`, `room_id`, `start_date`, `end_date`, `is_active`, `created_at`, `updated_at`) VALUES
             (1, 1, 1, '2025-09-01', NULL, 1, NOW(), NOW()), (2, 2, 2, '2025-09-01', NULL, 1, NOW(), NOW()), (3, 3, 3, '2025-09-01', NULL, 1, NOW(), NOW()),
             (4, 4, 4, '2025-09-01', NULL, 1, NOW(), NOW()), (5, 5, 5, '2025-09-01', NULL, 1, NOW(), NOW()), (6, 6, 6, '2025-09-01', NULL, 1, NOW(), NOW()),
@@ -181,45 +186,248 @@ class ImportDataSeeder extends Seeder
             (29, 'Vaatwasser stuk', 'Pomp werkt niet.', 1, 29),
             (30, 'Afvoer verstopt', 'Douche loopt niet weg.', 1, 30);
 
-            -- 8. Documenten (Met file_path, contract_id en nu ook room_id)
-            -- Voor bestaande contract-documenten is room_id NULL.
-            -- Ik voeg per kamer 1 afbeelding toe.
-            INSERT INTO `document` (`id`, `name`, `file_path`, `document_type_id`, `user_id`, `contract_id`, `room_id`, `created_at`, `updated_at`) VALUES
-            (1, 'Contract_Lotte.pdf', 'protected/contracts/1/Contract_Lotte.pdf', 1, 1, 1, NULL, NOW(), NOW()),
-            (2, 'PB_Lotte.pdf', 'protected/contracts/1/PB_Lotte.pdf', 2, 1, 1, NULL, NOW(), NOW()),
-            (3, 'Contract_Robbe.pdf', 'protected/contracts/2/Contract_Robbe.pdf', 1, 2, 2, NULL, NOW(), NOW()),
-            (4, 'Contract_Noah.pdf', 'protected/contracts/3/Contract_Noah.pdf', 1, 3, 3, NULL, NOW(), NOW()),
-            (5, 'Reglement_Gebouw1.pdf', 'protected/general/Reglement_Gebouw1.pdf', 3, 31, NULL, NULL, NOW(), NOW()),
-            (6, 'Verzekering_Gebouw1.pdf', 'protected/general/Verzekering_Gebouw1.pdf', 4, 31, NULL, NULL, NOW(), NOW()),
-            (7, 'Contract_Emma.pdf', 'protected/contracts/4/Contract_Emma.pdf', 1, 4, 4, NULL, NOW(), NOW()),
-            (8, 'Contract_Arthur.pdf', 'protected/contracts/5/Contract_Arthur.pdf', 1, 5, 5, NULL, NOW(), NOW()),
-            (9, 'PB_Arthur.pdf', 'protected/contracts/5/PB_Arthur.pdf', 2, 5, 5, NULL, NOW(), NOW()),
-            (10, 'Contract_Mila.pdf', 'protected/contracts/6/Contract_Mila.pdf', 1, 6, 6, NULL, NOW(), NOW()),
-            (11, 'EPC_Gebouw2.pdf', 'protected/general/EPC_Gebouw2.pdf', 5, 31, NULL, NULL, NOW(), NOW()),
-            (12, 'Contract_Liam.pdf', 'protected/contracts/7/Contract_Liam.pdf', 1, 7, 7, NULL, NOW(), NOW()),
-            (13, 'Contract_Olivia.pdf', 'protected/contracts/8/Contract_Olivia.pdf', 1, 8, 8, NULL, NOW(), NOW()),
-            (14, 'Contract_Louis.pdf', 'protected/contracts/9/Contract_Louis.pdf', 1, 9, 9, NULL, NOW(), NOW()),
-            (15, 'Contract_Louise.pdf', 'protected/contracts/10/Contract_Louise.pdf', 1, 10, 10, NULL, NOW(), NOW()),
-            (16, 'PB_Louise.pdf', 'protected/contracts/10/PB_Louise.pdf', 2, 10, 10, NULL, NOW(), NOW()),
-            (17, 'Contract_Lucas.pdf', 'protected/contracts/11/Contract_Lucas.pdf', 1, 11, 11, NULL, NOW(), NOW()),
-            (18, 'Contract_Elise.pdf', 'protected/contracts/12/Contract_Elise.pdf', 1, 12, 12, NULL, NOW(), NOW()),
-            (19, 'Contract_Adam.pdf', 'protected/contracts/13/Contract_Adam.pdf', 1, 13, 13, NULL, NOW(), NOW()),
-            (20, 'Contract_Marie.pdf', 'protected/contracts/14/Contract_Marie.pdf', 1, 14, 14, NULL, NOW(), NOW()),
-            (21, 'Contract_Jules.pdf', 'protected/contracts/15/Contract_Jules.pdf', 1, 15, 15, NULL, NOW(), NOW()),
-            (22, 'Contract_Ella.pdf', 'protected/contracts/16/Contract_Ella.pdf', 1, 16, 16, NULL, NOW(), NOW()),
-            (23, 'Contract_Victor.pdf', 'protected/contracts/17/Contract_Victor.pdf', 1, 17, 17, NULL, NOW(), NOW()),
-            (24, 'Contract_Julie.pdf', 'protected/contracts/18/Contract_Julie.pdf', 1, 18, 18, NULL, NOW(), NOW()),
-            (25, 'Contract_Gabriel.pdf', 'protected/contracts/19/Contract_Gabriel.pdf', 1, 19, 19, NULL, NOW(), NOW()),
-            (26, 'Contract_Sarah.pdf', 'protected/contracts/20/Contract_Sarah.pdf', 1, 20, 20, NULL, NOW(), NOW()),
-            (27, 'Contract_Mohamed.pdf', 'protected/contracts/21/Contract_Mohamed.pdf', 1, 21, 21, NULL, NOW(), NOW()),
-            (28, 'Contract_Yasmine.pdf', 'protected/contracts/22/Contract_Yasmine.pdf', 1, 22, 22, NULL, NOW(), NOW()),
-            (29, 'Contract_Thomas.pdf', 'protected/contracts/23/Contract_Thomas.pdf', 1, 23, 23, NULL, NOW(), NOW()),
-            (30, 'Contract_Amber.pdf', 'protected/contracts/24/Contract_Amber.pdf', 1, 24, 24, NULL, NOW(), NOW()),
-            -- Afbeeldingen (Type 7)
-            (31, 'Kamer1.jpg', 'https://www.datocms-assets.com/76079/1744377653-kot-pic-3.png?fit=clip&fm=png&h=1080&w=1920', 7, NULL, NULL, 1, NOW(), NOW()),
-            (32, 'Kamer2.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 2, NOW(), NOW()),
-            (33, 'Kamer5.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 5, NOW(), NOW()),
-            (34, 'Kamer13.jpg', 'images/rooms/default.jpg', 7, NULL, NULL, 13, NOW(), NOW());
+            -- 6. FOTO'S (Elke kamer krijgt 1 Main foto en 5 Gallerij foto's)
+            INSERT INTO `document` (`name`, `file_path`, `document_type_id`, `room_id`, `created_at`, `updated_at`) VALUES
+            
+            -- KAMER 1 (Leuven)
+            ('K1_Main', 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800', 7, 1, NOW(), NOW()),
+            ('K1_1', 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800', 9, 1, NOW(), NOW()),
+            ('K1_2', 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800', 9, 1, NOW(), NOW()),
+            ('K1_3', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800', 9, 1, NOW(), NOW()),
+            ('K1_4', 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800', 9, 1, NOW(), NOW()),
+            ('K1_5', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 1, NOW(), NOW()),
+
+            -- KAMER 2 (Leuven)
+            ('K2_Main', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 7, 2, NOW(), NOW()),
+            ('K2_1', 'https://images.unsplash.com/photo-1522771753035-1a5b6519ad41?w=800', 9, 2, NOW(), NOW()),
+            ('K2_2', 'https://images.unsplash.com/photo-1505693416388-b0346efee535?w=800', 9, 2, NOW(), NOW()),
+            ('K2_3', 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800', 9, 2, NOW(), NOW()),
+            ('K2_4', 'https://images.unsplash.com/photo-1499933374294-4584851497cc?w=800', 9, 2, NOW(), NOW()),
+            ('K2_5', 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800', 9, 2, NOW(), NOW()),
+
+            -- KAMER 3 (Leuven)
+            ('K3_Main', 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800', 7, 3, NOW(), NOW()),
+            ('K3_1', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 3, NOW(), NOW()),
+            ('K3_2', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 9, 3, NOW(), NOW()),
+            ('K3_3', 'https://images.unsplash.com/photo-1507919909716-c82196f29958?w=800', 9, 3, NOW(), NOW()),
+            ('K3_4', 'https://images.unsplash.com/photo-1556912173-3db996ea0622?w=800', 9, 3, NOW(), NOW()),
+            ('K3_5', 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800', 9, 3, NOW(), NOW()),
+
+            -- KAMER 4 (Leuven)
+            ('K4_Main', 'https://images.unsplash.com/photo-1503174971373-b1f69850bded?w=800', 7, 4, NOW(), NOW()),
+            ('K4_1', 'https://images.unsplash.com/photo-1505692794406-8c70752538f6?w=800', 9, 4, NOW(), NOW()),
+            ('K4_2', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 4, NOW(), NOW()),
+            ('K4_3', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 4, NOW(), NOW()),
+            ('K4_4', 'https://images.unsplash.com/photo-1521783988139-89397d761dce?w=800', 9, 4, NOW(), NOW()),
+            ('K4_5', 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800', 9, 4, NOW(), NOW()),
+
+            -- KAMER 5 (Leuven - Studio)
+            ('K5_Main', 'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800', 7, 5, NOW(), NOW()),
+            ('K5_1', 'https://images.unsplash.com/photo-1515516947640-36491c67f990?w=800', 9, 5, NOW(), NOW()),
+            ('K5_2', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 5, NOW(), NOW()),
+            ('K5_3', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800', 9, 5, NOW(), NOW()),
+            ('K5_4', 'https://images.unsplash.com/photo-1589834390005-5d4fb9bf3d32?w=800', 9, 5, NOW(), NOW()),
+            ('K5_5', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800', 9, 5, NOW(), NOW()),
+
+            -- KAMER 6 (Leuven)
+            ('K6_Main', 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800', 7, 6, NOW(), NOW()),
+            ('K6_1', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 9, 6, NOW(), NOW()),
+            ('K6_2', 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800', 9, 6, NOW(), NOW()),
+            ('K6_3', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 6, NOW(), NOW()),
+            ('K6_4', 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800', 9, 6, NOW(), NOW()),
+            ('K6_5', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 9, 6, NOW(), NOW()),
+
+            -- KAMER 7 (Leuven)
+            ('K7_Main', 'https://images.unsplash.com/photo-1588854337473-b76011c536e7?w=800', 7, 7, NOW(), NOW()),
+            ('K7_1', 'https://images.unsplash.com/photo-1587069300649-6f5c8ac2df85?w=800', 9, 7, NOW(), NOW()),
+            ('K7_2', 'https://images.unsplash.com/photo-1616594039964-40891a909672?w=800', 9, 7, NOW(), NOW()),
+            ('K7_3', 'https://images.unsplash.com/photo-1596048563359-598d9c22d10f?w=800', 9, 7, NOW(), NOW()),
+            ('K7_4', 'https://images.unsplash.com/photo-1594040226829-7f251ab46d80?w=800', 9, 7, NOW(), NOW()),
+            ('K7_5', 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=800', 9, 7, NOW(), NOW()),
+
+            -- KAMER 8 (Leuven)
+            ('K8_Main', 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800', 7, 8, NOW(), NOW()),
+            ('K8_1', 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=800', 9, 8, NOW(), NOW()),
+            ('K8_2', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 8, NOW(), NOW()),
+            ('K8_3', 'https://images.unsplash.com/photo-1502005229766-939760a58531?w=800', 9, 8, NOW(), NOW()),
+            ('K8_4', 'https://images.unsplash.com/photo-1522771753035-1a5b6519ad41?w=800', 9, 8, NOW(), NOW()),
+            ('K8_5', 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800', 9, 8, NOW(), NOW()),
+
+            -- KAMER 9 (Leuven - Apart)
+            ('K9_Main', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 7, 9, NOW(), NOW()),
+            ('K9_1', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 9, NOW(), NOW()),
+            ('K9_2', 'https://images.unsplash.com/photo-1499933374294-4584851497cc?w=800', 9, 9, NOW(), NOW()),
+            ('K9_3', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 9, NOW(), NOW()),
+            ('K9_4', 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800', 9, 9, NOW(), NOW()),
+            ('K9_5', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 9, 9, NOW(), NOW()),
+
+            -- KAMER 10 (Leuven - Penthouse)
+            ('K10_Main', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800', 7, 10, NOW(), NOW()),
+            ('K10_1', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 10, NOW(), NOW()),
+            ('K10_2', 'https://images.unsplash.com/photo-1513506003011-3b03c80165bd?w=800', 9, 10, NOW(), NOW()),
+            ('K10_3', 'https://images.unsplash.com/photo-1463320726281-696a413703b6?w=800', 9, 10, NOW(), NOW()),
+            ('K10_4', 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800', 9, 10, NOW(), NOW()),
+            ('K10_5', 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800', 9, 10, NOW(), NOW()),
+
+            -- KAMER 11 (Antwerpen - Loft)
+            ('K11_Main', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 7, 11, NOW(), NOW()),
+            ('K11_1', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 9, 11, NOW(), NOW()),
+            ('K11_2', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 11, NOW(), NOW()),
+            ('K11_3', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800', 9, 11, NOW(), NOW()),
+            ('K11_4', 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=800', 9, 11, NOW(), NOW()),
+            ('K11_5', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 11, NOW(), NOW()),
+
+            -- KAMER 12 (Antwerpen)
+            ('K12_Main', 'https://images.unsplash.com/photo-1522771753035-1a5b6519ad41?w=800', 7, 12, NOW(), NOW()),
+            ('K12_1', 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800', 9, 12, NOW(), NOW()),
+            ('K12_2', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 12, NOW(), NOW()),
+            ('K12_3', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 12, NOW(), NOW()),
+            ('K12_4', 'https://images.unsplash.com/photo-1499933374294-4584851497cc?w=800', 9, 12, NOW(), NOW()),
+            ('K12_5', 'https://images.unsplash.com/photo-1505693416388-b0346efee535?w=800', 9, 12, NOW(), NOW()),
+
+            -- KAMER 13 (Antwerpen)
+            ('K13_Main', 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800', 7, 13, NOW(), NOW()),
+            ('K13_1', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 13, NOW(), NOW()),
+            ('K13_2', 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800', 9, 13, NOW(), NOW()),
+            ('K13_3', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 13, NOW(), NOW()),
+            ('K13_4', 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800', 9, 13, NOW(), NOW()),
+            ('K13_5', 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800', 9, 13, NOW(), NOW()),
+
+            -- KAMER 14 (Antwerpen)
+            ('K14_Main', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 7, 14, NOW(), NOW()),
+            ('K14_1', 'https://images.unsplash.com/photo-1515516947640-36491c67f990?w=800', 9, 14, NOW(), NOW()),
+            ('K14_2', 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800', 9, 14, NOW(), NOW()),
+            ('K14_3', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 14, NOW(), NOW()),
+            ('K14_4', 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800', 9, 14, NOW(), NOW()),
+            ('K14_5', 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800', 9, 14, NOW(), NOW()),
+
+            -- KAMER 15 (Antwerpen)
+            ('K15_Main', 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800', 7, 15, NOW(), NOW()),
+            ('K15_1', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800', 9, 15, NOW(), NOW()),
+            ('K15_2', 'https://images.unsplash.com/photo-1589834390005-5d4fb9bf3d32?w=800', 9, 15, NOW(), NOW()),
+            ('K15_3', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800', 9, 15, NOW(), NOW()),
+            ('K15_4', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 15, NOW(), NOW()),
+            ('K15_5', 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=800', 9, 15, NOW(), NOW()),
+
+            -- KAMER 16 (Antwerpen)
+            ('K16_Main', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800', 7, 16, NOW(), NOW()),
+            ('K16_1', 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800', 9, 16, NOW(), NOW()),
+            ('K16_2', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 16, NOW(), NOW()),
+            ('K16_3', 'https://images.unsplash.com/photo-1513506003011-3b03c80165bd?w=800', 9, 16, NOW(), NOW()),
+            ('K16_4', 'https://images.unsplash.com/photo-1499933374294-4584851497cc?w=800', 9, 16, NOW(), NOW()),
+            ('K16_5', 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800', 9, 16, NOW(), NOW()),
+
+            -- KAMER 17 (Antwerpen)
+            ('K17_Main', 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800', 7, 17, NOW(), NOW()),
+            ('K17_1', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 9, 17, NOW(), NOW()),
+            ('K17_2', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 17, NOW(), NOW()),
+            ('K17_3', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 17, NOW(), NOW()),
+            ('K17_4', 'https://images.unsplash.com/photo-1556912173-3db996ea0622?w=800', 9, 17, NOW(), NOW()),
+            ('K17_5', 'https://images.unsplash.com/photo-1505693416388-b0346efee535?w=800', 9, 17, NOW(), NOW()),
+
+            -- KAMER 18 (Antwerpen)
+            ('K18_Main', 'https://images.unsplash.com/photo-1522771753035-1a5b6519ad41?w=800', 7, 18, NOW(), NOW()),
+            ('K18_1', 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800', 9, 18, NOW(), NOW()),
+            ('K18_2', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 18, NOW(), NOW()),
+            ('K18_3', 'https://images.unsplash.com/photo-1505692794406-8c70752538f6?w=800', 9, 18, NOW(), NOW()),
+            ('K18_4', 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800', 9, 18, NOW(), NOW()),
+            ('K18_5', 'https://images.unsplash.com/photo-1521783988139-89397d761dce?w=800', 9, 18, NOW(), NOW()),
+
+            -- KAMER 19 (Antwerpen)
+            ('K19_Main', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 7, 19, NOW(), NOW()),
+            ('K19_1', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 19, NOW(), NOW()),
+            ('K19_2', 'https://images.unsplash.com/photo-1499933374294-4584851497cc?w=800', 9, 19, NOW(), NOW()),
+            ('K19_3', 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800', 9, 19, NOW(), NOW()),
+            ('K19_4', 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800', 9, 19, NOW(), NOW()),
+            ('K19_5', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 19, NOW(), NOW()),
+
+            -- KAMER 20 (Antwerpen)
+            ('K20_Main', 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800', 7, 20, NOW(), NOW()),
+            ('K20_1', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 20, NOW(), NOW()),
+            ('K20_2', 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=800', 9, 20, NOW(), NOW()),
+            ('K20_3', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800', 9, 20, NOW(), NOW()),
+            ('K20_4', 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=800', 9, 20, NOW(), NOW()),
+            ('K20_5', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800', 9, 20, NOW(), NOW()),
+
+            -- KAMER 21 (Hasselt)
+            ('K21_Main', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 7, 21, NOW(), NOW()),
+            ('K21_1', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 21, NOW(), NOW()),
+            ('K21_2', 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800', 9, 21, NOW(), NOW()),
+            ('K21_3', 'https://images.unsplash.com/photo-1505693416388-b0346efee535?w=800', 9, 21, NOW(), NOW()),
+            ('K21_4', 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800', 9, 21, NOW(), NOW()),
+            ('K21_5', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 9, 21, NOW(), NOW()),
+
+            -- KAMER 22 (Hasselt)
+            ('K22_Main', 'https://images.unsplash.com/photo-1522771753035-1a5b6519ad41?w=800', 7, 22, NOW(), NOW()),
+            ('K22_1', 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800', 9, 22, NOW(), NOW()),
+            ('K22_2', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 22, NOW(), NOW()),
+            ('K22_3', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 22, NOW(), NOW()),
+            ('K22_4', 'https://images.unsplash.com/photo-1589834390005-5d4fb9bf3d32?w=800', 9, 22, NOW(), NOW()),
+            ('K22_5', 'https://images.unsplash.com/photo-1499933374294-4584851497cc?w=800', 9, 22, NOW(), NOW()),
+
+            -- KAMER 23 (Hasselt)
+            ('K23_Main', 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800', 7, 23, NOW(), NOW()),
+            ('K23_1', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 23, NOW(), NOW()),
+            ('K23_2', 'https://images.unsplash.com/photo-1515516947640-36491c67f990?w=800', 9, 23, NOW(), NOW()),
+            ('K23_3', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 23, NOW(), NOW()),
+            ('K23_4', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800', 9, 23, NOW(), NOW()),
+            ('K23_5', 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800', 9, 23, NOW(), NOW()),
+
+            -- KAMER 24 (Hasselt)
+            ('K24_Main', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800', 7, 24, NOW(), NOW()),
+            ('K24_1', 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800', 9, 24, NOW(), NOW()),
+            ('K24_2', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800', 9, 24, NOW(), NOW()),
+            ('K24_3', 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800', 9, 24, NOW(), NOW()),
+            ('K24_4', 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800', 9, 24, NOW(), NOW()),
+            ('K24_5', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 24, NOW(), NOW()),
+
+            -- KAMER 25 (Hasselt)
+            ('K25_Main', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 7, 25, NOW(), NOW()),
+            ('K25_1', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 25, NOW(), NOW()),
+            ('K25_2', 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800', 9, 25, NOW(), NOW()),
+            ('K25_3', 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800', 9, 25, NOW(), NOW()),
+            ('K25_4', 'https://images.unsplash.com/photo-1505693416388-b0346efee535?w=800', 9, 25, NOW(), NOW()),
+            ('K25_5', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 25, NOW(), NOW()),
+
+            -- KAMER 26 (Hasselt)
+            ('K26_Main', 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800', 7, 26, NOW(), NOW()),
+            ('K26_1', 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=800', 9, 26, NOW(), NOW()),
+            ('K26_2', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 26, NOW(), NOW()),
+            ('K26_3', 'https://images.unsplash.com/photo-1513506003011-3b03c80165bd?w=800', 9, 26, NOW(), NOW()),
+            ('K26_4', 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=800', 9, 26, NOW(), NOW()),
+            ('K26_5', 'https://images.unsplash.com/photo-1522771753035-1a5b6519ad41?w=800', 9, 26, NOW(), NOW()),
+
+            -- KAMER 27 (Hasselt)
+            ('K27_Main', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 7, 27, NOW(), NOW()),
+            ('K27_1', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 27, NOW(), NOW()),
+            ('K27_2', 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800', 9, 27, NOW(), NOW()),
+            ('K27_3', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 27, NOW(), NOW()),
+            ('K27_4', 'https://images.unsplash.com/photo-1505692794406-8c70752538f6?w=800', 9, 27, NOW(), NOW()),
+            ('K27_5', 'https://images.unsplash.com/photo-1499933374294-4584851497cc?w=800', 9, 27, NOW(), NOW()),
+
+            -- KAMER 28 (Hasselt)
+            ('K28_Main', 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800', 7, 28, NOW(), NOW()),
+            ('K28_1', 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800', 9, 28, NOW(), NOW()),
+            ('K28_2', 'https://images.unsplash.com/photo-1521783988139-89397d761dce?w=800', 9, 28, NOW(), NOW()),
+            ('K28_3', 'https://images.unsplash.com/photo-1507473888900-52e1adad70ac?w=800', 9, 28, NOW(), NOW()),
+            ('K28_4', 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800', 9, 28, NOW(), NOW()),
+            ('K28_5', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 28, NOW(), NOW()),
+
+            -- KAMER 29 (Hasselt)
+            ('K29_Main', 'https://images.unsplash.com/photo-1522771753035-1a5b6519ad41?w=800', 7, 29, NOW(), NOW()),
+            ('K29_1', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800', 9, 29, NOW(), NOW()),
+            ('K29_2', 'https://images.unsplash.com/photo-1510563800743-aed236490d08?w=800', 9, 29, NOW(), NOW()),
+            ('K29_3', 'https://images.unsplash.com/photo-1556912173-3db996ea0622?w=800', 9, 29, NOW(), NOW()),
+            ('K29_4', 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800', 9, 29, NOW(), NOW()),
+            ('K29_5', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800', 9, 29, NOW(), NOW()),
+
+            -- KAMER 30 (Hasselt)
+            ('K30_Main', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800', 7, 30, NOW(), NOW()),
+            ('K30_1', 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800', 9, 30, NOW(), NOW()),
+            ('K30_2', 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800', 9, 30, NOW(), NOW()),
+            ('K30_3', 'https://images.unsplash.com/photo-1513506003011-3b03c80165bd?w=800', 9, 30, NOW(), NOW()),
+            ('K30_4', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800', 9, 30, NOW(), NOW()),
+            ('K30_5', 'https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=800', 9, 30, NOW(), NOW());
 
             -- 9. Koppelingen
             INSERT INTO `facility_room` (`id`, `facility_id`, `room_id`) VALUES

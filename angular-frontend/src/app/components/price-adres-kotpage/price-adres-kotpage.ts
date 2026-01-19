@@ -1,11 +1,18 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-price-adres-kotpage',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
+    <!-- Breadcrumbs -->
+    <div class="text-sm text-base-twee-600 mb-2">
+      <a routerLink="/kotcompass/zoekplatform">Home</a> /
+      <a routerLink="/kotcompass/rooms">Zoekplatform</a> /
+      <span class="text-accent">{{ street }} {{ houseNumber }}, {{ postalCode }} {{ city }}</span>
+    </div>
     <div class="flex justify-between items-start w-full">
       <!-- Left (info) -->
       <div class="flex flex-col">
@@ -25,8 +32,6 @@ import { CommonModule } from '@angular/common';
           <span>/</span>
           <span>{{ surface }}m²</span>
           <span>/</span>
-          <span>{{ bedrooms }} slaapkamers</span>
-          <span>/</span>
           <span>{{ priceType }}</span>
         </div>
       </div>
@@ -34,13 +39,9 @@ import { CommonModule } from '@angular/common';
       <!-- Right (price) -->
       <div class="flex flex-col items-end">
         <!-- price -->
-        <div class="text-3xl font-bold text-base-twee-900">
-          € {{ price }}
-        </div>
+        <div class="text-3xl font-bold text-base-twee-900">€ {{ price }}</div>
         <!-- Link -->
-        <a href="#" class="text-xs text-base-twee-600 underline mt-1">
-          Opbouw huurprijs
-        </a>
+        <a href="#" class="text-xs text-base-twee-600 underline mt-1"> Opbouw huurprijs </a>
       </div>
     </div>
   `,
@@ -54,7 +55,6 @@ export class PriceAdresKotpage {
   @Input() city: string = '';
   @Input() type: string = '';
   @Input() surface: number = 0;
-  @Input() bedrooms: number = 0;
   @Input() priceType: string = '';
   @Input() price: number = 0;
 }
