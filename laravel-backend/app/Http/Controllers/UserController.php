@@ -18,24 +18,19 @@ class UserController extends Controller
     {
         $user = $request->user();
 
-        // 1. Fetch the document from the database
-        // (Make sure 'document' matches your actual table name!)
+        // Haal profielfoto op uit document tabel
         $avatarDoc = DB::table('document')
             ->where('user_id', $user->id)
             ->where('document_type_id', 8)
             ->first();
 
-        // 2. Get the URL string
+        // Bepaal de URL indien aanwezig
         $url = $avatarDoc ? $avatarDoc->file_path : null;
 
-        // 3. CONVERT TO ARRAY (This is the critical fix)
-        // We convert the Model to a simple Array so Laravel stops filtering data.
+        // Zet model om naar array en voeg avatar URL toe
         $userData = $user->toArray();
-
-        // 4. Add the URL to the Array manually
         $userData['avatar_url'] = $url;
 
-        // 5. Send the Array, NOT the User Object
         return response()->json($userData);
     }
 
@@ -44,12 +39,11 @@ class UserController extends Controller
     {
         $user = $request->user();
 
-
+        // Valideer e-mail en telefoonnummer update
         $validated = $request->validate([
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
         ]);
-
 
         $user->update([
             'email' => $validated['email'],
@@ -68,14 +62,14 @@ class UserController extends Controller
 
         $user = $request->user();
 
-
+        // Controleer of huidige wachtwoord correct is
         if (!Hash::check($request->current_password, $user->password)) {
             throw ValidationException::withMessages([
                 'current_password' => ['Het huidige wachtwoord is onjuist.'],
             ]);
         }
 
-
+        // Update naar nieuw gehasht wachtwoord
         $user->update([
             'password' => Hash::make($request->password),
         ]);
@@ -84,43 +78,39 @@ class UserController extends Controller
     }
 
 
+    public function updateAvatar(Request $request)
+    {
+        // Valideer afbeeldingsgrootte (max 4MB)
+        $request->validate([
+            'avatar' => 'required|image|max:4096',
+        ]);
 
-public function updateAvatar(Request $request)
-{
-    $request->validate([
-        'avatar' => 'required|image|max:4096', // Max 4MB
-    ]);
+        // fetch authenticated user
+        $user = $request->user();
+        // retrieve uploaded file
+        $file = $request->file('avatar');
 
-    $user = $request->user();
-    $file = $request->file('avatar');
+        // Converteer bestand naar Base64 string voor opslag
+        $contents = file_get_contents($file->getRealPath());
+        $base64 = base64_encode($contents);
+        $mime = $file->getMimeType();
+        $base64Data = 'data:' . $mime . ';base64,' . $base64;
 
-    // 1. Zet het bestand om naar een Base64 String ✨
-    $contents = file_get_contents($file->getRealPath());
-    $base64 = base64_encode($contents);
-    $mime = $file->getMimeType();
+        // Maak aan of update bestaande profielfoto (type 8)
+        $document = Document::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'document_type_id' => 8
+            ],
+            [
+                'file_path' => $base64Data,
+                'name' => $file->getClientOriginalName(),
+                'is_active' => true
+            ]
+        );
 
-    // Dit is de "Magic String" die de afbeelding bevat
-    $base64Data = 'data:' . $mime . ';base64,' . $base64;
-
-    // 2. Sla op in de 'document' tabel
-    // We gebruiken updateOrCreate zodat de gebruiker max 1 profielfoto (type 8) heeft.
-    // Oude foto's worden overschreven.
-    $document = Document::updateOrCreate(
-        [
-            'user_id' => $user->id,
-            'document_type_id' => 8 // ID voor Profielfoto (zoals in je screenshot)
-        ],
-        [
-            // LET OP: Deze kolom moet LONGTEXT zijn in je database!
-            // Waarschijnlijk heet hij 'path', 'url' of 'content' in jouw tabel.
-            'file_path' => $base64Data,
-            'name' => $file->getClientOriginalName(),
-            'is_active' => true // Als je dit veld hebt
-        ]
-    );
-
-    // Stuur de Base64 string direct terug naar de frontend zodat hij meteen zichtbaar is
-    return response()->json(['url' => $base64Data]);
-}
+        // Retourneer URL direct voor live weergave
+        return response()->json(['url' => $base64Data]);
+    }
 }
 

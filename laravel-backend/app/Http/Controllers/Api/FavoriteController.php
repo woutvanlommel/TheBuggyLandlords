@@ -8,23 +8,21 @@ use App\Models\Room;
 
 class FavoriteController extends Controller
 {
-
+    // Haal favoriete gebouwen op voor de ingelogde gebruiker
     public function index(Request $request)
     {
-        // 1. Haal de ingelogde gebruiker op
         $user = $request->user();
 
-        // 2. Haal zijn favoriete gebouwen op
-        // We laden meteen de 'rooms' mee voor het dashboard overzicht
+        // Haal gebouwen op en laad direct de kamers mee voor het overzicht
         $favorites = $user->favoriteBuildings()->with('rooms')->get();
 
         return response()->json($favorites);
     }
 
-
+    // Schakel favoriete status in of uit (Like / Unlike)
     public function toggle(Request $request)
     {
-        // 1. Validate we actually got a room_id
+        // 1. Valideer of het kamer ID geldig is en bestaat in de database
         $validated = $request->validate([
             'room_id' => 'required|exists:room,id'
         ]);
@@ -32,40 +30,33 @@ class FavoriteController extends Controller
         $user = $request->user();
         $roomId = $validated['room_id'];
 
-        // 2. The Magic Toggle
-        // This attaches the room if missing, or detaches it if present.
-        // It returns an array showing what happened (attached or detached).
+        // 2. Toggle de relatie: attach als niet bestaat, detach als wel bestaat
+        // Dit bespaart ons handmatige if/else logica
         $changes = $user->favoriteRooms()->toggle($roomId);
 
-        // 3. Check what happened so we can tell the frontend
-        // If 'attached' is not empty, it means we just added it (Liked)
+        // 3. Bepaal de nieuwe status op basis van de wijzigingen
+        // Als 'attached' gevuld is, is de kamer net toegevoegd aan favorieten
         $isFavorited = !empty($changes['attached']);
 
         return response()->json([
             'status' => 'success',
-            'is_favorited' => $isFavorited, // true = Red Heart, false = Grey Heart
-            'message' => $isFavorited ? 'Room added to favorites' : 'Room removed from favorites'
+            'is_favorited' => $isFavorited, // true = Rood hartje, false = Grijs hartje
+            'message' => $isFavorited ? 'Kamer toegevoegd aan favorieten' : 'Kamer verwijderd uit favorieten'
         ]);
     }
 
-        public function getFavorites(Request $request)
-            {
-                $user = $request->user();
+    // Haal de complete lijst met favoriete kamers op inclusief details
+    public function getFavorites(Request $request)
+    {
+        $user = $request->user();
 
-                // OUDE CODE:
-                // $favorites = $user->favoriteRooms()->get();
+        // Gebruik Eager Loading (dot notation) om alle benodigde relaties in één keer op te halen
+        // Dit is essentieel voor performance en om alle adresgegevens (straat, stad) direct beschikbaar te hebben
+        $favorites = $user->favoriteRooms()
+            ->with(['building.street', 'building.place', 'roomtype'])
+            ->get();
 
-                // NIEUWE CODE:
-                // We gebruiken 'dot notation' om diep in de relaties te graven.
-                // 1. building        -> Haal het gebouw op
-                // 2. building.street -> Haal binnen dat gebouw de straat op
-                // 3. building.place  -> Haal binnen dat gebouw de stad op
-                // 4. roomtype        -> (Optioneel) Voor 'Studio', 'Kot', etc.
-                $favorites = $user->favoriteRooms()
-                    ->with(['building.street', 'building.place', 'roomtype'])
-                    ->get();
-
-                return response()->json($favorites);
-            }
+        return response()->json($favorites);
+    }
 }
 
