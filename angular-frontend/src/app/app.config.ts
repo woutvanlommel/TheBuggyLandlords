@@ -12,7 +12,11 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
-    withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
+      withInMemoryScrolling({ 
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'enabled' 
+      })
+    ),
     provideHttpClient(),
     provideNgxStripe(environment.stripePublicKey),
     provideQuillConfig({

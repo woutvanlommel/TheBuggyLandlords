@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, map, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map, Subject, shareReplay } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,17 +12,19 @@ export class RoomService {
   // 1. Voor de zoekpagina (Map updates)
   private mapRoomsSubject = new BehaviorSubject<any[]>([]);
   public mapRooms$ = this.mapRoomsSubject.asObservable();
-  
+
   // Filter state
   private currentFilters: any = {};
   public refreshTrigger$ = new Subject<void>();
-  
+
   // Available Types (Dynamic)
   private availableTypesSubject = new BehaviorSubject<string[]>([]);
   public availableTypes$ = this.availableTypesSubject.asObservable();
 
   // Map Center control
-  private mapCenterSubject = new BehaviorSubject<{lat: number, lng: number, zoom: number} | null>(null);
+  private mapCenterSubject = new BehaviorSubject<{ lat: number; lng: number; zoom: number } | null>(
+    null,
+  );
   public mapCenter$ = this.mapCenterSubject.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -33,14 +35,13 @@ export class RoomService {
   }
 
   setMapCenter(lat: number, lng: number, zoom: number = 13) {
-    this.mapCenterSubject.next({lat, lng, zoom});
+    this.mapCenterSubject.next({ lat, lng, zoom });
   }
-
 
   getPublicRooms(
     page: number = 1,
     limit: number = 9,
-    highlighted: boolean = false
+    highlighted: boolean = false,
   ): Observable<any> {
     const token = sessionStorage.getItem('auth_token');
 
@@ -68,7 +69,7 @@ export class RoomService {
     minLat: number,
     maxLat: number,
     minLng: number,
-    maxLng: number
+    maxLng: number,
   ): Observable<any[]> {
     let params = new HttpParams()
       .set('minLat', minLat.toString())
@@ -77,14 +78,14 @@ export class RoomService {
       .set('maxLng', maxLng.toString());
 
     if (this.currentFilters.query) params = params.set('query', this.currentFilters.query);
-    
+
     if (this.currentFilters.category) {
-        let cat = this.currentFilters.category;
-        // Support array -> comma string
-        if (Array.isArray(cat)) {
-            cat = cat.length > 0 ? cat.join(',') : 'All';
-        }
-        params = params.set('category', cat);
+      let cat = this.currentFilters.category;
+      // Support array -> comma string
+      if (Array.isArray(cat)) {
+        cat = cat.length > 0 ? cat.join(',') : 'All';
+      }
+      params = params.set('category', cat);
     }
 
     if (this.currentFilters.city) params = params.set('city', this.currentFilters.city);
@@ -97,13 +98,13 @@ export class RoomService {
 
     return this.http.get<any>(this.baseApi + 'public/rooms', { headers, params }).pipe(
       tap((response: any) => {
-          this.mapRoomsSubject.next(response.data);
-          // Update available types if present in response
-          if (response.available_types) {
-              this.availableTypesSubject.next(response.available_types);
-          }
+        this.mapRoomsSubject.next(response.data);
+        // Update available types if present in response
+        if (response.available_types) {
+          this.availableTypesSubject.next(response.available_types);
+        }
       }),
-      map((response: any) => response.data) // <--- DEZE REGEL IS CRUCIAAL
+      map((response: any) => response.data), // <--- DEZE REGEL IS CRUCIAAL
     );
   }
 
@@ -111,7 +112,7 @@ export class RoomService {
     const token = sessionStorage.getItem('auth_token');
     let headers = new HttpHeaders();
     if (token) {
-        headers = headers.set('Authorization', `Bearer ${token}`);
+      headers = headers.set('Authorization', `Bearer ${token}`);
     }
     return this.http.get<any>(`${this.baseApi}public/rooms/${id}`, { headers });
   }
@@ -138,24 +139,35 @@ export class RoomService {
     return this.http.post<{ is_favorited: boolean }>(
       'http://localhost:8000/api/favorites/toggle',
       { room_id: roomId },
-      { headers: headers }
+      { headers: headers },
     );
   }
 
-  // Haal alle publieke kamers op (voor de map/lijst)
-  // async getPublicRooms(): Promise<any[]> {
-  //   const response = await fetch(this.baseApi + 'public/rooms', {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'application/json',
-  //     },
-  //   });
+  private facilitiesCache$?: Observable<any[]>;
 
-  //   if (!response.ok) {
-  //     throw new Error('Failed to fetch rooms');
-  //   }
-
-  //   return response.json();
-  // }
+  getFacilities(): Observable<any[]> {
+    if (!this.facilitiesCache$) {
+      this.facilitiesCache$ = this.http.get<any[]>(`${this.baseApi}public/facilities`).pipe(
+        shareReplay(1)
+      );
+    }
+    return this.facilitiesCache$;
+  }
 }
+
+// Haal alle publieke kamers op (voor de map/lijst)
+// async getPublicRooms(): Promise<any[]> {
+//   const response = await fetch(this.baseApi + 'public/rooms', {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Accept: 'application/json',
+//     },
+//   });
+
+//   if (!response.ok) {
+//     throw new Error('Failed to fetch rooms');
+//   }
+
+//   return response.json();
+// }

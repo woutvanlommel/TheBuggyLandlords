@@ -41,7 +41,13 @@ import { RouterLink } from '@angular/router';
         <!-- price -->
         <div class="text-3xl font-bold text-base-twee-900">€ {{ price }}</div>
         <!-- Link -->
-        <a href="#" class="text-xs text-base-twee-600 underline mt-1"> Opbouw huurprijs </a>
+        <a 
+          [routerLink]="[]" 
+          fragment="priceCalculation" 
+          class="text-xs text-base-twee-600 underline mt-1 cursor-pointer"
+        >
+          Opbouw huurprijs
+        </a>
       </div>
     </div>
   `,

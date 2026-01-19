@@ -21,7 +21,8 @@ class RoomController extends Controller
             'building.place',
             'building.owner',
             'images',
-            'roomtype'
+            'roomtype',
+            'facilities'
         ]);
 
         if ($request->has('building_id')) {
@@ -226,7 +227,8 @@ class RoomController extends Controller
             'building.owner',
             'documents', // Verander 'images' naar 'documents' om alle afbeeldingen (7 én 9) mee te sturen
             'roomtype',
-            'extraCosts'
+            'extraCosts',
+            'facilities'
         ])->findOrFail($id);
 
         $roomArray = $room->toArray();
@@ -313,5 +315,10 @@ class RoomController extends Controller
         }
         
         return response()->json($results);
+    }
+
+    public function getFacilities()
+    {
+        return response()->json(\App\Models\Facility::all());
     }
 }

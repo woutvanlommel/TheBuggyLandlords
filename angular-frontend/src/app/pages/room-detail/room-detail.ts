@@ -6,18 +6,34 @@ import { RoomCard } from '../../components/room-card/room-card';
 import { ContactCard } from '../../components/contact-card/contact-card';
 import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-adres-kotpage';
 import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
+import { DescriptionKotpage } from '../../components/description-kotpage/description-kotpage';
+import { FacilitiesKotpage } from '../../components/facilities-kotpage/facilities-kotpage';
+import { PriceCalculationKotpage } from '../../components/price-calculation-kotpage/price-calculation-kotpage';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, ContactCard, PriceAdresKotpage, ImagesKotpage],
+  imports: [
+    CommonModule,
+    ContactCard,
+    PriceAdresKotpage,
+    ImagesKotpage,
+    DescriptionKotpage,
+    FacilitiesKotpage,
+    PriceCalculationKotpage,
+  ],
   template: `
     @if (isLoading) {
-      <div><p>Laden...</p></div>
+      <div class="flex flex-col gap-2 justify-center items-center min-h-screen">
+        <div class="text-center py-4 text-base-twee-500">Kamer laden...</div>
+        <div
+          class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent mb-4"
+        ></div>
+      </div>
     } @else if (hasError) {
       <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
-      <div class="w-full max-w-300 px-6 mx-auto my-4 flex flex-col gap-6 items-center">
+      <div class="w-full max-w-300 px-6 mx-auto mt-16 mb-32 flex flex-col gap-6 items-center">
         <!-- Price & Address Component -->
         <app-price-adres-kotpage
           class="w-full"
@@ -36,15 +52,40 @@ import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
         <!--Room images-->
         <app-images-kotpage [images]="room.documents || []"></app-images-kotpage>
 
-        <!-- Contact Card: owner is the landlord -->
-        <app-contact-card
-          [user]="room.building?.owner"
-          [roomId]="room.id"
-          [isSpotlighted]="room.is_highlighted"
-          [isUnlocked]="room.is_unlocked"
-          (unlocked)="refreshData()"
+        <div class="w-full flex flex-col gap-10 md:flex-row md:items-start justify-between py-8">
+          <!-- Description -->
+          <app-description-kotpage
+            class="flex-1 min-w-0 border-0 md:border-r-2 md:pr-4"
+            [description]="room.description"
+            [street]="room.building?.street?.street"
+            [houseNumber]="room.building?.housenumber"
+            [postalCode]="room.building?.place?.zipcode"
+            [city]="room.building?.place?.place"
+          >
+          </app-description-kotpage>
+          <!-- Contact Card: owner is the landlord -->
+          <app-contact-card
+            class="w-full md:w-auto md:max-w-md shrink-0"
+            [user]="room.building?.owner"
+            [roomId]="room.id"
+            [isSpotlighted]="room.is_highlighted"
+            [isUnlocked]="room.is_unlocked"
+            (unlocked)="refreshData()"
+          >
+          </app-contact-card>
+        </div>
+
+        <!-- Room Facilities -->
+        <app-facilities-kotpage [facilities]="room.facilities || []"></app-facilities-kotpage>
+
+        <!-- Total cost calculation (price + extra costs) -->
+        <app-price-calculation-kotpage
+          class="w-full"
+          [pricePerMonth]="room.price || 0"
+          [extraCostsList]="room.extra_costs || []"
+          id="priceCalculation"
         >
-        </app-contact-card>
+        </app-price-calculation-kotpage>
       </div>
     }
   `,
@@ -64,8 +105,8 @@ export class RoomDetail {
     // Check extra_costs (mapped from extraCosts relation)
     if (this.room.extra_costs && Array.isArray(this.room.extra_costs)) {
       this.room.extra_costs.forEach((cost: any) => {
-        // Check pivot data
-        if (cost.pivot && cost.pivot.price) {
+        // Alleen de terugkerende (maandelijkse) kosten optellen
+        if (cost.is_recurring && cost.pivot && cost.pivot.price) {
           total += Number(cost.pivot.price);
         }
       });

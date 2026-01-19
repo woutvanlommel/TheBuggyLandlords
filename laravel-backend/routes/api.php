@@ -88,6 +88,7 @@ Route::post('/login', function (Request $request) {
 Route::get('/public/search-suggestions', [RoomController::class, 'searchSuggestions']);
 Route::get('/public/search-cities', [RoomController::class, 'searchCities']);
 Route::get('/public/search-location', [RoomController::class, 'searchLocation']);
+Route::get('/public/facilities', [RoomController::class, 'getFacilities']);
 /**
  * Publieke detailroute voor één kamer
  */
