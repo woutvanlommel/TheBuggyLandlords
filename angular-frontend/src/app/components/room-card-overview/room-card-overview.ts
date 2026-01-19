@@ -39,17 +39,17 @@ import { RouterLink } from '@angular/router';
 
         <div class="w-1/3 h-full min-h-full shrink-0">
           @if (imageDocs.length) {
-          <img
-            [src]="imageDocs[0].url"
-            alt="Kamer afbeelding"
-            class="w-full h-full min-h-full self-stretch block object-cover rounded-l-lg border border-gray-200"
-          />
+            <img
+              [src]="imageDocs[0].url"
+              alt="Kamer afbeelding"
+              class="w-full h-full min-h-full self-stretch block object-cover rounded-l-lg border border-gray-200"
+            />
           } @else {
-          <div
-            class="w-full h-full min-h-full self-stretch bg-gray-200 rounded-l-lg border border-gray-300 flex items-center justify-center text-gray-400 text-sm"
-          >
-            Geen afbeelding
-          </div>
+            <div
+              class="w-full h-full min-h-full self-stretch bg-gray-200 rounded-l-lg border border-gray-300 flex items-center justify-center text-gray-400 text-sm"
+            >
+              Geen afbeelding
+            </div>
           }
         </div>
         <div class="p-4 w-2/3 flex flex-col justify-between items-start gap-4">
@@ -59,9 +59,6 @@ import { RouterLink } from '@angular/router';
               {{ room?.building?.place?.zipcode }}
             </h3>
 
-            <div>
-              Eigenaar: {{ room?.building?.owner?.fname }} {{ room?.building?.owner?.name }}
-            </div>
             <small
               >{{ room?.building?.street?.street }} {{ room?.building?.housenumber }},
               {{ room?.building?.place?.zipcode }} {{ room?.building?.place?.place }}
