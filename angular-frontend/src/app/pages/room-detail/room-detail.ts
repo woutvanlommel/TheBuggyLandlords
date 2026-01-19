@@ -42,9 +42,9 @@ import { DescriptionKotpage } from '../../components/description-kotpage/descrip
         <!--Room images-->
         <app-images-kotpage [images]="room.documents || []"></app-images-kotpage>
 
-        <div class="w-full flex flex-col gap-10 md:flex-row md:items-start justify-between">
+        <div class="w-full flex flex-col gap-10 md:flex-row md:items-start justify-between py-8">
           <app-description-kotpage
-            class="flex-1 min-w-0"
+            class="flex-1 min-w-0 border-0 md:border-r-2 md:pr-4"
             [description]="room.description"
             [street]="room.building?.street?.street"
             [houseNumber]="room.building?.housenumber"
