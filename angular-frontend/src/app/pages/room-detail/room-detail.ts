@@ -6,14 +6,20 @@ import { RoomCard } from '../../components/room-card/room-card';
 import { ContactCard } from '../../components/contact-card/contact-card';
 import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-adres-kotpage';
 import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
+import { DescriptionKotpage } from '../../components/description-kotpage/description-kotpage';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, ContactCard, PriceAdresKotpage, ImagesKotpage],
+  imports: [CommonModule, ContactCard, PriceAdresKotpage, ImagesKotpage, DescriptionKotpage],
   template: `
     @if (isLoading) {
-      <div><p>Laden...</p></div>
+      <div class="flex flex-col gap-2 justify-center items-center min-h-screen">
+        <div class="text-center py-4 text-base-twee-500">Kamer laden...</div>
+        <div
+          class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent mb-4"
+        ></div>
+      </div>
     } @else if (hasError) {
       <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
@@ -36,15 +42,27 @@ import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
         <!--Room images-->
         <app-images-kotpage [images]="room.documents || []"></app-images-kotpage>
 
-        <!-- Contact Card: owner is the landlord -->
-        <app-contact-card
-          [user]="room.building?.owner"
-          [roomId]="room.id"
-          [isSpotlighted]="room.is_highlighted"
-          [isUnlocked]="room.is_unlocked"
-          (unlocked)="refreshData()"
-        >
-        </app-contact-card>
+        <div class="w-full flex flex-col gap-10 md:flex-row md:items-start justify-between">
+          <app-description-kotpage
+            class="flex-1 min-w-0"
+            [description]="room.description"
+            [street]="room.building?.street?.street"
+            [houseNumber]="room.building?.housenumber"
+            [postalCode]="room.building?.place?.zipcode"
+            [city]="room.building?.place?.place"
+          >
+          </app-description-kotpage>
+          <!-- Contact Card: owner is the landlord -->
+          <app-contact-card
+            class="w-full md:w-auto md:max-w-md shrink-0"
+            [user]="room.building?.owner"
+            [roomId]="room.id"
+            [isSpotlighted]="room.is_highlighted"
+            [isUnlocked]="room.is_unlocked"
+            (unlocked)="refreshData()"
+          >
+          </app-contact-card>
+        </div>
       </div>
     }
   `,
