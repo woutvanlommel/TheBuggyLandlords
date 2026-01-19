@@ -17,6 +17,29 @@ export class AuthService {
     return sessionStorage.getItem(this.tokenKey);
   }
 
+  getUser() {
+    const id = sessionStorage.getItem('user_id');
+    const fname = sessionStorage.getItem('user_fname');
+    const name = sessionStorage.getItem('user_name');
+    const role = sessionStorage.getItem('user_role');
+
+    // Als er geen ID is, is er niemand ingelogd
+    if (!id) {
+      return null;
+    }
+    const normalizedRole = role ? role.toLowerCase() : '';
+    // We bouwen het user-object weer op uit de sessie data
+    return {
+      id: Number(id),
+      fname: fname,
+      name: name,
+      role: role,
+      // Omdat je in login() geen 'role_id' opslaat, leiden we die hier af voor de zekerheid.
+      // 2 = verhuurder, 1 = student (pas dit aan als jouw DB anders werkt)
+      role_id: (role === 'landlord' || normalizedRole === 'verhuurder') ? 2 : 1
+    };
+  }
+
   // Helper om headers te maken MET token
   getAuthHeaders(): Headers {
     const headers = new Headers({
