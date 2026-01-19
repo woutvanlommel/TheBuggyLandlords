@@ -4,23 +4,39 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RoomCard } from '../../components/room-card/room-card';
 import { ContactCard } from '../../components/contact-card/contact-card';
+import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-adres-kotpage';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, RoomCard, ContactCard],
+  imports: [CommonModule, ContactCard, PriceAdresKotpage],
   template: `
     @if (isLoading) {
     <div><p>Laden...</p></div>
     } @else if (hasError) {
     <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
-    <div class="mx-auto w-30/100 my-4 flex flex-col gap-6">
-      <app-room-card [room]="room"></app-room-card>
+    <div class="w-full max-w-7xl px-6 mx-auto my-4 flex flex-col gap-6 items-center">
       
+      <!-- Price & Address Component -->
+      <app-price-adres-kotpage
+        class="w-full"
+        [name]="room.roomtype || 'Kamer'"
+        [street]="room.building?.street?.street"
+        [houseNumber]="room.building?.housenumber"
+        [postalCode]="room.building?.place?.zipcode"
+        [city]="room.building?.place?.place"
+        [type]="room.roomtype || 'Onbekend'"
+        [surface]="room.surface || 0"
+        [bedrooms]="1"
+        [priceType]="'per maand'"
+        [price]="totalPrice">
+      </app-price-adres-kotpage>
+
       <!-- Contact Card: owner is the landlord -->
       <app-contact-card 
           [user]="room.building?.owner"
+
           [roomId]="room.id"
           [isSpotlighted]="room.is_highlighted"
           [isUnlocked]="room.is_unlocked"
@@ -37,6 +53,22 @@ export class RoomDetail {
   room: any = null;
   isLoading = true;
   hasError = false;
+
+  get totalPrice(): number {
+    if (!this.room) return 0;
+    let total = Number(this.room.price) || 0;
+    
+    // Check extra_costs (mapped from extraCosts relation)
+    if (this.room.extra_costs && Array.isArray(this.room.extra_costs)) {
+      this.room.extra_costs.forEach((cost: any) => {
+        // Check pivot data
+        if (cost.pivot && cost.pivot.price) {
+          total += Number(cost.pivot.price);
+        }
+      });
+    }
+    return total;
+  }
 
   ngOnInit() {
     this.refreshData();

@@ -28,7 +28,7 @@ import { NewsletterService } from '../../services/newsletter';
           </h1>
           <div class="max-w-md">
             <p class="text-lg text-base-twee-900 leading-relaxed">
-              Find, manage, and optimize your student housing in one platform. KotCompass helps landlords and students match faster.
+              Vind, beheer en optimaliseer je studentenhuisvesting in één platform. KotCompass helpt verhuurders en studenten sneller te matchen.
             </p>
           </div>
         </div>
@@ -41,7 +41,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- KOTCOMPASS  -->
           <a
             routerLink="/kotcompass"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-xl font-bold text-gray-900 transition-all duration-300 group hover:-translate-y-1 mb-2"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-6 text-xl font-bold text-gray-900 transition-all duration-300 group hover:-translate-y-1 mb-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -67,7 +67,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- Dashboard -->
           <a
             routerLink="/dashboard"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-6 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -93,7 +93,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- Profile -->
           <a
             routerLink="/profile"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-6 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -119,7 +119,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- Credits -->
           <a
             routerLink="/credits"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-6 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -145,7 +145,7 @@ import { NewsletterService } from '../../services/newsletter';
           <!-- FAQ -->
           <a
             routerLink="/kotcompass/faq"
-            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-2 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
+            class="focus:outline-none cursor-pointer relative flex items-center justify-start gap-6 text-lg text-gray-800 transition-all duration-300 group hover:-translate-y-1"
           >
             <span class="w-32">
               <span class="relative inline-block">
@@ -175,9 +175,9 @@ import { NewsletterService } from '../../services/newsletter';
           class="p-6 rounded-2xl w-full lg:w-1/3 max-w-sm flex flex-col items-center lg:items-end"
         >
           <div class="w-full">
-            <h3 class="text-xl font-bold font-sans text-base-twee-900 mb-2">Newsletter</h3>
+            <h3 class="text-xl font-bold font-sans text-base-twee-900 mb-2">Nieuwsbrief</h3>
             <p class="text-base-twee-700 text-sm mb-4">
-              Stay updated on new listings, platform updates, and tips for landlords.
+              Blijf op de hoogte van nieuwe aanbiedingen, platform updates en tips voor verhuurders.
             </p>
 
             <form class="relative w-full" method="post" (ngSubmit)="onSubscribe($event)">
@@ -186,7 +186,7 @@ import { NewsletterService } from '../../services/newsletter';
                 name="email"
                 [(ngModel)]="userEmail"
                 required
-                placeholder="@ enter your email.."
+                placeholder="@ geef je email in.."
                 class="w-full pl-4 pr-14 py-3 bg-base-een-100 rounded-full text-base-twee-900 placeholder-base-twee-400 shadow-sm focus:outline-none"
               />
               <button
@@ -220,6 +220,11 @@ import { NewsletterService } from '../../services/newsletter';
           </div>
         </div>
       </div>
+      <div class="border-t border-gray-200 mt-4 py-4 text-center">
+         <p class="text-xs text-base-twee-700">
+          &copy; {{ currentYear }} KotCompass. All rights reserved.
+        </p>
+      </div>
     </footer>
   `,
   styles: `
@@ -232,6 +237,7 @@ import { NewsletterService } from '../../services/newsletter';
 export class Footer {
   userEmail = '';
   isLoading = false;
+  currentYear = new Date().getFullYear();
 
   constructor(private newsletterService: NewsletterService, private cdr: ChangeDetectorRef) {}
 

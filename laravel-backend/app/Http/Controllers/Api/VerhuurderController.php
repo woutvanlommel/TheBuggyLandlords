@@ -299,8 +299,10 @@ class VerhuurderController extends Controller
     public function uploadRoomImage(Request $request)
     {
         $user = $request->user();
+        
+        // We verwijderen de 'image' rule omdat die PDF's blokkeert
         $request->validate([
-            'image' => 'required|image|max:20480', // Verhoogd naar 20MB
+            'image' => 'required|file|max:20480', 
             'room_id' => 'required|exists:room,id',
             'document_type_id' => 'required|exists:documenttype,id',
         ]);
@@ -310,35 +312,54 @@ class VerhuurderController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Als het een hoofdafbeelding is (type 7), verwijder dan de oude
-        if ($request->document_type_id == 7) {
-            $oldDoc = Document::where('room_id', $room->id)->where('document_type_id', 7)->first();
-            if ($oldDoc) {
-                // Verwijder fysiek bestand
-                $path = str_replace('/storage/', '', $oldDoc->file_path);
-                Storage::disk('public')->delete($path);
-                $oldDoc->delete();
+        $file = $request->file('image');
+        $typeId = (int)$request->document_type_id;
+
+        // 1. Validatie op basis van ID
+        if (in_array($typeId, [7, 9])) {
+            // Moet een afbeelding zijn
+            if (!in_array($file->getMimeType(), ['image/jpeg', 'image/jpg', 'image/png'])) {
+                return response()->json(['message' => 'Foto\'s (Type 7 & 9) moeten jpeg, jpg of png zijn.'], 422);
             }
+
+            // Opslaan als Base64 (voor portabiliteit)
+            $contents = file_get_contents($file->getRealPath());
+            $base64Data = 'data:' . $file->getMimeType() . ';base64,' . base64_encode($contents);
+            $filePath = $base64Data;
+        } else {
+            // Moet een PDF zijn
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['message' => 'Documenten moeten een PDF zijn.'], 422);
+            }
+
+            // Opslaan als bestand met HASH (zoals gevraagd)
+            $hashName = md5_file($file->getRealPath());
+            $fileName = $hashName . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('rooms/' . $room->id . '/documents', $fileName, 'public');
+            $filePath = '/storage/' . $path;
         }
 
-        $file = $request->file('image');
-        $hashName = md5_file($file->getRealPath());
-        $extension = $file->getClientOriginalExtension();
-        $fileName = $hashName . '.' . $extension;
-        $path = $file->storeAs('rooms/' . $room->id, $fileName, 'public');
+        // Database entry maken of updaten
+        if ($typeId == 7) {
+            $document = Document::updateOrCreate(
+                ['room_id' => $room->id, 'document_type_id' => 7],
+                [
+                    'user_id' => $user->id,
+                    'name' => $file->getClientOriginalName(),
+                    'file_path' => $filePath
+                ]
+            );
+        } else {
+            $document = Document::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'document_type_id' => $typeId,
+                'name' => $file->getClientOriginalName(),
+                'file_path' => $filePath,
+            ]);
+        }
 
-        $document = Document::create([
-            'room_id' => $room->id,
-            'user_id' => $user->id,
-            'document_type_id' => $request->document_type_id,
-            'name' => $fileName,
-            'file_path' => '/storage/' . $path,
-        ]);
-
-        return response()->json([
-            'message' => 'Afbeelding geüpload',
-            'document' => $document
-        ]);
+        return response()->json(['message' => 'Upload succesvol', 'document' => $document]);
     }
 
     /**
@@ -358,9 +379,11 @@ class VerhuurderController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Verwijder fysiek bestand
-        $path = str_replace('/storage/', '', $document->file_path);
-        Storage::disk('public')->delete($path);
+        // Verwijder fysiek bestand enkel als het géén Base64 data is
+        if (!str_starts_with($document->file_path, 'data:')) {
+            $path = str_replace('/storage/', '', $document->file_path);
+            Storage::disk('public')->delete($path);
+        }
         
         $document->delete();
 

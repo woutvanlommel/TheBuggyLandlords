@@ -33,7 +33,12 @@ class Document extends Model
                     return $path;
                 }
 
-                // Zorg dat we niet dubbel /storage/ krijgen
+                // Als het Base64 data is, geef het direct terug
+                if (str_starts_with($path, 'data:')) {
+                    return $path;
+                }
+
+                // Voor normale bestanden (zoals PDF's) in de storage folder
                 $cleanPath = ltrim(str_replace('/storage/', '', $path), '/');
                 return asset('storage/' . $cleanPath);
             }

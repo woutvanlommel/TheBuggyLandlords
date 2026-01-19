@@ -23,19 +23,23 @@ import { AppCityTiles } from '../app-city-tiles/app-city-tiles';
         <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-[2px]"></div>
 
         <!-- Content -->
-        <div class="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center gap-6 text-center">
-            <h1 class="text-3xl md:text-5xl font-light text-white tracking-wide">
-              Vind jouw ideale kot met <span class="font-bold text-accent">KotCompass</span>
-            </h1>
-            <h2 class="text-xl md:text-2xl font-medium text-gray-200 mb-8">
-              Ontdek duizenden studentenkamers in heel België
-            </h2>
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center gap-8 text-center pt-20">
+            <!-- Typographic Header -->
+            <div class="flex flex-col items-center gap-4">
+              <h1 class="text-4xl md:text-6xl lg:text-7xl font-sans font-light text-white tracking-tight leading-tight">
+                De slimste weg naar <br class="hidden sm:block">
+                jouw <span class="font-bold text-accent">perfecte studentenkot</span>
+              </h1>
+              <p class="text-lg md:text-2xl font-light text-gray-200 max-w-3xl leading-relaxed mt-4">
+                Met KotCompass vind je eenvoudig en direct de ideale studentenkamer die bij jou past.
+              </p>
+            </div>
             
-            <div class="w-full max-w-2xl transform transition-all hover:scale-[1.01] relative z-50">
+            <div class="w-full max-w-3xl transform transition-all hover:scale-[1.01] relative z-50 mt-8">
               <app-app-home-search></app-app-home-search>
             </div>
 
-            <div class="w-full mt-6">
+            <div class="w-full">
               <app-app-city-tiles></app-app-city-tiles>
             </div>
         </div>

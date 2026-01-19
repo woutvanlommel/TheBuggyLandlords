@@ -11,23 +11,37 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/
   imports: [CommonModule, FormsModule],
   template: `
   <div class="w-full relative group z-50">
-    <div class="flex items-center gap-2 w-full">
+    <div class="flex items-center w-full bg-white rounded-full shadow-2xl p-2 transition-all duration-300 ring-4 ring-white/10 focus-within:ring-accent/30 focus-within:scale-[1.02]">
+      <div class="pl-4 text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </div>
       <input 
         type="text" 
         [(ngModel)]="searchTerm" 
         (ngModelChange)="onSearchChange($event)"
         (keyup.enter)="search()" 
-        placeholder="Zoek naar steden..." 
-        class="flex-1 rounded-l-md rounded-r-md sm:rounded-r-none bg-white/90 backdrop-blur border-none px-6 py-4 text-lg font-semibold shadow-xl focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200 text-gray-800 placeholder-gray-500"
+        placeholder="In welke stad zoek je een kot?" 
+        class="flex-1 bg-transparent border-none px-4 py-3 text-lg font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-0"
       />
-      <button (click)="search()" class="bg-accent text-white font-bold text-lg px-8 py-4 rounded-r-md hidden sm:block hover:bg-accent-600 transition-colors cursor-pointer shadow-xl">
-        ZOEK
+      <button (click)="search()" class="bg-accent text-white font-bold text-lg px-8 py-3 rounded-full hidden sm:flex items-center gap-2 hover:bg-accent-600 transition-all duration-300 shadow-lg hover:shadow-accent/40 cursor-pointer">
+        <span>ZOEK</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </button>
+      <!-- Mobile Search Button (icon only) -->
+      <button (click)="search()" class="bg-accent text-white p-3 rounded-full sm:hidden flex items-center justify-center hover:bg-accent-600 transition-colors shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
       </button>
     </div>
 
     <!-- Autocomplete Dropdown -->
     @if (filteredCities.length > 0) {
-    <div class="absolute z-50 left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden max-h-60 overflow-y-auto">
+    <div class="absolute z-50 left-4 right-4 mt-4 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden max-h-60 overflow-y-auto animate-fade-in-down">
       @for (city of filteredCities; track city.name) {
       <div 
           (click)="selectCity(city)"
