@@ -7,11 +7,19 @@ import { ContactCard } from '../../components/contact-card/contact-card';
 import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-adres-kotpage';
 import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
 import { DescriptionKotpage } from '../../components/description-kotpage/description-kotpage';
+import { FacilitiesKotpage } from '../../components/facilities-kotpage/facilities-kotpage';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  imports: [CommonModule, ContactCard, PriceAdresKotpage, ImagesKotpage, DescriptionKotpage],
+  imports: [
+    CommonModule,
+    ContactCard,
+    PriceAdresKotpage,
+    ImagesKotpage,
+    DescriptionKotpage,
+    FacilitiesKotpage,
+  ],
   template: `
     @if (isLoading) {
       <div class="flex flex-col gap-2 justify-center items-center min-h-screen">
@@ -43,6 +51,7 @@ import { DescriptionKotpage } from '../../components/description-kotpage/descrip
         <app-images-kotpage [images]="room.documents || []"></app-images-kotpage>
 
         <div class="w-full flex flex-col gap-10 md:flex-row md:items-start justify-between py-8">
+          <!-- Description -->
           <app-description-kotpage
             class="flex-1 min-w-0 border-0 md:border-r-2 md:pr-4"
             [description]="room.description"
@@ -63,6 +72,9 @@ import { DescriptionKotpage } from '../../components/description-kotpage/descrip
           >
           </app-contact-card>
         </div>
+
+        <!-- Room Facilities -->
+        <app-facilities-kotpage [facilities]="room.facilities || []"></app-facilities-kotpage>
       </div>
     }
   `,
