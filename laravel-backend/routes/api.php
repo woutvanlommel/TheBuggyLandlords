@@ -223,7 +223,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/add-building', [VerhuurderController::class, 'storeBuilding']);
     Route::put('/buildings/{id}', [VerhuurderController::class, 'updateBuilding']);
     Route::delete('/buildings/{id}', [VerhuurderController::class, 'deleteBuilding']);
-    
+
     Route::get('/room-types', [VerhuurderController::class, 'roomTypes']);
     Route::get('/rooms/{id}', [VerhuurderController::class, 'showRoom']);
     Route::post('/rooms', [VerhuurderController::class, 'storeRoom']);
@@ -244,6 +244,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- FAVORIETEN BEHEREN ---
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
+    Route::get('/favorites', [FavoriteController::class, 'getFavorites']);
 
     // --- Voor profile tab ---
 

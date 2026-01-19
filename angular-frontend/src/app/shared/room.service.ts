@@ -8,15 +8,16 @@ import { BehaviorSubject, Observable, tap, map, Subject } from 'rxjs';
 })
 export class RoomService {
   private baseApi = environment.apiUrl;
+  private apiUrl = 'http://127.0.0.1:8000/api';
 
   // 1. Voor de zoekpagina (Map updates)
   private mapRoomsSubject = new BehaviorSubject<any[]>([]);
   public mapRooms$ = this.mapRoomsSubject.asObservable();
-  
+
   // Filter state
   private currentFilters: any = {};
   public refreshTrigger$ = new Subject<void>();
-  
+
   // Available Types (Dynamic)
   private availableTypesSubject = new BehaviorSubject<string[]>([]);
   public availableTypes$ = this.availableTypesSubject.asObservable();
@@ -77,7 +78,7 @@ export class RoomService {
       .set('maxLng', maxLng.toString());
 
     if (this.currentFilters.query) params = params.set('query', this.currentFilters.query);
-    
+
     if (this.currentFilters.category) {
         let cat = this.currentFilters.category;
         // Support array -> comma string
@@ -124,6 +125,22 @@ export class RoomService {
   getSearchLocation(query: string): Observable<any> {
     const params = new HttpParams().set('query', query);
     return this.http.get<any>(`${this.baseApi}public/search-location`, { params });
+  }
+
+  // In RoomService class...
+
+  getFavorites() {
+    const token = sessionStorage.getItem('auth_token');
+
+    // Zorg voor de juiste headers (net als bij je andere calls)
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    // 👇 CHECK DEZE URL: Komt hij overeen met je backend route?
+    // Het kan zijn: '/favorites', '/user/favorites' of '/buildings/favorites'
+    return this.http.get<any[]>(`${this.apiUrl}/favorites`, { headers });
   }
 
   toggleFavorite(roomId: number) {

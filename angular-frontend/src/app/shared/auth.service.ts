@@ -27,7 +27,7 @@ export class AuthService {
     if (!id) {
       return null;
     }
-
+    const normalizedRole = role ? role.toLowerCase() : '';
     // We bouwen het user-object weer op uit de sessie data
     return {
       id: Number(id),
@@ -36,7 +36,7 @@ export class AuthService {
       role: role,
       // Omdat je in login() geen 'role_id' opslaat, leiden we die hier af voor de zekerheid.
       // 2 = verhuurder, 1 = student (pas dit aan als jouw DB anders werkt)
-      role_id: (role === 'landlord' || role === 'verhuurder') ? 2 : 1
+      role_id: (role === 'landlord' || normalizedRole === 'verhuurder') ? 2 : 1
     };
   }
 

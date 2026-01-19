@@ -8,6 +8,20 @@ use App\Models\Room;
 
 class FavoriteController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        // 1. Haal de ingelogde gebruiker op
+        $user = $request->user();
+
+        // 2. Haal zijn favoriete gebouwen op
+        // We laden meteen de 'rooms' mee voor het dashboard overzicht
+        $favorites = $user->favoriteBuildings()->with('rooms')->get();
+
+        return response()->json($favorites);
+    }
+
+
     public function toggle(Request $request)
     {
         // 1. Validate we actually got a room_id
@@ -32,6 +46,15 @@ class FavoriteController extends Controller
             'is_favorited' => $isFavorited, // true = Red Heart, false = Grey Heart
             'message' => $isFavorited ? 'Room added to favorites' : 'Room removed from favorites'
         ]);
+    }
+
+    public function getFavorites(Request $request)
+    {
+        $user = $request->user();
+
+        $favorites = $user->favoriteRooms()->get();
+
+        return response()->json($favorites);
     }
 }
 

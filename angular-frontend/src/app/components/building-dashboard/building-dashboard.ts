@@ -14,14 +14,18 @@ import {AuthService} from '../../shared/auth.service';
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>
         <p class="text-xs font-semibold tracking-wide text-primary-600">Overzicht</p>
-        <h3 class="mt-1 text-lg font-semibold text-base-twee-900">Studenten per Kot</h3>
+        <h3 class="mt-1 text-lg font-semibold text-base-twee-900">
+          {{ isLandlord ? 'Studenten per Kot' : 'Mijn Favorieten' }}
+        </h3>
       </div>
-      <button
-        class="px-3 py-2 rounded-xl bg-base-een-100/50 backdrop-blur-sm text-base-twee-900 border border-base-twee-200 shadow hover:bg-white/80 transition-colors"
-        (click)="showAddBuildingModal = true"
-      >
-        Voeg gebouw toe
-      </button>
+      @if(isLandlord) {
+        <button
+          class="px-3 py-2 rounded-xl bg-base-een-100/50 backdrop-blur-sm text-base-twee-900 border border-base-twee-200 shadow hover:bg-white/80 transition-colors"
+          (click)="showAddBuildingModal = true"
+        >
+          Voeg gebouw toe
+        </button>
+      }
     </div>
 
     <div class="space-y-4" [class]="showAddBuildingModal ? 'min-h-180' : 'min-h-150px'">
@@ -73,11 +77,12 @@ import {AuthService} from '../../shared/auth.service';
               </h4>
               <p class="text-xs text-base-twee-500">
                 {{ building.place?.place }} • {{ building.rooms?.length || 0 }} Kamers •
+              @if(isLandlord) {
                 <span
                   routerLink="/dashboard/building/{{ building.id }}"
                   class="text-primary-300 hover:text-primary-500 hover:underline transition duration-200 ease"
-                  >Bewerk gebouw</span
-                >
+                >Bewerk gebouw</span>
+              }
               </p>
             </div>
           </div>
@@ -394,14 +399,34 @@ export class BuildingDashboard implements OnInit {
 
   constructor(private verhuurderService: VerhuurderService, private cdr: ChangeDetectorRef, private roomService: RoomService, private authService: AuthService) {}
 
-  ngOnInit() {
-
+ngOnInit() {
+    // 1. Haal de user op
     const user = this.authService.getUser();
-    // Als user bestaat ? check de rol : anders false
-this.isLandlord = user ? (user.role_id === 2 || user.role === 'landlord') : false;
 
+    console.log("---- DEBUG ROL CHECK ----");
+    console.log("User object:", user);
+
+    // 2. Check of het een verhuurder is
+    // We checken op role_id 2 OF de tekst 'landlord'/'verhuurder' (voor de zekerheid)
+    if (user) {
+
+      const roleName = (user.role || '').toLowerCase();
+
+        this.isLandlord = (
+            Number(user.role_id) === 2 ||
+            user.role === 'landlord' ||
+            user.role === 'verhuurder'
+        );
+    } else {
+        this.isLandlord = false;
+    }
+
+    console.log("Is dit een Landlord?", this.isLandlord); // Moet TRUE zijn voor jou!
+    console.log("-------------------------");
+
+    // 3. Nu pas laden we de data
     this.loadBuildings();
-  }
+}
 
   onStreetInput() {
     clearTimeout(this.suggestTimeout);
@@ -477,40 +502,65 @@ async loadBuildings() {
 
       // 2. Logic Split: Verhuurder vs Student
       if (this.isLandlord) {
-        // VERHUURDER: Haalt eigen gebouwen op
+        // --- VERHUURDER LOGICA (Promise) ---
         data = await this.verhuurderService.getMyBuildings();
+
+        // Verwerk de data direct
+        const buildingsArray = Array.isArray(data) ? data : (data as any).data || [];
+        this.buildings = buildingsArray.map((b: any) => ({ ...b, expanded: false }));
+        console.log('Landlord buildings loaded:', this.buildings);
+
       } else {
-        // STUDENT: Haalt favorieten op via RoomService
-        // We gebruiken .subscribe() omdat Angular services vaak Observables zijn.
-        // Als jouw RoomService Promise returned, kun je gewoon 'await' gebruiken.
+        // --- STUDENT LOGICA (Observable) ---
+        // We halen favorieten op via RoomService
         this.roomService.getFavorites().subscribe({
-            next: (favs: any) => {
-                // We zorgen dat 'expanded' property bestaat voor de UI
-                const favoritesArray = Array.isArray(favs) ? favs : (favs as any).data || [];
-                this.buildings = favoritesArray.map((b: any) => ({ ...b, expanded: false }));
-                this.loading = false;
-                this.cdr.detectChanges();
-            },
-            error: (err: any) => {
-                console.error("Fout bij laden favorieten:", err);
-                this.loading = false;
-            }
+          next: (favs: any) => {
+            // 1. Check of de data in een .data wrapper zit of direct een array is
+            const rawData = Array.isArray(favs) ? favs : (favs as any).data || [];
+
+            // 2. De data formatteren ("Foppen" van de HTML)
+            // We halen de gebouw-info UIT de kamer en zetten die vooraan.
+            const formatted = rawData.map((room: any) => ({
+                // Kopieer alle info van het 'building' object naar de hoofdlaag
+                // Zodat {{ building.street }} werkt in je HTML
+                ...room.building,
+
+                // Zet de kamer zelf in een lijstje genaamd 'rooms'
+                // Zodat de tabel in de accordion werkt
+                rooms: [room],
+
+                // UI state toevoegen
+                expanded: false,
+
+                // Handig om te weten dat dit eigenlijk een room ID is voor de favoriet
+                favorite_room_id: room.id
+            }));
+
+            this.buildings = formatted;
+            this.loading = false;
+            this.cdr.detectChanges();
+            console.log('Favorite rooms loaded:', this.buildings);
+          },
+          error: (err: any) => {
+            console.error("Fout bij laden favorieten:", err);
+            this.loading = false;
+            this.cdr.detectChanges();
+          }
         });
-        return; // Stop hier, want de subscribe handelt de rest af
+
+        // BELANGRIJK: We stoppen hier met return.
+        // De code onder de catch/finally wordt alleen door de Landlord (Promise) gebruikt.
+        return;
       }
 
-      // Verhuurder logica vervolg (Promise based)
-      const buildingsArray = Array.isArray(data) ? data : (data as any).data || [];
-      this.buildings = buildingsArray.map((b: any) => ({ ...b, expanded: false }));
-      console.log('Loaded buildings:', this.buildings);
-
     } catch (error) {
-      console.error('Error loading buildings:', error);
+      console.error('Error loading buildings (Landlord):', error);
       this.buildings = [];
     } finally {
-      if(this.isLandlord) {
-          this.loading = false;
-          this.cdr.detectChanges();
+      // Dit blok wordt alleen uitgevoerd voor de Verhuurder (omdat Student hierboven al returned)
+      if (this.isLandlord) {
+        this.loading = false;
+        this.cdr.detectChanges();
       }
     }
   }
