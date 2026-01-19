@@ -10,19 +10,19 @@ export class RoomService {
   private baseApi = environment.apiUrl;
   private apiUrl = 'http://127.0.0.1:8000/api';
 
-  // 1. Voor de zoekpagina (Map updates)
+  // Beheer van kaartupdates
   private mapRoomsSubject = new BehaviorSubject<any[]>([]);
   public mapRooms$ = this.mapRoomsSubject.asObservable();
 
-  // Filter state
+  // Filterstatus
   private currentFilters: any = {};
   public refreshTrigger$ = new Subject<void>();
 
-  // Available Types (Dynamic)
+  // Dynamische kamertypes
   private availableTypesSubject = new BehaviorSubject<string[]>([]);
   public availableTypes$ = this.availableTypesSubject.asObservable();
 
-  // Map Center control
+  // Beheer kaartfocus
   private mapCenterSubject = new BehaviorSubject<{ lat: number; lng: number; zoom: number } | null>(
     null,
   );
@@ -30,15 +30,18 @@ export class RoomService {
 
   constructor(private http: HttpClient) {}
 
+  // Update filters en trigger refresh
   updateFilters(filters: any) {
     this.currentFilters = { ...this.currentFilters, ...filters };
     this.refreshTrigger$.next();
   }
 
+  // Zet kaartcentrum in focus
   setMapCenter(lat: number, lng: number, zoom: number = 13) {
     this.mapCenterSubject.next({ lat, lng, zoom });
   }
 
+  // Publieke kamers ophalen (paginering optioneel)
   getPublicRooms(
     page: number = 1,
     limit: number = 9,
@@ -60,12 +63,13 @@ export class RoomService {
     return this.http.get<any>(this.baseApi + 'public/rooms', { headers: headers, params: params });
   }
 
+  // Steden zoeken voor autocomplete
   searchCities(query: string): Observable<any[]> {
     let params = new HttpParams().set('query', query);
     return this.http.get<any[]>(this.baseApi + 'public/search-cities', { params });
   }
 
-  // Gebruikt door ZOEK pagina (Update de state voor de map)
+  // Haalt kamers op binnen kaartgrenzen
   getRoomsByBBox(
     minLat: number,
     maxLat: number,
@@ -82,7 +86,7 @@ export class RoomService {
 
     if (this.currentFilters.category) {
       let cat = this.currentFilters.category;
-      // Support array -> comma string
+      // Array naar string converteren
       if (Array.isArray(cat)) {
         cat = cat.length > 0 ? cat.join(',') : 'All';
       }
@@ -92,7 +96,7 @@ export class RoomService {
     if (this.currentFilters.city) params = params.set('city', this.currentFilters.city);
     if (this.currentFilters.sort) params = params.set('sort', this.currentFilters.sort);
 
-    // ... headers logica ...
+    // Auth token toevoegen indien aanwezig
     const token = sessionStorage.getItem('auth_token');
     let headers = new HttpHeaders();
     if (token) headers = headers.set('Authorization', `Bearer ${token}`);
@@ -105,10 +109,11 @@ export class RoomService {
           this.availableTypesSubject.next(response.available_types);
         }
       }),
-      map((response: any) => response.data), // <--- DEZE REGEL IS CRUCIAAL
+      map((response: any) => response.data), // Enkel data retourneren
     );
   }
 
+  // Individuele kamer ophalen
   getRoomById(id: number) {
     const token = sessionStorage.getItem('auth_token');
     let headers = new HttpHeaders();
@@ -117,30 +122,30 @@ export class RoomService {
     }
     return this.http.get<any>(`${this.baseApi}public/rooms/${id}`, { headers });
   }
-
+// Zoeksuggesties (straten/gebouwen) ophalen
   getSearchSuggestions(query: string): Observable<string[]> {
     const params = new HttpParams().set('query', query);
     return this.http.get<string[]>(`${this.baseApi}public/search-suggestions`, { params });
   }
 
+  // Specifieke locatie coördinaten ophalen
   getSearchLocation(query: string): Observable<any> {
     const params = new HttpParams().set('query', query);
     return this.http.get<any>(`${this.baseApi}public/search-location`, { params });
   }
 
-  // In RoomService class...
+  // Favorieten van gebruiker ophalen  }
 
   getFavorites() {
     const token = sessionStorage.getItem('auth_token');
 
-    // Zorg voor de juiste headers (net als bij je andere calls)
+    // Headers instellen
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
-    // 👇 CHECK DEZE URL: Komt hij overeen met je backend route?
-    // Het kan zijn: '/favorites', '/user/favorites' of '/buildings/favorites'
+  // Favoriet toevoegen of verwijderen
     return this.http.get<any[]>(`${this.apiUrl}/favorites`, { headers });
   }
 
@@ -158,6 +163,7 @@ export class RoomService {
       { room_id: roomId },
       { headers: headers },
     );
+  // Faciliteiten ophalen (met caching)
   }
 
   private facilitiesCache$?: Observable<any[]>;

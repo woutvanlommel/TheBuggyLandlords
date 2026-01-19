@@ -11,7 +11,7 @@ import { AuthService } from '../../shared/auth.service';
   standalone: true,
   imports: [RouterLink, CommonModule, FormsModule],
   template: `
-    <!-- Header sectie met titel en knop voor verhuurders -->
+    <!-- Header: titel en acties -->
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>
         <p class="text-xs font-semibold tracking-wide text-primary-600">Overzicht</p>
@@ -31,7 +31,7 @@ import { AuthService } from '../../shared/auth.service';
 
     <div class="space-y-4" [class]="showAddBuildingModal ? 'min-h-180' : 'min-h-150px'">
 
-      <!-- Laadstatus weergave -->
+      <!-- Laadindicator -->
       @if (loading) {
         <div class="flex flex-col gap-2 justify-center items-center py-8">
           <div class="text-center text-base-twee-500">Laden...</div>
@@ -39,21 +39,21 @@ import { AuthService } from '../../shared/auth.service';
         </div>
       }
 
-      <!-- Lege status indien geen data -->
+      <!-- Lege status -->
       @if (!loading && buildings.length === 0) {
         <div class="text-center py-8 text-base-twee-500 bg-base-een-50/50 rounded-xl border border-base-twee-100">
           Geen items gevonden.
         </div>
       }
 
-      <!-- Hoofdlijst: Itereert over gebouwen (verhuurder) of kamers (huurder) -->
+      <!-- Lijst: gebouwen of favorieten -->
       @for (building of buildings; track building.favorite_room_id || building.id) {
 
-        <!-- VERHUURDER WEERGAVE: Accordeon lijst -->
+        <!-- Verhuurder: accordeonweergave -->
         @if (isLandlord) {
           <div class="bg-base-een-100/30 border border-base-twee-200/50 rounded-xl overflow-hidden mb-4 transition-all hover:shadow-sm">
 
-            <!-- Gebouw header (klikbaar) -->
+            <!-- Gebouw header -->
             <div
               (click)="toggleBuilding(building)"
               class="p-4 flex items-center justify-between cursor-pointer hover:bg-base-een-200/30 transition-colors group"
@@ -78,7 +78,7 @@ import { AuthService } from '../../shared/auth.service';
               </svg>
             </div>
 
-            <!-- Uitklapbare inhoud: Tabel met kamers en statussen -->
+            <!-- Tabel: kamers en status -->
             @if (building.expanded) {
               <div class="border-t border-base-twee-200/50 bg-white/50 backdrop-blur-sm">
                 <div class="overflow-x-auto">
@@ -98,7 +98,7 @@ import { AuthService } from '../../shared/auth.service';
                             {{ room.name || ((room.roomtype?.type || 'Kamer') + ' ' + (room.room_number || '')) }}
                           </td>
                           <td class="px-4 py-3">
-                            <!-- Toon huurder of placeholder -->
+                            <!-- Huurder info -->
                             @if (room.active_contract?.user; as tenant) {
                               <div class="flex items-center gap-2">
                                 <div class="w-6 h-6 rounded-full bg-secondary-100 text-secondary-700 flex items-center justify-center text-xs font-bold">{{ tenant.fname.charAt(0) }}</div>
@@ -130,11 +130,11 @@ import { AuthService } from '../../shared/auth.service';
           </div>
         }
 
-        <!-- HUURDER WEERGAVE: Favoriete kaarten -->
+        <!-- Huurder: favorieten -->
         @else {
           <div class="relative mb-4 group">
 
-            <!-- Favoriet verwijderen knop -->
+            <!-- Knop: favoriet verwijderen -->
             <button
               (click)="removeFavorite($event, building)"
               class="absolute top-3 right-3 z-20 p-2 rounded-full bg-white/60 hover:bg-red-50 text-base-twee-400 hover:text-red-600 border border-transparent hover:border-red-100 transition-all shadow-sm backdrop-blur-sm cursor-pointer"
@@ -145,7 +145,7 @@ import { AuthService } from '../../shared/auth.service';
               </svg>
             </button>
 
-            <!-- Kamer details kaart -->
+            <!-- Kamer details -->
             <a
               [routerLink]="['/kotcompass/rooms', building.favorite_room_id]"
               class="block bg-white border border-base-twee-200 rounded-xl p-4 hover:border-primary-500 hover:shadow-md transition-all cursor-pointer relative overflow-hidden"
@@ -160,7 +160,7 @@ import { AuthService } from '../../shared/auth.service';
                 </div>
 
                 <div class="flex-1">
-                  <!-- Adres weergave met fallbacks voor data-structuur -->
+                  <!-- Adresweergave -->
                   <h4 class="font-bold text-lg text-base-twee-900 group-hover:text-primary-700 transition-colors">
                      {{ building.street?.street || building.street?.name || building.street || '' }}
                      {{ building.housenumber || building.number }}
@@ -183,7 +183,7 @@ import { AuthService } from '../../shared/auth.service';
         }
       }
 
-    <!-- Modal voor toevoegen nieuw gebouw -->
+    <!-- Modal: gebouw toevoegen -->
     @if (showAddBuildingModal) {
       <div class="absolute w-full h-full top-0 left-0 inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-base-twee-900/20" (click)="closeModal()">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" (click)="$event.stopPropagation()">
@@ -197,7 +197,7 @@ import { AuthService } from '../../shared/auth.service';
 
           <div class="p-8 overflow-y-auto">
             <div class="space-y-6">
-              <!-- Straatnaam met autocomplete suggesties -->
+              <!-- Input: straatnaam + suggesties -->
               <div>
                 <label class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5 ml-1">Straatnaam</label>
                 <div class="relative">
@@ -217,7 +217,7 @@ import { AuthService } from '../../shared/auth.service';
                 </div>
               </div>
 
-              <!-- Overige adresvelden -->
+              <!-- Adresvelden -->
               <div class="grid grid-cols-2 gap-4">
                 <div>
                    <label class="block text-xs font-bold text-base-twee-500 uppercase tracking-widest mb-1.5 ml-1">Huisnummer</label>
@@ -263,7 +263,7 @@ export class BuildingDashboard implements OnInit {
 
   constructor(private verhuurderService: VerhuurderService, private cdr: ChangeDetectorRef, private roomService: RoomService, private authService: AuthService) {}
 
-  // Initialisatie: Check rol en laad data
+  // Initialisatie en data laden
   ngOnInit() {
     const user = this.authService.getUser();
     if (user) {
@@ -273,7 +273,7 @@ export class BuildingDashboard implements OnInit {
     this.loadBuildings();
   }
 
-  // Adres suggesties ophalen (met debounce)
+  // Adressuggesties ophalen (debounce)
   onStreetInput() {
     clearTimeout(this.suggestTimeout);
     if (this.newBuilding.street.length < 1) {
@@ -294,7 +294,7 @@ export class BuildingDashboard implements OnInit {
     }, 100);
   }
 
-  // Suggestie selecteren en formulier vullen
+  // Formulier vullen met suggestie
   selectSuggestion(suggestion: any) {
     this.newBuilding.street = suggestion.street;
     this.newBuilding.city = suggestion.city;
@@ -308,7 +308,7 @@ export class BuildingDashboard implements OnInit {
     this.suggestions = [];
   }
 
-  // Nieuw gebouw opslaan via API
+  // Nieuw gebouw opslaan
   async submitNewBuilding() {
     try {
       this.loading = true;
@@ -323,7 +323,7 @@ export class BuildingDashboard implements OnInit {
     }
   }
 
-  // Haal gebouwen (verhuurder) of favorieten (huurder) op
+  // Data ophalen (gebouwen/favorieten)
   async loadBuildings() {
     try {
       this.loading = true;
@@ -360,7 +360,7 @@ export class BuildingDashboard implements OnInit {
     building.expanded = !building.expanded;
   }
 
-  // Favoriet verwijderen (alleen voor huurders)
+  // Favoriet verwijderen
   removeFavorite(event: Event, building: any) {
     event.stopPropagation();
     event.preventDefault();
@@ -374,7 +374,7 @@ export class BuildingDashboard implements OnInit {
       next: (response: any) => {
         building.isDeleting = false;
 
-        // Als item uit favorieten is verwijderd, update de lokale lijst
+        // Lijst bijwerken
         if (!response.is_favorited) {
            this.buildings = this.buildings.filter(b => b.favorite_room_id !== roomId);
            this.cdr.detectChanges();

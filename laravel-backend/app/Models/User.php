@@ -17,11 +17,7 @@ class User extends Authenticatable
 
     protected $with = ['profilePicture'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    // Attributen die massaal toegewezen kunnen worden
     protected $fillable = [
         'name',
         'fname',
@@ -32,19 +28,15 @@ class User extends Authenticatable
         'role_id'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    // Attributen die verborgen blijven in JSON-responses
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    // Relatie: Profielfoto van gebruiker (Document type 8)
     public function profilePicture()
     {
-        // Zoek het document dat bij deze user hoort EN type 8 is
         return $this->hasOne(Document::class)->where('document_type_id', 8);
     }
 
@@ -66,11 +58,7 @@ class User extends Authenticatable
     //     return null;
     // }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    // Type casting instellingen
     protected function casts(): array
     {
         return [
@@ -79,32 +67,31 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Relatie: Een User (Huurder) heeft meerdere contracten (historiek).
-     */
+    // Relatie: Huurcontracten van de gebruiker
     public function contracts()
     {
         return $this->hasMany(Contract::class);
     }
 
-    /**
-     * Relatie: Een User (Verhuurder) bezit meerdere gebouwen.
-     */
+    // Relatie: Gebouwen eigendom van verhuurder
     public function buildings()
     {
         return $this->hasMany(Building::class);
     }
 
+    // Relatie: Rol van de gebruiker
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
+    // Relatie: Favoriete kamers (basis)
     public function favorites()
     {
         return $this->belongsToMany(Room::class, 'favorites', 'user_id', 'room_id');
     }
 
+    // Relatie: Favoriete kamers met gebouwdetails
     public function favoriteRooms()
     {
         return $this->belongsToMany(Room::class, 'favorites', 'user_id', 'room_id')
