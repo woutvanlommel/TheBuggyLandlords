@@ -48,13 +48,24 @@ class FavoriteController extends Controller
         ]);
     }
 
-    public function getFavorites(Request $request)
-    {
-        $user = $request->user();
+        public function getFavorites(Request $request)
+            {
+                $user = $request->user();
 
-        $favorites = $user->favoriteRooms()->get();
+                // OUDE CODE:
+                // $favorites = $user->favoriteRooms()->get();
 
-        return response()->json($favorites);
-    }
+                // NIEUWE CODE:
+                // We gebruiken 'dot notation' om diep in de relaties te graven.
+                // 1. building        -> Haal het gebouw op
+                // 2. building.street -> Haal binnen dat gebouw de straat op
+                // 3. building.place  -> Haal binnen dat gebouw de stad op
+                // 4. roomtype        -> (Optioneel) Voor 'Studio', 'Kot', etc.
+                $favorites = $user->favoriteRooms()
+                    ->with(['building.street', 'building.place', 'roomtype'])
+                    ->get();
+
+                return response()->json($favorites);
+            }
 }
 
