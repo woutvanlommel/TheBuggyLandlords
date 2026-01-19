@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, map, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map, Subject, shareReplay } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -143,8 +143,15 @@ export class RoomService {
     );
   }
 
+  private facilitiesCache$?: Observable<any[]>;
+
   getFacilities(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseApi}public/facilities`);
+    if (!this.facilitiesCache$) {
+      this.facilitiesCache$ = this.http.get<any[]>(`${this.baseApi}public/facilities`).pipe(
+        shareReplay(1)
+      );
+    }
+    return this.facilitiesCache$;
   }
 }
 

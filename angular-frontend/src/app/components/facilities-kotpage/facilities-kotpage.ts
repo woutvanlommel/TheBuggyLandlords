@@ -2,6 +2,7 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { RoomService } from '../../shared/room.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheckCircle, heroXMark } from '@ng-icons/heroicons/outline';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-facilities-kotpage',
@@ -21,7 +22,7 @@ import { heroCheckCircle, heroXMark } from '@ng-icons/heroicons/outline';
           </p>
         </div>
 
-        @if (allFacilities.length > 0) {
+        @if (!isLoading) {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-20">
             @for (allFac of allFacilities; track allFac.id) {
               <div
@@ -66,8 +67,8 @@ import { heroCheckCircle, heroXMark } from '@ng-icons/heroicons/outline';
         } @else {
           <!-- Luxury Skeleton Loading -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 animate-pulse">
-            @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-              <div class="h-20 bg-gray-50 rounded-2xl mb-4 opacity-50"></div>
+            @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
+              <div class="h-12 bg-gray-50 rounded-2xl mb-4 opacity-50"></div>
             }
           </div>
         }
@@ -84,19 +85,21 @@ import { heroCheckCircle, heroXMark } from '@ng-icons/heroicons/outline';
 export class FacilitiesKotpage implements OnInit {
   @Input() facilities: any[] = []; // De faciliteiten die aanwezig zijn in deze kamer
   allFacilities: any[] = [];
+  isLoading: boolean = true;
 
   private roomService = inject(RoomService);
 
-  ngOnInit() {
-    this.roomService.getFacilities().subscribe({
-      next: (data) => {
-        // Sorteer op naam zodat de lijst consistent is
-        this.allFacilities = data.sort((a, b) => a.facility.localeCompare(b.facility));
-      },
-      error: (err) => {
-        console.error('Fout bij ophalen alle voorzieningen:', err);
-      },
-    });
+  async ngOnInit() {
+    this.isLoading = true;
+    try {
+      const data = await firstValueFrom(this.roomService.getFacilities());
+      // Sorteer op naam zodat de lijst consistent is
+      this.allFacilities = data.sort((a, b) => a.facility.localeCompare(b.facility));
+    } catch (err) {
+      console.error('Fout bij ophalen alle voorzieningen:', err);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   isAvailable(id: number): boolean {

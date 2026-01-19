@@ -8,6 +8,7 @@ import { PriceAdresKotpage } from '../../components/price-adres-kotpage/price-ad
 import { ImagesKotpage } from '../../components/images-kotpage/images-kotpage';
 import { DescriptionKotpage } from '../../components/description-kotpage/description-kotpage';
 import { FacilitiesKotpage } from '../../components/facilities-kotpage/facilities-kotpage';
+import { PriceCalculationKotpage } from '../../components/price-calculation-kotpage/price-calculation-kotpage';
 
 @Component({
   selector: 'app-room-detail',
@@ -19,6 +20,7 @@ import { FacilitiesKotpage } from '../../components/facilities-kotpage/facilitie
     ImagesKotpage,
     DescriptionKotpage,
     FacilitiesKotpage,
+    PriceCalculationKotpage,
   ],
   template: `
     @if (isLoading) {
@@ -31,7 +33,7 @@ import { FacilitiesKotpage } from '../../components/facilities-kotpage/facilitie
     } @else if (hasError) {
       <div class="text-red-600">Kamer niet gevonden of fout bij ophalen.</div>
     } @else if (room && room.id) {
-      <div class="w-full max-w-300 px-6 mx-auto my-4 flex flex-col gap-6 items-center">
+      <div class="w-full max-w-300 px-6 mx-auto mt-16 mb-32 flex flex-col gap-6 items-center">
         <!-- Price & Address Component -->
         <app-price-adres-kotpage
           class="w-full"
@@ -75,6 +77,15 @@ import { FacilitiesKotpage } from '../../components/facilities-kotpage/facilitie
 
         <!-- Room Facilities -->
         <app-facilities-kotpage [facilities]="room.facilities || []"></app-facilities-kotpage>
+
+        <!-- Total cost calculation (price + extra costs) -->
+        <app-price-calculation-kotpage
+          class="w-full"
+          [pricePerMonth]="room.price || 0"
+          [extraCostsList]="room.extra_costs || []"
+          id="priceCalculation"
+        >
+        </app-price-calculation-kotpage>
       </div>
     }
   `,
@@ -94,8 +105,8 @@ export class RoomDetail {
     // Check extra_costs (mapped from extraCosts relation)
     if (this.room.extra_costs && Array.isArray(this.room.extra_costs)) {
       this.room.extra_costs.forEach((cost: any) => {
-        // Check pivot data
-        if (cost.pivot && cost.pivot.price) {
+        // Alleen de terugkerende (maandelijkse) kosten optellen
+        if (cost.is_recurring && cost.pivot && cost.pivot.price) {
           total += Number(cost.pivot.price);
         }
       });

@@ -18,6 +18,13 @@ import { QuillViewHTMLComponent } from 'ngx-quill';
             class="word-fix block text-left !break-normal"
           ></quill-view-html>
         </div>
+      } @else {
+        <div class="max-w-full overflow-hidden">
+          <h2 class="text-[clamp(1.5rem,2vw,3rem)] font-semibold mb-4 text-base-twee-900">
+            Beschrijving
+          </h2>
+          <p class="text-md text-zinc-300">Nog geen beschrijving</p>
+        </div>
       }
 
       <div class="mt-8 text-gray-500 border-t border-gray-100 pt-4">
