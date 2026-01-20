@@ -258,10 +258,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- CREDITS SYSTEM ---
     Route::group(['prefix' => 'credits'], function () {
+        //Get current balance (Secured via token)
         Route::get('/balance', [App\Http\Controllers\Api\CreditController::class, 'getBalance']);
         Route::get('/packages', [App\Http\Controllers\Api\CreditController::class, 'getPackages']);
+        
+        // Step 1: Intent. Server calculates the price so the user can't fake it.
         Route::post('/payment-intent', [App\Http\Controllers\Api\CreditController::class, 'createPaymentIntent']);
+        
+        // Step 2: Payment. No route here! The frontend talks directly to Stripe.
+        
+        // Step 3: Verification. I check with Stripe if the transaction is valid before adding credits.
         Route::post('/verify-payment', [App\Http\Controllers\Api\CreditController::class, 'verifyPayment']);
+        
         Route::post('/buy', [App\Http\Controllers\Api\CreditController::class, 'buyPackage']);
         Route::post('/spotlight', [App\Http\Controllers\Api\CreditController::class, 'toggleSpotlight']);
         Route::post('/activate-spotlight', [App\Http\Controllers\Api\CreditController::class, 'activateSpotlight']);

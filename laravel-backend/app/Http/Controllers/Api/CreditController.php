@@ -37,7 +37,9 @@ class CreditController extends Controller
     }
 
     /**
-     * Start Stripe Payment Intent
+     * [POST] Step 1: Intent
+     * 
+     * Calculate the price here (Server-side) so the user cannot manipulate it.
      */
     public function createPaymentIntent(Request $request)
     {
@@ -45,12 +47,15 @@ class CreditController extends Controller
             'package_id' => 'required|integer|in:1,2,3',
         ]);
 
+        // SECURITY: Define prices server-side. 
+        // never trust the price sent from the frontend.
         $packages = [
             1 => ['credits' => 50, 'price' => 25],
             2 => ['credits' => 100, 'price' => 45],
             3 => ['credits' => 500, 'price' => 200]
         ];
 
+        // Calculate amount here based on the ID
         $package = $packages[$request->package_id];
         $amount = $package['price'] * 100; // Stripe expects cents
 
@@ -79,7 +84,15 @@ class CreditController extends Controller
     }
 
     /**
-     * Verify Stripe Payment and Add Credits
+     * [Step 2] The Payment (Frontend)
+     * 
+     * No controller method here. The frontend handles this directly with Stripe.
+     */
+
+    /**
+     * [POST] Step 3: Verification
+     * 
+     * Verify with Stripe if the money is actually received before adding credits to the DB.
      */
     public function verifyPayment(Request $request)
     {
@@ -90,10 +103,13 @@ class CreditController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
+            // SECURITY: Don't trust the frontend's "success" message.
+            // I ask Stripe directly: "Did this transaction actually succeed?"
             Log::info('Verifying Payment: ' . $request->paymentIntentId);
             $paymentIntent = PaymentIntent::retrieve($request->paymentIntentId);
             Log::info('PaymentIntent Status: ' . $paymentIntent->status);
 
+            // Only update the database if Stripe confirms the money is received.
             if ($paymentIntent->status === 'succeeded') {
                 $credits = (int) $paymentIntent->metadata->credits;
                 $userId = $paymentIntent->metadata->user_id;

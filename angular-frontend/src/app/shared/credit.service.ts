@@ -62,10 +62,16 @@ export class CreditService {
     return of(this.packages);
   }
 
+  // Step 1: Start transaction. I send the package ID to my backend to get the 'clientSecret' from Stripe.
   createPaymentIntent(packageId: number): Observable<{clientSecret: string}> {
     return this.http.post<{clientSecret: string}>(`${this.apiUrl}/payment-intent`, { package_id: packageId }, { headers: this.getHeaders() });
   }
 
+  // Step 2: The Payment. This happens in the component using Stripe Elements. 
+  // No service call here because the data goes straight to Stripe for security.
+
+  // Step 3: Verification. I send the paymentIntentId to my backend to check if the money is really there. 
+  // If yes, I update the balance immediately.
   verifyPayment(paymentIntentId: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/verify-payment`, { paymentIntentId }, { headers: this.getHeaders() }).pipe(
       tap(res => {
