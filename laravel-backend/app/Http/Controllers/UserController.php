@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Services\DocumentService;
 use App\Models\Document;
+use App\Models\Message;
+use App\Events\MessageSent;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -85,42 +88,53 @@ class UserController extends Controller
 
 
 
-public function updateAvatar(Request $request)
-{
-    $request->validate([
-        'avatar' => 'required|image|max:4096', // Max 4MB
-    ]);
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|max:4096', // Max 4MB
+        ]);
 
-    $user = $request->user();
-    $file = $request->file('avatar');
+        $user = $request->user();
+        $file = $request->file('avatar');
 
-    // 1. Zet het bestand om naar een Base64 String ✨
-    $contents = file_get_contents($file->getRealPath());
-    $base64 = base64_encode($contents);
-    $mime = $file->getMimeType();
+        // 1. Zet het bestand om naar een Base64 String ✨
+        $contents = file_get_contents($file->getRealPath());
+        $base64 = base64_encode($contents);
+        $mime = $file->getMimeType();
 
-    // Dit is de "Magic String" die de afbeelding bevat
-    $base64Data = 'data:' . $mime . ';base64,' . $base64;
+        // Dit is de "Magic String" die de afbeelding bevat
+        $base64Data = 'data:' . $mime . ';base64,' . $base64;
 
-    // 2. Sla op in de 'document' tabel
-    // We gebruiken updateOrCreate zodat de gebruiker max 1 profielfoto (type 8) heeft.
-    // Oude foto's worden overschreven.
-    $document = Document::updateOrCreate(
-        [
-            'user_id' => $user->id,
-            'document_type_id' => 8 // ID voor Profielfoto (zoals in je screenshot)
-        ],
-        [
-            // LET OP: Deze kolom moet LONGTEXT zijn in je database!
-            // Waarschijnlijk heet hij 'path', 'url' of 'content' in jouw tabel.
-            'file_path' => $base64Data,
-            'name' => $file->getClientOriginalName(),
-            'is_active' => true // Als je dit veld hebt
-        ]
-    );
+        // 2. Sla op in de 'document' tabel
+        // We gebruiken updateOrCreate zodat de gebruiker max 1 profielfoto (type 8) heeft.
+        // Oude foto's worden overschreven.
+        $document = Document::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'document_type_id' => 8 // ID voor Profielfoto (zoals in je screenshot)
+            ],
+            [
+                // LET OP: Deze kolom moet LONGTEXT zijn in je database!
+                // Waarschijnlijk heet hij 'path', 'url' of 'content' in jouw tabel.
+                'file_path' => $base64Data,
+                'name' => $file->getClientOriginalName(),
+                'is_active' => true // Als je dit veld hebt
+            ]
+        );
 
-    // Stuur de Base64 string direct terug naar de frontend zodat hij meteen zichtbaar is
-    return response()->json(['url' => $base64Data]);
-}
+        // Stuur de Base64 string direct terug naar de frontend zodat hij meteen zichtbaar is
+        return response()->json(['url' => $base64Data]);
+    }
+
+    public function store(Request $request) {
+        $message = Message::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $request->receiver_id,
+            'content' => $request->input('content'),
+        ]);
+
+        broadcast(new MessageSent($message))->toOthers();
+        return response()->json($message);
+    }
 }
 
