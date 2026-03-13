@@ -99,19 +99,12 @@ export class RoomDetail {
   hasError = false;
 
   get totalPrice(): number {
-    if (!this.room) return 0;
-    let total = Number(this.room.price) || 0;
-
-    // Check extra_costs (mapped from extraCosts relation)
-    if (this.room.extra_costs && Array.isArray(this.room.extra_costs)) {
-      this.room.extra_costs.forEach((cost: any) => {
-        // Alleen de terugkerende (maandelijkse) kosten optellen
-        if (cost.is_recurring && cost.pivot && cost.pivot.price) {
-          total += Number(cost.pivot.price);
-        }
-      });
-    }
-    return total;
+    const base = Number(this.room?.price) || 0;
+    const extras =
+      this.room?.extra_costs
+        ?.filter((c: any) => c.is_recurring && c.pivot?.price)
+        .reduce((sum: number, c: any) => sum + Number(c.pivot.price), 0) ?? 0;
+    return base + extras;
   }
 
   ngOnInit() {

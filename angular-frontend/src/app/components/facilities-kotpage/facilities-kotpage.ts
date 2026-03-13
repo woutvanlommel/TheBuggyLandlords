@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { RoomService } from '../../shared/room.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCheckCircle, heroXMark } from '@ng-icons/heroicons/outline';
@@ -88,6 +88,7 @@ export class FacilitiesKotpage implements OnInit {
   isLoading: boolean = true;
 
   private roomService = inject(RoomService);
+  private cdr = inject(ChangeDetectorRef);
 
   async ngOnInit() {
     this.isLoading = true;
@@ -99,6 +100,7 @@ export class FacilitiesKotpage implements OnInit {
       console.error('Fout bij ophalen alle voorzieningen:', err);
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
