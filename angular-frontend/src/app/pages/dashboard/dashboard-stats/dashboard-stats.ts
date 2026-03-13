@@ -6,7 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { BuildingDashboard } from '../../../components/building-dashboard/building-dashboard';
 import { VerhuurderService } from '../../../shared/verhuurder.service';
 import { CreditService } from '../../../shared/credit.service';
-import { ChatService } from '../../../shared/chat.service';
+import { ChatService } from '../../../shared/chat-service';
+
 
 @Component({
   selector: 'app-dashboard-stats',
@@ -208,7 +209,7 @@ export class DashboardStats implements OnInit, AfterViewChecked {
   ngOnInit() {
     // 1. Haal eigen ID op (bijv. uit sessie of auth service)
     const userData = JSON.parse(sessionStorage.getItem('user_data') || '{}');
-    this.myId = userData.id;
+    this.myId = Number(sessionStorage.getItem('user_id'));
 
     const role = sessionStorage.getItem('user_role');
     this.isLandlord = !!role && role.toLowerCase() === 'verhuurder';
@@ -236,8 +237,11 @@ export class DashboardStats implements OnInit, AfterViewChecked {
   }
 
   async loadConversations() {
+      const headers = {
+        'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
+  };
     // Endpoint die je in Laravel maakt om de inbox op te halen
-    this.http.get<any[]>('http://localhost:8000/api/conversations').subscribe(data => {
+    this.http.get<any[]>('http://localhost:8000/api/conversations', {headers}).subscribe(data => {
       this.conversations = data;
       this.cdr.detectChanges();
     });
@@ -245,8 +249,11 @@ export class DashboardStats implements OnInit, AfterViewChecked {
 
   selectConversation(user: any) {
     this.selectedUser = user;
+          const headers = {
+        'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
+  };
     // Haal berichtgeschiedenis op met deze specifieke user
-    this.http.get<any[]>(`http://localhost:8000/api/messages/${user.id}`).subscribe(data => {
+    this.http.get<any[]>(`http://localhost:8000/api/messages/${user.id}`, {headers}).subscribe(data => {
       this.messages = data;
       this.cdr.detectChanges();
     });
@@ -255,12 +262,16 @@ export class DashboardStats implements OnInit, AfterViewChecked {
   sendMessage() {
     if (!this.newMessageText.trim() || !this.selectedUser) return;
 
+          const headers = {
+            'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
+  };
+
     const payload = {
       receiver_id: this.selectedUser.id,
       content: this.newMessageText
     };
 
-    this.http.post('http://localhost:8000/api/messages', payload).subscribe((msg: any) => {
+    this.http.post('http://localhost:8000/api/messages', payload, {headers}).subscribe((msg: any) => {
       this.messages.push(msg); // Voeg eigen bericht toe aan de UI
       this.newMessageText = ''; // Clear input
       this.updateInboxWithLatestMessage(msg); // Update preview in de lijst links

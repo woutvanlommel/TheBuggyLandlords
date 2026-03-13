@@ -23,8 +23,9 @@ export class ChatService {
       authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
       auth: {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Je JWT of Sanctum token
-          Accept: 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest' // Voeg deze toe, dit helpt Laravel herkennen dat het een API request is
         },
       },
     });

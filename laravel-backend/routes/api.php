@@ -17,7 +17,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CreditController;
 use App\Http\Controllers\Api\MessageController;
 use App\Models\Message;
-
+use Illuminate\Support\Facades\Broadcast;
 /*
 |--------------------------------------------------------------------------
 | API Routes - CustomFlow / Student Housing App
@@ -241,10 +241,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/rooms/upload-image', [VerhuurderController::class, 'uploadRoomImage']);
     Route::delete('/documents/{id}', [VerhuurderController::class, 'deleteDocument']);
 
-    Route::get('/messages', [App\Http\Controllers\Api\MessageController::class, 'index']);
-    Route::post('/messages', [App\Http\Controllers\Api\MessageController::class, 'store']);
-    Route::put('/messages/{id}/read', [App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
-
     // --- FAVORIETEN BEHEREN ---
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
     Route::get('/favorites', [FavoriteController::class, 'getFavorites']);
@@ -282,5 +278,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/conversations', [MessageController::class, 'getConversations']);
     Route::get('/messages/{userId}', [MessageController::class, 'getMessagesWithUser']);
     Route::post('/messages', [MessageController::class, 'store']);
+    Route::post('/broadcasting/auth', function (Request $request) {
+        return Broadcast::auth($request);
+    });
 
 });
