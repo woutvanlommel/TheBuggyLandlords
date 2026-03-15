@@ -237,6 +237,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search-users', [VerhuurderController::class, 'searchUsers']);
     Route::post('/rooms/link-tenant', [VerhuurderController::class, 'linkTenant']);
     Route::post('/rooms/{roomId}/unlink-tenant', [VerhuurderController::class, 'unlinkTenant']);
+    Route::get('/my-tenants', [VerhuurderController::class, 'getMyTenants']);
 
     Route::post('/rooms/upload-image', [VerhuurderController::class, 'uploadRoomImage']);
     Route::delete('/documents/{id}', [VerhuurderController::class, 'deleteDocument']);

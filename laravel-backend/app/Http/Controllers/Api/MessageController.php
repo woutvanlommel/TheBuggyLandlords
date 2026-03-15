@@ -77,19 +77,49 @@ class MessageController extends Controller
     {
         $request->validate([
             'content' => 'required|string',
-            'receiver_id' => 'required|exists:users,id',
+            'receiver_id' => 'required', // Kan een ID zijn of de string 'all'
         ]);
 
+        $senderId = Auth::id();
+        $receiverId = $request->input('receiver_id');
+
+        // Scenario A: Bericht naar ALLE eigen huurders
+        if ($receiverId === 'all') {
+            $tenants = User::whereHas('contracts', function ($q) use ($senderId) {
+                $q->where('is_active', 1)->whereHas('room.building', function ($q2) use ($senderId) {
+                    $q2->where('user_id', $senderId);
+                });
+            })->get();
+
+            foreach ($tenants as $tenant) {
+                $msg = Message::create([
+                    'sender_id' => $senderId,
+                    'receiver_id' => $tenant->id,
+                    'content' => $request->input('content'),
+                    'is_read' => false
+                ]);
+                broadcast(new MessageSent($msg))->toOthers();
+            }
+            return response()->json(['message' => 'Mededeling verzonden naar alle huurders']);
+        }
+
+        // Scenario B: Bericht naar één specifieke huurder (met security check)
+        $isOwnTenant = User::where('id', $receiverId)->whereHas('contracts.room.building', function($q) use ($senderId) {
+            $q->where('user_id', $senderId);
+        })->exists();
+
+        if (!$isOwnTenant) {
+            return response()->json(['error' => 'Niet geautoriseerd'], 403);
+        }
+
         $message = Message::create([
-            'sender_id' => Auth::id(),
-            'receiver_id' => $request->input('receiver_id'),
+            'sender_id' => $senderId,
+            'receiver_id' => $receiverId,
             'content' => $request->input('content'),
             'is_read' => false
         ]);
 
-        // Real-time broadcast
         broadcast(new MessageSent($message))->toOthers();
-
         return response()->json($message);
     }
 }

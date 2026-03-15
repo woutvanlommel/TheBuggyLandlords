@@ -110,14 +110,14 @@ import { ChatService } from '../../../shared/chat-service';
       </article>
     </section>
 
-  <section class="grid grid-cols-12 gap-6 relative">
+    <section class="grid grid-cols-12 gap-6 relative">
       <article class="col-span-12 lg:col-span-8 bg-white rounded-2xl p-6 shadow-sm border border-gray-100 min-h-[400px]">
         <app-building-dashboard></app-building-dashboard>
       </article>
 
       <div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
 
-        <article class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl flex flex-col min-h-[400px]">
+        <article class="bg-base-een-100/50 backdrop-blur-sm border border-primary-100/50 rounded-2xl p-5 shadow-xl flex flex-col min-h-[450px]">
           <div class="mb-3">
             <p class="text-xs font-semibold tracking-wide text-primary-600">Communicatie</p>
             <h3 class="mt-1 text-lg font-semibold text-base-twee-900">
@@ -138,18 +138,34 @@ import { ChatService } from '../../../shared/chat-service';
             </p>
           </div>
 
-          <div class="space-y-3 mt-auto">
+          <div class="space-y-3 mt-auto border-t border-primary-50 pt-4">
+
+            <div *ngIf="isLandlord" class="mb-2">
+              <label class="block text-[10px] font-bold text-primary-600 uppercase mb-1 ml-1">Stuur naar:</label>
+              <select
+                [(ngModel)]="selectedTenantId"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-primary-100 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm appearance-none cursor-pointer"
+              >
+                <option value="all" class="font-bold text-secondary-600">📢 Alle actieve huurders (Mededeling)</option>
+                <option disabled>──────────</option>
+                <option *ngFor="let tenant of allTenants" [value]="tenant.id">
+                  👤 {{ tenant.fname }} {{ tenant.name }}
+                </option>
+              </select>
+            </div>
+
             <textarea
               [(ngModel)]="newMessageText"
               (keyup.enter)="sendMessage()"
-              [disabled]="!selectedUser"
+              [disabled]="!selectedUser && selectedTenantId === ''"
               placeholder="Typ hier je bericht..."
               rows="2"
               class="w-full px-4 py-2 rounded-xl bg-base-een-100/50 border border-base-twee-300/50 focus:outline-none focus:ring-2 focus:ring-primary-400 placeholder:text-base-twee-400 text-sm disabled:opacity-50"
             ></textarea>
+
             <button
               (click)="sendMessage()"
-              [disabled]="!selectedUser || !newMessageText"
+              [disabled]="(!selectedUser && selectedTenantId === '') || !newMessageText"
               class="w-full py-2 rounded-xl bg-primary text-white font-semibold shadow hover:bg-primary-600 transition-colors disabled:bg-gray-400"
             >
               Verstuur
@@ -164,16 +180,18 @@ import { ChatService } from '../../../shared/chat-service';
           <ul class="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
             <li *ngFor="let chat of conversations"
                 (click)="selectConversation(chat.user)"
-                [ngClass]="{'border-primary-400 bg-primary/5': selectedUser?.id === chat.user.id}"
+                [ngClass]="{'border-primary-400 bg-primary/5 shadow-inner': selectedUser?.id === chat.user.id}"
                 class="flex items-center gap-3 bg-white/40 p-3 rounded-xl border border-transparent hover:border-primary-200 cursor-pointer transition-all">
               <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xs">
                 {{ chat.user.name.charAt(0) }}
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-base-twee-900 truncate">{{ chat.user.name }}</p>
-                <p class="text-xs text-base-twee-500 truncate">{{ chat.last_message.content }}</p>
+                <p class="text-xs text-base-twee-500 truncate">{{ chat.last_message?.content }}</p>
               </div>
-              <span *ngIf="!chat.last_message.is_read" class="w-2 h-2 rounded-full bg-secondary-500"></span>
+              <span *ngIf="chat.last_message && !chat.last_message.is_read && chat.last_message.sender_id !== myId"
+                class="w-2 h-2 rounded-full bg-secondary-500">
+              </span>
             </li>
           </ul>
         </article>
@@ -197,6 +215,8 @@ export class DashboardStats implements OnInit, AfterViewChecked {
   messages: any[] = [];
   selectedUser: any = null;
   newMessageText: string = '';
+  allTenants: any[] = [];
+  selectedTenantId: string = 'all';
 
   constructor(
     private creditService: CreditService,
@@ -223,6 +243,7 @@ export class DashboardStats implements OnInit, AfterViewChecked {
     if (this.isLandlord) {
       this.loadStats();
       this.loadConversations(); // Laad de inbox
+      this.loadMyTenants(); // Laad alle huurders voor eventueel filteren in de toekomst
     }
 
     // 2. Start WebSocket luisteraar
@@ -249,34 +270,69 @@ export class DashboardStats implements OnInit, AfterViewChecked {
 
   selectConversation(user: any) {
     this.selectedUser = user;
-          const headers = {
-        'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
-  };
-    // Haal berichtgeschiedenis op met deze specifieke user
-    this.http.get<any[]>(`http://localhost:8000/api/messages/${user.id}`, {headers}).subscribe(data => {
-      this.messages = data;
-      this.cdr.detectChanges();
-    });
+
+    // Zorg dat de dropdown mee verspringt naar de persoon die je aanklikt
+    if (this.isLandlord) {
+      this.selectedTenantId = user.id.toString();
+    }
+
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    this.http.get<any[]>(`http://localhost:8000/api/messages/${user.id}`, { headers })
+      .subscribe(data => {
+        this.messages = data;
+        this.cdr.detectChanges();
+      });
   }
 
   sendMessage() {
-    if (!this.newMessageText.trim() || !this.selectedUser) return;
+    if (!this.newMessageText.trim()) return;
 
-          const headers = {
-            'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
-  };
+    let receiverId: any = null;
 
+    if (this.isLandlord) {
+      // Als verhuurder: de dropdown (selectedTenantId) is de baas!
+      // Als die op 'all' staat of een specifiek ID, gebruik die.
+      receiverId = this.selectedTenantId;
+
+      // Fallback: als er niets in de dropdown staat maar wel een chat open is
+      if (!receiverId && this.selectedUser) {
+        receiverId = this.selectedUser.id;
+      }
+    } else {
+      // Als huurder: stuur gewoon naar de geopende chat
+      receiverId = this.selectedUser?.id;
+    }
+
+    if (!receiverId) {
+      alert("Selecteer eerst een ontvanger of een gesprek.");
+      return;
+    }
+
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
     const payload = {
-      receiver_id: this.selectedUser.id,
+      receiver_id: receiverId,
       content: this.newMessageText
     };
 
-    this.http.post('http://localhost:8000/api/messages', payload, {headers}).subscribe((msg: any) => {
-      this.messages.push(msg); // Voeg eigen bericht toe aan de UI
-      this.newMessageText = ''; // Clear input
-      this.updateInboxWithLatestMessage(msg); // Update preview in de lijst links
-      this.cdr.detectChanges();
-    });
+    this.http.post('http://localhost:8000/api/messages', payload, { headers })
+      .subscribe({
+        next: (res: any) => {
+          // UI bijwerken: Alleen toevoegen aan het huidige venster als het ID matcht
+          if (receiverId !== 'all' && this.selectedUser && Number(res.receiver_id) === Number(this.selectedUser.id)) {
+            this.messages.push(res);
+          } else if (receiverId === 'all') {
+            alert('Mededeling succesvol verzonden naar alle huurders!');
+          }
+
+          this.newMessageText = '';
+          this.cdr.detectChanges();
+          // Optioneel: herlaad de inbox links om het nieuwe bericht te zien
+          this.loadConversations();
+        },
+        error: (err) => {
+          console.error("Versturen mislukt", err);
+        }
+      });
   }
 
   handleIncomingMessage(msg: any) {
@@ -334,6 +390,13 @@ export class DashboardStats implements OnInit, AfterViewChecked {
     } catch (e) {
       console.error('Failed to load stats', e);
     }
+  }
+
+  loadMyTenants() {
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    this.http.get<any[]>('http://localhost:8000/api/my-tenants', { headers }).subscribe(data => {
+      this.allTenants = data;
+    });
   }
 }
 
