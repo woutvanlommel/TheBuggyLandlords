@@ -15,7 +15,7 @@ import { QuillViewHTMLComponent } from 'ngx-quill';
           <quill-view-html
             [content]="description"
             theme="snow"
-            class="word-fix block text-left !break-normal"
+            class="word-fix block text-left"
           ></quill-view-html>
         </div>
       } @else {
@@ -36,33 +36,36 @@ import { QuillViewHTMLComponent } from 'ngx-quill';
     :host {
       display: block;
       width: 100%;
+      min-width: 0;
     }
 
-    /* Forceer normale woordafbreking en voorkom splitsen in het midden */
-    .word-fix ::ng-deep * {
-      word-break: normal !important;
-      overflow-wrap: break-word !important;
-      word-wrap: break-word !important;
-      hyphens: none !important;
+    .word-fix {
+      display: block;
+      width: 100%;
     }
 
-    /* Specifieke styling voor de Quill-container om de tekst weer netjes te maken */
-    .word-fix ::ng-deep .ql-container.ql-snow {
-      border: none !important;
+    /* HARD OVERRIDE op de Quill-output */
+    .word-fix ::ng-deep .ql-editor {
+      max-width: 100%;
+    }
+
+    .word-fix ::ng-deep p,
+    .word-fix ::ng-deep span,
+    .word-fix ::ng-deep strong,
+    .word-fix ::ng-deep em {
       font-size: 1.125rem;
       line-height: 1.8;
-      color: #374151; /* Tailwind gray-700 */
-      font-family: inherit;
+      color: #374151;
     }
 
-    .word-fix ::ng-deep .ql-editor {
-      padding: 0 !important;
-    }
-
-    /* Zorg dat paragrafen zich gedragen als blokken */
     .word-fix ::ng-deep p {
       margin-bottom: 1.25rem;
       display: block !important;
+      max-width: 100%;
+    }
+
+    .word-fix ::ng-deep strong {
+      font-weight: 800 !important;
     }
   `,
 })
