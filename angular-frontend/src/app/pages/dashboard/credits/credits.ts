@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router'; // Added Router
 import { CreditPackagesComponent } from '../../../components/credit-packages/credit-packages.component';
@@ -12,6 +12,31 @@ import { AuthService } from '../../../shared/auth.service';
   imports: [CommonModule, CreditPackagesComponent, LandlordSpotlightComponent],
   template: `
     <div class="space-y-8">
+        <div
+          *ngIf="toastVisible"
+          class="credit-toast fixed top-6 right-6 z-50 w-[min(92vw,24rem)] rounded-xl border shadow-xl backdrop-blur-sm"
+          [ngClass]="toastClassList"
+        >
+            <div class="p-4 pr-11 relative">
+                <div class="flex items-start gap-3">
+                    <div class="mt-0.5 h-2.5 w-2.5 rounded-full" [class]="toastVariant === 'success' ? 'bg-secondary-500' : 'bg-primary-500'"></div>
+                    <div class="min-w-0">
+                        <p class="font-bold text-sm">{{ toastTitle }}</p>
+                        <p class="text-sm text-base-twee-700 mt-1">{{ toastMessage }}</p>
+                    </div>
+                </div>
+                <button
+                  type="button"
+                  class="absolute top-2 right-2 rounded-md p-1 text-base-twee-500 hover:bg-base-een-100/70 hover:text-base-twee-700 transition-colors"
+                  aria-label="Sluit melding"
+                  (click)="dismissToast()"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
         
         <!-- HEADER: BALANCE -->
         <div class="p-8 text-center bg-base-een-100/50 backdrop-blur-sm rounded-xl border border-primary-100/50 shadow-sm relative overflow-hidden group">
@@ -62,12 +87,34 @@ import { AuthService } from '../../../shared/auth.service';
         </section>
     </div>
   `,
-  styles: []
+    styles: [
+        `
+            .credit-toast {
+                animation: credit-toast-enter 220ms ease-out;
+            }
+
+            @keyframes credit-toast-enter {
+                from {
+                    opacity: 0;
+                    transform: translate3d(18px, -8px, 0);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate3d(0, 0, 0);
+                }
+            }
+        `
+    ]
 })
-export class Credits implements OnInit {
+export class Credits implements OnInit, OnDestroy {
   balance: number = 0;
   isLandlord: boolean = false;
   verifying: boolean = false;
+    toastVisible: boolean = false;
+    toastTitle: string = '';
+    toastMessage: string = '';
+    toastVariant: 'success' | 'info' = 'success';
+    private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private creditService: CreditService, 
@@ -95,6 +142,44 @@ export class Credits implements OnInit {
     });
   }
 
+    ngOnDestroy() {
+        if (this.toastTimer) {
+            clearTimeout(this.toastTimer);
+        }
+    }
+
+    get toastClassList(): string {
+        if (this.toastVariant === 'success') {
+            return 'border-secondary-200 bg-linear-to-r from-secondary-100 to-base-een-100 text-base-twee-900';
+        }
+
+        return 'border-primary-200 bg-linear-to-r from-primary-100 to-base-een-100 text-base-twee-900';
+    }
+
+    private showToast(title: string, message: string, variant: 'success' | 'info' = 'success', durationMs: number = 4500) {
+        this.toastTitle = title;
+        this.toastMessage = message;
+        this.toastVariant = variant;
+        this.toastVisible = true;
+
+        if (this.toastTimer) {
+            clearTimeout(this.toastTimer);
+        }
+
+        this.toastTimer = setTimeout(() => {
+            this.dismissToast();
+        }, durationMs);
+    }
+
+    dismissToast() {
+        this.toastVisible = false;
+
+        if (this.toastTimer) {
+            clearTimeout(this.toastTimer);
+            this.toastTimer = null;
+        }
+    }
+
   handlePaymentReturn(paymentIntentId: string) {
       if (this.verifying) return;
       this.verifying = true;
@@ -111,11 +196,19 @@ export class Credits implements OnInit {
           next: (res) => {
               this.verifying = false;
               if (res.success) {
-                  alert(`Payment Successful!\nAdded: ${res.credits_added} credits.\nBalance: ${res.new_balance}`);
+                                    this.showToast(
+                                        'Betaling gelukt',
+                                        `+${res.credits_added} credits toegevoegd. Nieuw saldo: ${res.new_balance}.`,
+                                        'success'
+                                    );
                   this.creditService.refreshBalance(); // Force refresh
               } else {
                   console.error('Payment verified but logic failed', res);
-                  alert('Payment processed. Credits will be updated shortly.');
+                                    this.showToast(
+                                        'Betaling verwerkt',
+                                        'Je credits worden zo meteen bijgewerkt.',
+                                        'info'
+                                    );
               }
           },
           error: (err) => {
