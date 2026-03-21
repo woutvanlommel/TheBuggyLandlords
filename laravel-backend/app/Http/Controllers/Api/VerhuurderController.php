@@ -32,6 +32,7 @@ class VerhuurderController extends Controller
         $buildings = $user->buildings()
             ->with([
                 'rooms.roomType', 
+                'rooms.images',
                 'rooms.contracts' => function($query) {
                     $query->where('is_active', 1)->with('user');
                 }, 
