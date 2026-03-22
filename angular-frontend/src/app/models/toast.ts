@@ -16,6 +16,7 @@ export interface ToastProps {
 }
 
 export interface ActiveToast {
+  id: string;
   title: string;
   message: string;
   variant: ToastVariant;

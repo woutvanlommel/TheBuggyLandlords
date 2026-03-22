@@ -9,16 +9,18 @@ interface ToastStyle {
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  private toastSubject = new BehaviorSubject<ActiveToast | null>(null);
+  private toastSubject = new BehaviorSubject<ActiveToast[]>([]);
   readonly toast$ = this.toastSubject.asObservable();
 
-  private timer: ReturnType<typeof setTimeout> | null = null;
+  private timers = new Map<string, ReturnType<typeof setTimeout>>();
 
-  show(props: ToastProps): void {
+  show(props: ToastProps): string {
     const variant: ToastVariant = props.variant ?? 'info';
     const style = this.getStyle(variant, props.icon);
+    const id = this.createId();
 
     const toast: ActiveToast = {
+      id,
       title: props.title ?? 'Melding',
       message: props.message ?? '',
       variant,
@@ -28,25 +30,32 @@ export class ToastService {
       closable: props.closable ?? true,
     };
 
-    this.toastSubject.next(toast);
-
-    if (this.timer) {
-      clearTimeout(this.timer);
-      this.timer = null;
-    }
+    this.toastSubject.next([toast, ...this.toastSubject.value]);
 
     if (toast.durationMs > 0) {
-      this.timer = setTimeout(() => this.dismiss(), toast.durationMs);
+      const timer = setTimeout(() => this.dismiss(id), toast.durationMs);
+      this.timers.set(id, timer);
     }
+
+    return id;
   }
 
-  dismiss(): void {
-    if (this.timer) {
-      clearTimeout(this.timer);
-      this.timer = null;
+  dismiss(id: string): void {
+    const timer = this.timers.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      this.timers.delete(id);
     }
 
-    this.toastSubject.next(null);
+    this.toastSubject.next(this.toastSubject.value.filter((toast) => toast.id !== id));
+  }
+
+  clear(): void {
+    for (const timer of this.timers.values()) {
+      clearTimeout(timer);
+    }
+    this.timers.clear();
+    this.toastSubject.next([]);
   }
 
   private getStyle(variant: ToastVariant, customIcon?: ToastIconName): ToastStyle {
@@ -77,5 +86,9 @@ export class ToastService {
       icon: customIcon ?? selected.icon,
       classList: selected.classList,
     };
+  }
+
+  private createId(): string {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
 }
