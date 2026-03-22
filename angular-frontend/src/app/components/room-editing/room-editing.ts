@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 import { QuillEditorComponent } from 'ngx-quill';
 import { DatePipe } from '@angular/common';
+import { ToastService } from '../../shared/toast';
 
 @Component({
   selector: 'app-room-editing',
@@ -802,6 +803,7 @@ export class RoomEditing implements OnInit {
     private router: Router,
     private verhuurderService: VerhuurderService,
     private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
   ) {}
 
   async ngOnInit() {
@@ -1039,11 +1041,21 @@ export class RoomEditing implements OnInit {
         facilities: this.room.facilities.map((f: any) => f.id),
       });
 
-      alert('Kamer succesvol bijgewerkt!');
+      this.toastService.show({
+        title: 'Kamer bijgewerkt',
+        message: 'De kamer is succesvol opgeslagen.',
+        variant: 'success',
+      });
       this.room = await this.verhuurderService.getRoom(this.room.id);
     } catch (e) {
       console.error(e);
-      alert('Fout bij opslaan.');
+      this.toastService.show({
+        title: 'Opslaan mislukt',
+        message: 'Er ging iets fout bij het opslaan van de kamer.',
+        variant: 'error',
+        icon: 'heroXCircle',
+        durationMs: 5000,
+      });
     } finally {
       this.saving = false;
       this.cdr.detectChanges();
