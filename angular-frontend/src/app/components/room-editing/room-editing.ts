@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 import { QuillEditorComponent } from 'ngx-quill';
 import { DatePipe } from '@angular/common';
+import { ToastService } from '../../shared/toast';
 
 @Component({
   selector: 'app-room-editing',
@@ -802,6 +803,7 @@ export class RoomEditing implements OnInit {
     private router: Router,
     private verhuurderService: VerhuurderService,
     private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
   ) {}
 
   async ngOnInit() {
@@ -823,7 +825,12 @@ export class RoomEditing implements OnInit {
       if (!this.room.facilities) this.room.facilities = [];
     } catch (error) {
       console.error(error);
-      alert('Laden mislukt.');
+      this.toastService.show({
+        title: 'Laden mislukt',
+        message: 'De kamergegevens konden niet geladen worden.',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
@@ -886,10 +893,19 @@ export class RoomEditing implements OnInit {
       );
       this.room = await this.verhuurderService.getRoom(this.room.id);
       this.selectedUser = null;
-      alert('Huurder succesvol gekoppeld!');
+      this.toastService.show({
+        title: 'Huurder gekoppeld',
+        message: 'De huurder is succesvol gekoppeld aan deze kamer.',
+        variant: 'success',
+      });
     } catch (e) {
       console.error(e);
-      alert('Linken mislukt.');
+      this.toastService.show({
+        title: 'Linken mislukt',
+        message: 'De huurder kon niet gekoppeld worden. Probeer opnieuw.',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.linking = false;
       this.cdr.detectChanges();
@@ -901,10 +917,19 @@ export class RoomEditing implements OnInit {
     try {
       await this.verhuurderService.unlinkTenant(this.room.id);
       this.room = await this.verhuurderService.getRoom(this.room.id);
-      alert('Huurder ontkoppeld.');
+      this.toastService.show({
+        title: 'Huurder ontkoppeld',
+        message: 'De huurder is ontkoppeld van deze kamer.',
+        variant: 'info',
+      });
     } catch (e) {
       console.error(e);
-      alert('Ontkoppelen mislukt.');
+      this.toastService.show({
+        title: 'Ontkoppelen mislukt',
+        message: 'De huurder kon niet ontkoppeld worden.',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.cdr.detectChanges();
     }
@@ -1039,11 +1064,21 @@ export class RoomEditing implements OnInit {
         facilities: this.room.facilities.map((f: any) => f.id),
       });
 
-      alert('Kamer succesvol bijgewerkt!');
+      this.toastService.show({
+        title: 'Kamer bijgewerkt',
+        message: 'De kamer is succesvol opgeslagen.',
+        variant: 'success',
+      });
       this.room = await this.verhuurderService.getRoom(this.room.id);
     } catch (e) {
       console.error(e);
-      alert('Fout bij opslaan.');
+      this.toastService.show({
+        title: 'Opslaan mislukt',
+        message: 'Er ging iets fout bij het opslaan van de kamer.',
+        variant: 'error',
+        icon: 'heroXCircle',
+        durationMs: 5000,
+      });
     } finally {
       this.saving = false;
       this.cdr.detectChanges();
