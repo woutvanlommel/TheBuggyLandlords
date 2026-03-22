@@ -1,11 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, RedirectCommand, Router, RouterModule } from '@angular/router';
 import { VerhuurderService } from '../../shared/verhuurder.service';
 import { QuillEditorComponent } from 'ngx-quill';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroKeyMicro } from '@ng-icons/heroicons/micro';
+import { ToastService } from '../../shared/toast';
 
 @Component({
   selector: 'app-building-editing',
@@ -51,7 +52,11 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
               [disabled]="loading"
               class="px-6 py-2 bg-primary-600 text-white rounded-xl font-semibold shadow hover:bg-primary-700 transition-all disabled:opacity-50"
             >
-              Opslaan
+              @if (loading) {
+                Opslaan...
+              } @else {
+                Opslaan
+              }
             </button>
           </div>
         </div>
@@ -93,36 +98,36 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
                       (input)="onStreetInput()"
                       class="w-full pl-4 pr-10 py-3 rounded-xl border border-base-twee-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
                     />
-                    @if(suggestLoading) {
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2">
-                      <div
-                        class="w-4 h-4 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"
-                      ></div>
-                    </div>
+                    @if (suggestLoading) {
+                      <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                        <div
+                          class="w-4 h-4 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"
+                        ></div>
+                      </div>
                     }
                   </div>
 
                   <!-- Suggestions Dropdown -->
-                  @if(suggestions.length > 0) {
-                  <div
-                    class="absolute z-50 left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-base-twee-100 overflow-hidden max-h-40 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200"
-                  >
-                    @for (suggestion of suggestions; track $index) {
+                  @if (suggestions.length > 0) {
                     <div
-                      (click)="selectSuggestion(suggestion)"
-                      class="px-4 py-2 hover:bg-primary-50 cursor-pointer transition-colors border-b border-base-een-50 last:border-0 text-sm group"
+                      class="absolute z-50 left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-base-twee-100 overflow-hidden max-h-40 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200"
                     >
-                      <p
-                        class="font-bold text-base-twee-900 group-hover:text-primary-700 transition-colors"
-                      >
-                        {{ suggestion.street }}
-                      </p>
-                      <p class="text-[10px] text-base-twee-500">
-                        {{ suggestion.postalCode }} {{ suggestion.city }}
-                      </p>
+                      @for (suggestion of suggestions; track $index) {
+                        <div
+                          (click)="selectSuggestion(suggestion)"
+                          class="px-4 py-2 hover:bg-primary-50 cursor-pointer transition-colors border-b border-base-een-50 last:border-0 text-sm group"
+                        >
+                          <p
+                            class="font-bold text-base-twee-900 group-hover:text-primary-700 transition-colors"
+                          >
+                            {{ suggestion.street }}
+                          </p>
+                          <p class="text-[10px] text-base-twee-500">
+                            {{ suggestion.postalCode }} {{ suggestion.city }}
+                          </p>
+                        </div>
+                      }
                     </div>
-                    }
-                  </div>
                   }
                 </div>
 
@@ -216,8 +221,8 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
                   toolbar: [
                     ['bold', 'italic', 'underline'],
                     [{ list: 'ordered' }, { list: 'bullet' }],
-                    ['clean']
-                  ]
+                    ['clean'],
+                  ],
                 }"
                 class="block w-full bg-white overflow-hidden border-2 border-base-een-200 focus-within:border-primary-500 transition-all font-sans"
                 [styles]="{ height: '350px' }"
@@ -314,91 +319,91 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
 
               <!-- Room Grid -->
               @if (!loading && building?.rooms?.length > 0) {
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @for (room of building.rooms; track room.id) {
-                <div
-                  class="bg-base-een-100/30 border border-base-twee-100 p-5 rounded-3xl group hover:border-primary-200 hover:bg-white transition-all"
-                >
-                  <div class="flex justify-between items-start mb-4">
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-600 font-bold group-hover:bg-primary-600 group-hover:text-white transition-all"
-                      >
-                        <ng-icon name="heroKeyMicro" class="w-6 h-6"></ng-icon>
-                      </div>
-                      <div>
-                        <h4 class="font-bold text-base-twee-900">
-                          {{ getRoomTypeName(room.roomtype_id) }} -
-                          {{ room.roomnumber }}
-                        </h4>
-                        <p
-                          class="text-[10px] text-base-twee-400 font-bold uppercase tracking-widest"
-                        >
-                          €{{ room.price }} / maand
-                        </p>
-                      </div>
-                    </div>
-
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  @for (room of building.rooms; track room.id) {
                     <div
-                      class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      class="bg-base-een-100/30 border border-base-twee-100 p-5 rounded-3xl group hover:border-primary-200 hover:bg-white transition-all"
                     >
-                      <button
-                        routerLink="/dashboard/room/{{ room.id }}"
-                        class="p-2 hover:bg-primary-50 rounded-xl text-primary-600 transition-colors"
-                        title="Bewerken"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="w-5 h-5"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        (click)="deleteRoom(room.id)"
-                        class="p-2 hover:bg-red-50 rounded-xl text-red-500 transition-colors"
-                        title="Verwijderen"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="w-5 h-5"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                      <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                          <div
+                            class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-600 font-bold group-hover:bg-primary-600 group-hover:text-white transition-all"
+                          >
+                            <ng-icon name="heroKeyMicro" class="w-6 h-6"></ng-icon>
+                          </div>
+                          <div>
+                            <h4 class="font-bold text-base-twee-900">
+                              {{ getRoomTypeName(room.roomtype_id) }} -
+                              {{ room.roomnumber }}
+                            </h4>
+                            <p
+                              class="text-[10px] text-base-twee-400 font-bold uppercase tracking-widest"
+                            >
+                              €{{ room.price }} / maand
+                            </p>
+                          </div>
+                        </div>
 
-                  <div class="flex items-center gap-2">
-                    <span
-                      class="px-3 py-1 bg-white rounded-full text-[10px] font-bold shadow-sm"
-                      [ngClass]="room.active_contract ? 'text-orange-600' : 'text-green-600'"
-                    >
-                      ● {{ room.active_contract ? 'Verhuurd' : 'Beschikbaar' }}
-                    </span>
-                    <span class="text-[10px] text-base-twee-400 font-bold"
-                      >{{ room.surface }}m²</span
-                    >
-                  </div>
+                        <div
+                          class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <button
+                            routerLink="/dashboard/room/{{ room.id }}"
+                            class="p-2 hover:bg-primary-50 rounded-xl text-primary-600 transition-colors"
+                            title="Bewerken"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="w-5 h-5"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            (click)="deleteRoom(room.id)"
+                            class="p-2 hover:bg-red-50 rounded-xl text-red-500 transition-colors"
+                            title="Verwijderen"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="w-5 h-5"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="px-3 py-1 bg-white rounded-full text-[10px] font-bold shadow-sm"
+                          [ngClass]="room.active_contract ? 'text-orange-600' : 'text-green-600'"
+                        >
+                          ● {{ room.active_contract ? 'Verhuurd' : 'Beschikbaar' }}
+                        </span>
+                        <span class="text-[10px] text-base-twee-400 font-bold"
+                          >{{ room.surface }}m²</span
+                        >
+                      </div>
+                    </div>
+                  }
                 </div>
-                }
-              </div>
               }
             </div>
           </div>
@@ -518,10 +523,14 @@ import { heroKeyMicro } from '@ng-icons/heroicons/micro';
               </button>
               <button
                 (click)="saveRoom()"
-                [disabled]="!currentRoom.roomnumber || !currentRoom.price"
+                [disabled]="!currentRoom.roomnumber || !currentRoom.price || loading"
                 class="flex-[1.5] py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50"
               >
-                Kot Opslaan
+                @if (loading) {
+                  Opslaan...
+                } @else {
+                  Kot Opslaan
+                }
               </button>
             </div>
           </div>
@@ -560,7 +569,8 @@ export class BuildingEditing implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private verhuurderService: VerhuurderService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
   ) {}
 
   async ngOnInit() {
@@ -586,6 +596,11 @@ export class BuildingEditing implements OnInit {
       }
     } catch (error) {
       console.error('Error loading building data:', error);
+      this.toastService.show({
+        title: 'Laden mislukt',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
@@ -639,12 +654,19 @@ export class BuildingEditing implements OnInit {
     try {
       this.loading = true;
       await this.verhuurderService.updateBuilding(this.building.id, this.editBuilding);
-      alert('Gebouw succesvol bijgewerkt!');
+      this.toastService.show({
+        title: 'Gebouw opgeslagen',
+        variant: 'success',
+        durationMs: 5000,
+      });
       await this.loadData();
     } catch (error: any) {
       console.error('Error saving building:', error);
-      const message = error.error?.message || 'Er is een fout opgetreden bij het opslaan.';
-      alert(message);
+      this.toastService.show({
+        title: 'Opslaan mislukt',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
@@ -655,7 +677,7 @@ export class BuildingEditing implements OnInit {
     if (!this.building) return;
     if (
       !confirm(
-        'Weet je zeker dat je dit gebouw wilt verwijderen? Alle bijbehorende koten worden ook verwijderd.'
+        'Weet je zeker dat je dit gebouw wilt verwijderen? Alle bijbehorende koten worden ook verwijderd.',
       )
     )
       return;
@@ -664,9 +686,18 @@ export class BuildingEditing implements OnInit {
       this.loading = true;
       await this.verhuurderService.deleteBuilding(this.building.id);
       this.router.navigate(['/dashboard/stats']);
+      this.toastService.show({
+        title: 'Gebouw verwijderd',
+        variant: 'success',
+        durationMs: 5000,
+      });
     } catch (error) {
       console.error('Error deleting building:', error);
-      alert('Kon gebouw niet verwijderen.');
+      this.toastService.show({
+        title: 'Verwijderen mislukt',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
@@ -707,9 +738,18 @@ export class BuildingEditing implements OnInit {
       }
       this.closeRoomModal();
       await this.loadData();
+      this.toastService.show({
+        title: 'Kot succesvol toegevoegd',
+        variant: 'success',
+        durationMs: 5000,
+      });
     } catch (error) {
       console.error('Error saving room:', error);
-      alert('Kon kot niet opslaan.');
+      this.toastService.show({
+        title: 'Opslaan mislukt',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
@@ -727,9 +767,18 @@ export class BuildingEditing implements OnInit {
       this.loading = true;
       await this.verhuurderService.deleteRoom(id);
       await this.loadData();
+      this.toastService.show({
+        title: 'Kot verwijderd',
+        variant: 'success',
+        durationMs: 5000,
+      });
     } catch (error) {
       console.error('Error deleting room:', error);
-      alert('Kon kot niet verwijderen.');
+      this.toastService.show({
+        title: 'Verwijderen mislukt',
+        variant: 'error',
+        durationMs: 5000,
+      });
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
