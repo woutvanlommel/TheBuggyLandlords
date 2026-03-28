@@ -18,6 +18,7 @@ use App\Http\Controllers\CreditController;
 use App\Http\Controllers\Api\MessageController;
 use App\Models\Message;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Log;
 /*
 |--------------------------------------------------------------------------
 | API Routes - CustomFlow / Student Housing App
@@ -238,6 +239,54 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/rooms/link-tenant', [VerhuurderController::class, 'linkTenant']);
     Route::post('/rooms/{roomId}/unlink-tenant', [VerhuurderController::class, 'unlinkTenant']);
     Route::get('/my-tenants', [VerhuurderController::class, 'getMyTenants']);
+
+    // For renters: get their landlord
+    Route::get('/my-landlord', function (Request $request) {
+        try {
+            $userId = $request->user()->id;
+
+            Log::info('Getting landlord for user', ['user_id' => $userId]);
+
+            // Find the landlord through active contract
+            $contract = \App\Models\Contract::where('user_id', $userId)
+                                ->where('is_active', true)
+                                ->with('room.building.owner')
+                                ->first();
+
+            if (!$contract) {
+                Log::warning('No active contract found', ['user_id' => $userId]);
+                return response()->json(['message' => 'Geen actief contract gevonden'], 404);
+            }
+
+            if (!$contract->room) {
+                Log::warning('Contract has no room', ['contract_id' => $contract->id]);
+                return response()->json(['message' => 'Contract heeft geen kamer'], 404);
+            }
+
+            if (!$contract->room->building) {
+                Log::warning('Room has no building', ['room_id' => $contract->room->id]);
+                return response()->json(['message' => 'Kamer heeft geen gebouw'], 404);
+            }
+
+            $landlord = $contract->room->building->owner;
+
+            if (!$landlord) {
+                Log::warning('Building has no owner', ['building_id' => $contract->room->building->id]);
+                return response()->json(['message' => 'Gebouw heeft geen eigenaar'], 404);
+            }
+
+            Log::info('Landlord found', ['landlord_id' => $landlord->id]);
+            return response()->json($landlord);
+
+        } catch (\Exception $e) {
+            Log::error('Error getting landlord', [
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['message' => 'Fout bij ophalen verhuurder: ' . $e->getMessage()], 500);
+        }
+    });
 
     Route::post('/rooms/upload-image', [VerhuurderController::class, 'uploadRoomImage']);
     Route::delete('/documents/{id}', [VerhuurderController::class, 'deleteDocument']);

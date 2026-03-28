@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Messages API</title>
+</head>
+<body>
+    <h1>Message API Tester</h1>
+    
+    <div>
+        <h2>1. Get Conversations</h2>
+        <button onclick="getConversations()">Test GET /api/conversations</button>
+        <pre id="conversations-result"></pre>
+    </div>
+    
+    <div>
+        <h2>2. Get Messages with User</h2>
+        <input type="number" id="userId" placeholder="Enter User ID" value="1">
+        <button onclick="getMessages()">Test GET /api/messages/{userId}</button>
+        <pre id="messages-result"></pre>
+    </div>
+    
+    <div>
+        <h2>3. Auth Token</h2>
+        <input type="text" id="token" placeholder="Paste your auth token here" style="width: 500px">
+        <p><small>Get this from sessionStorage in your browser console: sessionStorage.getItem('auth_token')</small></p>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        function getToken() {
+            return document.getElementById('token').value;
+        }
+        
+        async function getConversations() {
+            const result = document.getElementById('conversations-result');
+            result.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/conversations`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                result.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.textContent = 'ERROR: ' + error.message;
+            }
+        }
+        
+        async function getMessages() {
+            const userId = document.getElementById('userId').value;
+            const result = document.getElementById('messages-result');
+            result.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/messages/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                result.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.textContent = 'ERROR: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

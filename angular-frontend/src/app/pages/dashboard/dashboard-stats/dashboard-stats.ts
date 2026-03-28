@@ -240,11 +240,17 @@ export class DashboardStats implements OnInit, AfterViewChecked {
       this.cdr.markForCheck();
     });
 
+    // Load appropriate data based on role
     if (this.isLandlord) {
       this.loadStats();
-      this.loadConversations(); // Laad de inbox
-      this.loadMyTenants(); // Laad alle huurders voor eventueel filteren in de toekomst
+      this.loadMyTenants();
+    } else {
+      // For renters: load their landlord automatically
+      this.loadMyLandlord();
     }
+    
+    // Both roles load conversations
+    this.loadConversations();
 
     // 2. Start WebSocket luisteraar
     this.chatService.listenToMessages(this.myId, (newMessage: any) => {
@@ -299,13 +305,25 @@ export class DashboardStats implements OnInit, AfterViewChecked {
         receiverId = this.selectedUser.id;
       }
     } else {
-      // Als huurder: stuur gewoon naar de geopende chat
+      // Als huurder: stuur gewoon naar de geopende chat (landlord)
       receiverId = this.selectedUser?.id;
+      
+      // If no conversation selected, this shouldn't happen as we auto-select landlord
+      // But just in case, show a helpful message
+      if (!receiverId) {
+        alert("Geen gesprek geselecteerd. Probeer de pagina opnieuw te laden.");
+        return;
+      }
     }
 
     if (!receiverId) {
       alert("Selecteer eerst een ontvanger of een gesprek.");
       return;
+    }
+
+    // CRITICAL FIX: Convert to number if not 'all'
+    if (receiverId !== 'all') {
+      receiverId = Number(receiverId);
     }
 
     const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
@@ -336,13 +354,25 @@ export class DashboardStats implements OnInit, AfterViewChecked {
   }
 
   handleIncomingMessage(msg: any) {
+    console.log('📨 WebSocket message received:', msg);
+    console.log('Current selected user:', this.selectedUser?.id);
+    console.log('Message sender:', msg.sender_id);
+    
     // Als het bericht van de persoon is die we nu open hebben: toevoegen aan de chat
     if (this.selectedUser && msg.sender_id === this.selectedUser.id) {
+      console.log('✅ Adding to current chat');
       this.messages.push(msg);
+    } else {
+      console.log('⚠️ Message from different user - updating inbox only');
     }
+    
     // Update sowieso de preview in de inbox lijst
     this.updateInboxWithLatestMessage(msg);
+    
+    // Force UI update
     this.cdr.detectChanges();
+    
+    console.log('📊 Messages array now has', this.messages.length, 'items');
   }
 
   updateInboxWithLatestMessage(msg: any) {
@@ -396,6 +426,21 @@ export class DashboardStats implements OnInit, AfterViewChecked {
     const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
     this.http.get<any[]>('http://localhost:8000/api/my-tenants', { headers }).subscribe(data => {
       this.allTenants = data;
+    });
+  }
+
+  loadMyLandlord() {
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    this.http.get<any>('http://localhost:8000/api/my-landlord', { headers }).subscribe({
+      next: (landlord) => {
+        // Automatically select the landlord as the conversation partner
+        this.selectedUser = landlord;
+        // Load messages with landlord
+        this.selectConversation(landlord);
+      },
+      error: (err) => {
+        console.error('Could not load landlord', err);
+      }
     });
   }
 }

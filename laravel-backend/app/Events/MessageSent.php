@@ -23,6 +23,12 @@ class MessageSent implements ShouldBroadcast
     public function __construct(Message $message)
     {
         $this->message = $message;
+        \Log::info('MessageSent event created', [
+            'message_id' => $message->id,
+            'sender_id' => $message->sender_id,
+            'receiver_id' => $message->receiver_id,
+            'channel' => 'chat.user.' . $message->receiver_id
+        ]);
     }
 
     /**
@@ -35,5 +41,13 @@ class MessageSent implements ShouldBroadcast
         return [
             new PrivateChannel('chat.user.' . $this->message->receiver_id),
         ];
+    }
+
+    /**
+     * The event's broadcast name.
+     */
+    public function broadcastAs(): string
+    {
+        return 'MessageSent';
     }
 }

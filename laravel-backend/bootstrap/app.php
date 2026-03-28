@@ -16,9 +16,19 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->alias([
             'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        $middleware->validateCsrfTokens(except:[
-            'broadcasting/auth'])
         ]);
+        $middleware->validateCsrfTokens(except:[
+            'api/*',
+            'broadcasting/auth'
+        ]);
+        
+        // For API routes, return JSON when unauthenticated instead of redirecting
+        $middleware->redirectGuestsTo(function ($request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return null;
+            }
+            return route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
