@@ -7,6 +7,7 @@ import { BuildingDashboard } from '../../../components/building-dashboard/buildi
 import { VerhuurderService } from '../../../shared/verhuurder.service';
 import { CreditService } from '../../../shared/credit.service';
 import { ChatService } from '../../../shared/chat-service';
+import { ToastService } from '../../../shared/toast';
 
 
 @Component({
@@ -222,6 +223,7 @@ export class DashboardStats implements OnInit, AfterViewChecked, OnDestroy {
     private creditService: CreditService,
     private verhuurderService: VerhuurderService,
     private chatService: ChatService,
+    private toastService: ToastService,
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
@@ -341,7 +343,11 @@ export class DashboardStats implements OnInit, AfterViewChecked, OnDestroy {
         next: (res: any) => {
           // UI bijwerken: alleen voor "all"; individuele chats komen realtime via Echo.
           if (receiverId === 'all') {
-            alert('Mededeling succesvol verzonden naar alle huurders!');
+            this.toastService.show({
+              title: 'Mededeling verzonden',
+              message: 'Je bericht is naar alle actieve huurders verstuurd.',
+              variant: 'success',
+            });
           } else if (this.selectedUser && Number(res.receiver_id) === Number(this.selectedUser.id)) {
             this.messages.push(res);
             this.updateInboxWithLatestMessage(res);
