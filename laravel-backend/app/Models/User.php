@@ -110,4 +110,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Room::class, 'favorites', 'user_id', 'room_id')
                     ->with('building');
     }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
 }

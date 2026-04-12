@@ -1,0 +1,3 @@
+Sending messages works, receiving doesnt!
+
+huurder kan niet naam huurbaas zien of kot!

@@ -15,6 +15,7 @@ use App\Models\Facility;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class VerhuurderController extends Controller
 {
@@ -35,8 +36,8 @@ class VerhuurderController extends Controller
                 'rooms.images',
                 'rooms.contracts' => function($query) {
                     $query->where('is_active', 1)->with('user');
-                }, 
-                'street', 
+                },
+                'street',
                 'place'
             ])
             ->get();
@@ -118,7 +119,7 @@ class VerhuurderController extends Controller
             'longitude' => $geoResult['longitude'],
             'description' => $validated['description'] ?? null
         ]);
-        
+
         return response()->json(['message' => 'Gebouw toegevoegd', 'building' => $building]);
     }
 
@@ -300,10 +301,10 @@ class VerhuurderController extends Controller
     public function uploadRoomImage(Request $request)
     {
         $user = $request->user();
-        
+
         // We verwijderen de 'image' rule omdat die PDF's blokkeert
         $request->validate([
-            'image' => 'required|file|max:20480', 
+            'image' => 'required|file|max:20480',
             'room_id' => 'required|exists:room,id',
             'document_type_id' => 'required|exists:documenttype,id',
         ]);
@@ -385,7 +386,7 @@ class VerhuurderController extends Controller
             $path = str_replace('/storage/', '', $document->file_path);
             Storage::disk('public')->delete($path);
         }
-        
+
         $document->delete();
 
         return response()->json(['message' => 'Bestand verwijderd']);
@@ -453,7 +454,7 @@ class VerhuurderController extends Controller
         ]);
 
         $room = Room::findOrFail($validated['room_id']);
-        
+
         if (!$room->building || $room->building->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -496,4 +497,19 @@ class VerhuurderController extends Controller
 
         return response()->json(['message' => 'Huurder succesvol ontkoppeld']);
     }
-}
+
+    public function getMyTenants()
+    {
+        $verhuurderId = Auth::id();
+
+        // Haal unieke huurders op die een actief contract hebben in een gebouw van deze verhuurder
+        $tenants = User::whereHas('contracts', function ($q) use ($verhuurderId) {
+            $q->where('is_active', 1)
+            ->whereHas('room.building', function ($q2) use ($verhuurderId) {
+                $q2->where('user_id', $verhuurderId);
+            });
+        })->get(['id', 'fname', 'name', 'email']);
+
+        return response()->json($tenants);
+    }
+    }

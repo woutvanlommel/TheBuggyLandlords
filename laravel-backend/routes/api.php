@@ -15,7 +15,10 @@ use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\VerhuurderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CreditController;
-
+use App\Http\Controllers\Api\MessageController;
+use App\Models\Message;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Log;
 /*
 |--------------------------------------------------------------------------
 | API Routes - CustomFlow / Student Housing App
@@ -235,13 +238,58 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search-users', [VerhuurderController::class, 'searchUsers']);
     Route::post('/rooms/link-tenant', [VerhuurderController::class, 'linkTenant']);
     Route::post('/rooms/{roomId}/unlink-tenant', [VerhuurderController::class, 'unlinkTenant']);
+    Route::get('/my-tenants', [VerhuurderController::class, 'getMyTenants']);
+
+    // For renters: get their landlord
+    Route::get('/my-landlord', function (Request $request) {
+        try {
+            $userId = $request->user()->id;
+
+            Log::info('Getting landlord for user', ['user_id' => $userId]);
+
+            // Find the landlord through active contract
+            $contract = \App\Models\Contract::where('user_id', $userId)
+                                ->where('is_active', true)
+                                ->with('room.building.owner')
+                                ->first();
+
+            if (!$contract) {
+                Log::warning('No active contract found', ['user_id' => $userId]);
+                return response()->json(['message' => 'Geen actief contract gevonden'], 404);
+            }
+
+            if (!$contract->room) {
+                Log::warning('Contract has no room', ['contract_id' => $contract->id]);
+                return response()->json(['message' => 'Contract heeft geen kamer'], 404);
+            }
+
+            if (!$contract->room->building) {
+                Log::warning('Room has no building', ['room_id' => $contract->room->id]);
+                return response()->json(['message' => 'Kamer heeft geen gebouw'], 404);
+            }
+
+            $landlord = $contract->room->building->owner;
+
+            if (!$landlord) {
+                Log::warning('Building has no owner', ['building_id' => $contract->room->building->id]);
+                return response()->json(['message' => 'Gebouw heeft geen eigenaar'], 404);
+            }
+
+            Log::info('Landlord found', ['landlord_id' => $landlord->id]);
+            return response()->json($landlord);
+
+        } catch (\Exception $e) {
+            Log::error('Error getting landlord', [
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['message' => 'Fout bij ophalen verhuurder: ' . $e->getMessage()], 500);
+        }
+    });
 
     Route::post('/rooms/upload-image', [VerhuurderController::class, 'uploadRoomImage']);
     Route::delete('/documents/{id}', [VerhuurderController::class, 'deleteDocument']);
-
-    Route::get('/messages', [App\Http\Controllers\Api\MessageController::class, 'index']);
-    Route::post('/messages', [App\Http\Controllers\Api\MessageController::class, 'store']);
-    Route::put('/messages/{id}/read', [App\Http\Controllers\Api\MessageController::class, 'markAsRead']);
 
     // --- FAVORIETEN BEHEREN ---
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
@@ -261,19 +309,27 @@ Route::middleware('auth:sanctum')->group(function () {
         //Get current balance (Secured via token)
         Route::get('/balance', [App\Http\Controllers\Api\CreditController::class, 'getBalance']);
         Route::get('/packages', [App\Http\Controllers\Api\CreditController::class, 'getPackages']);
-        
+
         // Step 1: Intent. Server calculates the price so the user can't fake it.
         Route::post('/payment-intent', [App\Http\Controllers\Api\CreditController::class, 'createPaymentIntent']);
-        
+
         // Step 2: Payment. No route here! The frontend talks directly to Stripe.
-        
+
         // Step 3: Verification. I check with Stripe if the transaction is valid before adding credits.
         Route::post('/verify-payment', [App\Http\Controllers\Api\CreditController::class, 'verifyPayment']);
-        
+
         Route::post('/buy', [App\Http\Controllers\Api\CreditController::class, 'buyPackage']);
         Route::post('/spotlight', [App\Http\Controllers\Api\CreditController::class, 'toggleSpotlight']);
         Route::post('/activate-spotlight', [App\Http\Controllers\Api\CreditController::class, 'activateSpotlight']);
         Route::post('/unlock-chat', [App\Http\Controllers\Api\CreditController::class, 'unlockChat']);
+    });
+
+    // --- communicatie ---
+    Route::get('/conversations', [MessageController::class, 'getConversations']);
+    Route::get('/messages/{userId}', [MessageController::class, 'getMessagesWithUser']);
+    Route::post('/messages', [MessageController::class, 'store']);
+    Route::post('/broadcasting/auth', function (Request $request) {
+        return Broadcast::auth($request);
     });
 
 });
