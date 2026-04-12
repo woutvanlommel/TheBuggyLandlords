@@ -206,7 +206,7 @@ export class LandlordSpotlightComponent implements OnInit {
               id: r.id, 
               title: `${r?.roomnumber}`, 
               isSpotlightActive: !!r.is_highlighted,
-              image: r?.images && r.images.length > 0 ? r.images[0].path : '',
+             image: r?.images && r.images.length > 0 ? r.images[0].url : '',
               expiresAt: r.highlight_expires_at // Map raw timestamp
          }));
 

@@ -5,6 +5,7 @@ import { VerhuurderService } from '../../shared/verhuurder.service';
 import { RouterLink } from '@angular/router';
 import { RoomService } from '../../shared/room.service';
 import { AuthService } from '../../shared/auth.service';
+import { ToastService } from '../../shared/toast';
 
 @Component({
   selector: 'app-building-dashboard',
@@ -419,6 +420,7 @@ export class BuildingDashboard implements OnInit {
     private cdr: ChangeDetectorRef,
     private roomService: RoomService,
     private authService: AuthService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit() {
@@ -470,8 +472,15 @@ export class BuildingDashboard implements OnInit {
       await this.verhuurderService.addBuilding(this.newBuilding);
       await this.loadBuildings();
       this.closeModal();
+      this.toastService.show({
+        title: 'Gebouw succesvol toegevoegd',
+        variant: 'success',
+      });
     } catch (error: any) {
-      alert(error.error?.message || 'Fout bij opslaan');
+      this.toastService.show({
+        title: 'Kon het gebouw niet verwijderen',
+        variant: 'error',
+      });
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
