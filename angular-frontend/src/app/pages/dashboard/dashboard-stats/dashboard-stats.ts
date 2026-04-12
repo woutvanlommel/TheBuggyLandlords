@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; // CRUCIAAL voor ngModel
@@ -199,7 +199,7 @@ import { ChatService } from '../../../shared/chat-service';
       </div>
     </section>`,
 })
-export class DashboardStats implements OnInit, AfterViewChecked {
+export class DashboardStats implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('chatScroll') private chatContainer!: ElementRef;
 
   // Bestaande stats variabelen
@@ -326,7 +326,11 @@ export class DashboardStats implements OnInit, AfterViewChecked {
       receiverId = Number(receiverId);
     }
 
-    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    const headers: any = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    const socketId = this.chatService.getSocketId();
+    if (socketId) {
+      headers['X-Socket-Id'] = socketId;
+    }
     const payload = {
       receiver_id: receiverId,
       content: this.newMessageText
@@ -335,17 +339,16 @@ export class DashboardStats implements OnInit, AfterViewChecked {
     this.http.post('http://localhost:8000/api/messages', payload, { headers })
       .subscribe({
         next: (res: any) => {
-          // UI bijwerken: Alleen toevoegen aan het huidige venster als het ID matcht
-          if (receiverId !== 'all' && this.selectedUser && Number(res.receiver_id) === Number(this.selectedUser.id)) {
-            this.messages.push(res);
-          } else if (receiverId === 'all') {
+          // UI bijwerken: alleen voor "all"; individuele chats komen realtime via Echo.
+          if (receiverId === 'all') {
             alert('Mededeling succesvol verzonden naar alle huurders!');
+          } else if (this.selectedUser && Number(res.receiver_id) === Number(this.selectedUser.id)) {
+            this.messages.push(res);
+            this.updateInboxWithLatestMessage(res);
           }
 
           this.newMessageText = '';
           this.cdr.detectChanges();
-          // Optioneel: herlaad de inbox links om het nieuwe bericht te zien
-          this.loadConversations();
         },
         error: (err) => {
           console.error("Versturen mislukt", err);
@@ -373,6 +376,12 @@ export class DashboardStats implements OnInit, AfterViewChecked {
     this.cdr.detectChanges();
     
     console.log('📊 Messages array now has', this.messages.length, 'items');
+  }
+
+  ngOnDestroy() {
+    if (this.myId) {
+      this.chatService.leaveChat(this.myId);
+    }
   }
 
   updateInboxWithLatestMessage(msg: any) {

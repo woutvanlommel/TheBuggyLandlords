@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
@@ -17,8 +18,8 @@ class MessageController extends Controller
     public function getConversations()
     {
         $authId = Auth::id();
-        
-        \Log::info('getConversations called', ['auth_id' => $authId]);
+
+        Log::info('getConversations called', ['auth_id' => $authId]);
 
         // Haal alle unieke gesprekspartners op
         $partnerIds = Message::where('sender_id', $authId)
@@ -29,7 +30,7 @@ class MessageController extends Controller
             })
             ->unique();
 
-        \Log::info('Partner IDs found', ['partners' => $partnerIds->toArray()]);
+        Log::info('Partner IDs found', ['partners' => $partnerIds->toArray()]);
 
         $conversations = [];
 
@@ -52,7 +53,7 @@ class MessageController extends Controller
             ];
         }
 
-        \Log::info('Conversations result', ['count' => count($conversations)]);
+        Log::info('Conversations result', ['count' => count($conversations)]);
 
         return response()->json($conversations);
     }
@@ -75,7 +76,7 @@ class MessageController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        \Log::info('Messages retrieved for user ' . $userId, [
+        Log::info('Messages retrieved for user ' . $userId, [
             'auth_id' => $authId,
             'partner_id' => $userId,
             'count' => $messages->count(),
@@ -124,7 +125,7 @@ class MessageController extends Controller
         // Scenario B: Bericht naar één specifieke gebruiker
         // Security check: alleen toegestaan als je de eigenaar bent OF als je huurder bent die je verhuurder contacteert
         $user = User::find($receiverId);
-        
+
         if (!$user) {
             return response()->json(['error' => 'Ontvanger niet gevonden'], 404);
         }

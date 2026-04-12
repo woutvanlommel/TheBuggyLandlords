@@ -7,6 +7,7 @@ import Pusher from 'pusher-js';
 })
 export class ChatService {
   private echo: Echo<any>;
+  private activeChannel: string | null = null;
 
   constructor() {
     // Maak Pusher globaal beschikbaar voor Laravel Echo
@@ -49,10 +50,20 @@ export class ChatService {
    * @param receiverId De ID van de ingelogde gebruiker
    */
   listenToMessages(receiverId: number, callback: (data: any) => void) {
-    console.log(`🎧 Subscribing to private channel: chat.user.${receiverId}`);
-    
-    this.echo.private(`chat.user.${receiverId}`)
-      .listen('MessageSent', (e: any) => {
+    const channelName = `chat.user.${receiverId}`;
+    console.log(`🎧 Subscribing to private channel: ${channelName}`);
+
+    // Voorkom dubbele listeners wanneer het component opnieuw init.
+    if (this.activeChannel === channelName) {
+      this.echo.private(channelName).stopListening('.MessageSent');
+    } else if (this.activeChannel) {
+      this.echo.leave(this.activeChannel);
+    }
+
+    this.activeChannel = channelName;
+
+    this.echo.private(channelName)
+      .listen('.MessageSent', (e: any) => {
         console.log('📨 MessageSent event received:', e);
         callback(e.message);
       })
@@ -65,6 +76,14 @@ export class ChatService {
    * Stop met luisteren (bijv. als de component destroyed wordt)
    */
   leaveChat(receiverId: number) {
-    this.echo.leave(`chat.user.${receiverId}`);
+    const channelName = `chat.user.${receiverId}`;
+    this.echo.leave(channelName);
+    if (this.activeChannel === channelName) {
+      this.activeChannel = null;
+    }
+  }
+
+  getSocketId(): string | undefined {
+    return this.echo.connector.pusher.connection.socket_id;
   }
 }
