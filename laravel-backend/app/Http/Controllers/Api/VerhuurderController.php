@@ -302,9 +302,8 @@ class VerhuurderController extends Controller
     {
         $user = $request->user();
 
-        // We verwijderen de 'image' rule omdat die PDF's blokkeert
         $request->validate([
-            'image' => 'required|file|max:20480',
+            'image' => 'required|file|mimes:jpeg,jpg,png,pdf|max:20480',
             'room_id' => 'required|exists:room,id',
             'document_type_id' => 'required|exists:documenttype,id',
         ]);
