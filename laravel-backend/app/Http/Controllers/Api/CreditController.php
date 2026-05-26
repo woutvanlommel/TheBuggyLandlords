@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 
+// CONTROLLER: CreditController
+// Holds all credit-related endpoints: balance, buying packages (Stripe),
+// activating spotlight (landlord), unlocking chat (tenant).
 class CreditController extends Controller
 {
-    /**
-     * Get current user balance
-     */
+    // [GET] Returns the current credit balance of the logged-in user.
+    // $request->user() = the user resolved from the Bearer token (Sanctum).
     public function getBalance(Request $request)
     {
         return response()->json(['balance' => $request->user()->credits]);
@@ -36,32 +38,37 @@ class CreditController extends Controller
         return response()->json($packages);
     }
 
-    /**
-     * [POST] Step 1: Intent
-     * 
-     * Calculate the price here (Server-side) so the user cannot manipulate it.
-     */
+    // ============================================================
+    // STRIPE FLOW = 3 STEPS: Intent → Payment → Verify
+    // ============================================================
+
+    // [POST] STEP 1: Create the Intent
+    // Frontend only sends a package_id. We compute the price ourselves.
+    // IMPORTANT: never read the price from the frontend → user can manipulate it!
     public function createPaymentIntent(Request $request)
     {
+        // Validation: package_id must be 1, 2 or 3 (otherwise 422 error).
         $request->validate([
             'package_id' => 'required|integer|in:1,2,3',
         ]);
 
-        // SECURITY: Define prices server-side. 
-        // never trust the price sent from the frontend.
+        // SECURITY: prices are hardcoded server-side.
+        // The frontend cannot lie about how much something costs.
         $packages = [
             1 => ['credits' => 50, 'price' => 25],
             2 => ['credits' => 100, 'price' => 45],
             3 => ['credits' => 500, 'price' => 200]
         ];
 
-        // Calculate amount here based on the ID
         $package = $packages[$request->package_id];
-        $amount = $package['price'] * 100; // Stripe expects cents
+        $amount = $package['price'] * 100; // Stripe expects the amount in cents
 
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
+            // PaymentIntent = Stripe's way of preparing a payment.
+            // metadata = extra info attached to the payment; on verification
+            // we read it back to know who the credits belong to.
             $paymentIntent = PaymentIntent::create([
                 'amount' => $amount,
                 'currency' => 'eur',
@@ -75,6 +82,8 @@ class CreditController extends Controller
                 ],
             ]);
 
+            // clientSecret = token used by the frontend to complete the payment
+            // (without exposing the Stripe SECRET key).
             return response()->json([
                 'clientSecret' => $paymentIntent->client_secret,
             ]);
@@ -89,11 +98,10 @@ class CreditController extends Controller
      * No controller method here. The frontend handles this directly with Stripe.
      */
 
-    /**
-     * [POST] Step 3: Verification
-     * 
-     * Verify with Stripe if the money is actually received before adding credits to the DB.
-     */
+    // [POST] STEP 3: Verification (after the payment)
+    // Frontend redirects to /credits with ?payment_intent=... in the URL.
+    // We check DIRECTLY with Stripe whether the payment really succeeded
+    // before adding credits. Never trust the frontend!
     public function verifyPayment(Request $request)
     {
         $request->validate([
@@ -103,36 +111,38 @@ class CreditController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            // SECURITY: Don't trust the frontend's "success" message.
-            // I ask Stripe directly: "Did this transaction actually succeed?"
+            // SECURITY: we ask Stripe itself whether the payment succeeded.
+            // An attacker can put "succeeded" in the URL, but Stripe doesn't lie.
             Log::info('Verifying Payment: ' . $request->paymentIntentId);
             $paymentIntent = PaymentIntent::retrieve($request->paymentIntentId);
             Log::info('PaymentIntent Status: ' . $paymentIntent->status);
 
-            // Only update the database if Stripe confirms the money is received.
+            // Only grant credits if Stripe confirms: status === 'succeeded'
             if ($paymentIntent->status === 'succeeded') {
                 $credits = (int) $paymentIntent->metadata->credits;
                 $userId = $paymentIntent->metadata->user_id;
 
                 Log::info("Metadata - Credits: {$credits}, User: {$userId}, AuthUser: " . $request->user()->id);
 
+                // SECURITY: make sure the logged-in user is the same one who
+                // started the payment. Prevents user A from stealing user B's credits.
                 if ($request->user()->id != $userId) {
                     Log::warning('User ID mismatch');
                     return response()->json(['error' => 'Unauthorized payment verification'], 403);
                 }
 
-                $user = $request->user();
-                $oldCredits = $user->credits;
-                
-                // Refresh user from DB to ensure we have latest data
-                $user = User::find($user->id); 
-                
-                $user->credits += $credits;
-                $user->save();
-                
-                Log::info("Credits Updated. Old: {$oldCredits}, Added: {$credits}, New: {$user->credits}");
+                $result = DB::transaction(function () use ($request, $credits) {
+                    // lockForUpdate prevents concurrent requests from reading the same
+                    // stale balance before either write commits (TOCTOU race).
+                    $user = User::lockForUpdate()->find($request->user()->id);
+                    $oldCredits = $user->credits;
+                    $user->credits += $credits;
+                    $user->save();
+                    Log::info("Credits Updated. Old: {$oldCredits}, Added: {$credits}, New: {$user->credits}");
+                    return ['credits_added' => $credits, 'new_balance' => $user->credits];
+                });
 
-                return response()->json(['success' => true, 'credits_added' => $credits, 'new_balance' => $user->credits]);
+                return response()->json(['success' => true] + $result);
             } else {
                 return response()->json(['success' => false, 'status' => $paymentIntent->status]);
             }
@@ -144,58 +154,22 @@ class CreditController extends Controller
     }
 
     /**
-     * Buy credits (LEGACY / TESTING)
-     */
-    public function buyPackage(Request $request)
-    {
-        $request->validate([
-            'package_id' => 'required|integer'
-        ]);
-
-        $packages = [
-            1 => 50,
-            2 => 100,
-            3 => 500
-        ];
-
-        $packageId = $request->input('package_id');
-        
-        if (!isset($packages[$packageId])) {
-            return response()->json(['success' => false, 'message' => 'Invalid package'], 400);
-        }
-
-        $creditsToAdd = $packages[$packageId];
-        $user = $request->user();
-
-        // Update user credits
-        $user->credits += $creditsToAdd;
-        $user->save();
-
-        return response()->json([
-            'success' => true,
-            'new_balance' => $user->credits,
-            'message' => "Added $creditsToAdd credits"
-        ]);
-    }
-
-    /**
      * Toggle Spotlight (Landlord)
      * Using Room's is_highlighted field
      */
-    /**
-     * Activate Spotlight with Timer (Landlord)
-     * COST: 1 Credit = 1 Day
-     */
-    public function activateSpotlight(Request $request) 
+    // [POST] Activate spotlight (landlord)
+    // Costs 1 credit per day. The landlord chooses how many days.
+    public function activateSpotlight(Request $request)
     {
+        // Validation: room_id and number of days required; minimum 1 day.
         $request->validate([
-            'property_id' => 'required|integer', 
+            'property_id' => 'required|integer',
             'days' => 'required|integer|min:1'
         ]);
 
         $roomId = $request->input('property_id');
         $days = (int) $request->input('days');
-        $cost = $days; // 1 credit per day
+        $cost = $days; // formula: 1 credit = 1 day
         $user = $request->user();
 
         $room = Room::find($roomId);
@@ -204,31 +178,38 @@ class CreditController extends Controller
             return response()->json(['success' => false, 'message' => 'Room not found'], 404);
         }
 
-        // Verify ownership
+        // SECURITY: ownership check → only the landlord of the building
+        // is allowed to spotlight their own room.
         $isOwner = $room->building && $room->building->user_id === $user->id;
         if (!$isOwner) {
             return response()->json(['success' => false, 'message' => 'Not authorized'], 403);
         }
 
-        // Check balance
-        if ($user->credits < $cost) {
-            return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
-        }
+        return DB::transaction(function () use ($user, $room, $cost, $days) {
+            // lockForUpdate: re-read balance inside the transaction to close
+            // the TOCTOU window between the credit check and the deduction.
+            $user = User::lockForUpdate()->find($user->id);
 
-        // Deduct credits
-        $user->credits -= $cost;
-        $user->save();
+            // Make sure the user has enough credits (otherwise 402 Payment Required).
+            if ($user->credits < $cost) {
+                return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
+            }
 
-        // Update Room
-        $room->is_highlighted = true;
-        $room->highlight_expires_at = now()->addDays($days);
-        $room->save();
+            // 1) Deduct credits
+            $user->credits -= $cost;
+            $user->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => "Spotlight activated for {$days} days",
-            'new_balance' => $user->credits
-        ]);
+            // 2) Set spotlight + compute expiry date (now + X days)
+            $room->is_highlighted = true;
+            $room->highlight_expires_at = now()->addDays($days);
+            $room->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Spotlight activated for {$days} days",
+                'new_balance' => $user->credits
+            ]);
+        });
     }
 
     /**
@@ -277,48 +258,55 @@ class CreditController extends Controller
         return response()->json(['success' => true]);
     }
 
-    /**
-     * Unlock Chat (Tenant)
-     */
+    // [POST] Unlock chat / contact (tenant)
+    // Costs 1 credit, but only once per room per user.
     public function unlockChat(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|integer' // room_id
+            'property_id' => 'required|integer' // = room_id
         ]);
 
         $user = $request->user();
         $roomId = $request->input('property_id');
 
-        // Check if already unlocked
-        $alreadyUnlocked = \App\Models\UnlockedRoom::where('user_id', $user->id)
-            ->where('room_id', $roomId)
-            ->exists();
+        return DB::transaction(function () use ($user, $roomId) {
+            // lockForUpdate: re-read balance inside the transaction to prevent
+            // concurrent unlocks from racing past the credit check.
+            $user = User::lockForUpdate()->find($user->id);
 
-        if ($alreadyUnlocked) {
+            // IMPORTANT: first check if this user already unlocked this room.
+            // Prevents anyone from paying twice for the same contact card.
+            $alreadyUnlocked = \App\Models\UnlockedRoom::where('user_id', $user->id)
+                ->where('room_id', $roomId)
+                ->exists();
+
+            if ($alreadyUnlocked) {
+                return response()->json([
+                    'success' => true,
+                    'new_balance' => $user->credits,
+                    'already_unlocked' => true
+                ]);
+            }
+
+            // Enough credits? (1 credit needed)
+            if ($user->credits < 1) {
+                return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
+            }
+
+            // 1) Deduct credit
+            $user->credits -= 1;
+            $user->save();
+
+            // 2) Remember the unlock in DB → no extra cost next time.
+            \App\Models\UnlockedRoom::create([
+                'user_id' => $user->id,
+                'room_id' => $roomId
+            ]);
+
             return response()->json([
                 'success' => true,
-                'new_balance' => $user->credits,
-                'already_unlocked' => true
+                'new_balance' => $user->credits
             ]);
-        }
-
-        if ($user->credits < 1) {
-            return response()->json(['success' => false, 'message' => 'Insufficient credits'], 402);
-        }
-
-        // Deduct credit
-        $user->credits -= 1;
-        $user->save();
-
-        // Record unlock
-        \App\Models\UnlockedRoom::create([
-            'user_id' => $user->id,
-            'room_id' => $roomId
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'new_balance' => $user->credits
-        ]);
+        });
     }
 }
