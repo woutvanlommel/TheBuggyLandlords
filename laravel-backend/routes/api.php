@@ -48,7 +48,7 @@ Route::post('/register', function (Request $request) {
         'phone'    => $validated['phone'],
         'password' => Hash::make($validated['password']),
         'credits'  => 0, // Standaard startkrediet
-        'role_id'  => $request->input('role', 1),   // Standaard rol (1 = Huurder)
+        'role_id'  => 1, // always huurder; never read role from request
     ]);
 
     $user->load('role');
@@ -56,7 +56,7 @@ Route::post('/register', function (Request $request) {
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json(['message' => 'Account aangemaakt', 'token' => $token, 'user' => $user], 201);
-});
+})->middleware('throttle:5,1');
 
 /**
  * Inloggen
@@ -80,7 +80,7 @@ Route::post('/login', function (Request $request) {
         'token'   => $token,
         'user'    => $user,
     ]);
-});
+})->middleware('throttle:10,1');
 
 
 /**
@@ -318,7 +318,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Step 3: Verification. I check with Stripe if the transaction is valid before adding credits.
         Route::post('/verify-payment', [App\Http\Controllers\Api\CreditController::class, 'verifyPayment']);
 
-        Route::post('/buy', [App\Http\Controllers\Api\CreditController::class, 'buyPackage']);
         Route::post('/spotlight', [App\Http\Controllers\Api\CreditController::class, 'toggleSpotlight']);
         Route::post('/activate-spotlight', [App\Http\Controllers\Api\CreditController::class, 'activateSpotlight']);
         Route::post('/unlock-chat', [App\Http\Controllers\Api\CreditController::class, 'unlockChat']);
